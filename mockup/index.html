@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intermodal Booking Mockup</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root {
+    --bg: #e9ecf1; --phone: #ffffff; --text: #1d2330; --muted: #6b7280; --line: #e3e6eb;
+    --card: #f6f7f9; --accent: #2f5bd3; --accent-text: #ffffff;
+    --vertt: #7c3aed; --sbb: #d32f2f; --bus: #e08a00; --ok: #15803d; --danger: #b91c1c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1014; --phone: #171a20; --text: #e8eaef; --muted: #9aa1ad; --line: #2a2f38;
+      --card: #20242c; --accent: #7aa2ff; --accent-text: #0e1014;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+         display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 16px; }
+  .phone { width: 390px; max-width: 100%; height: 820px; max-height: calc(100vh - 32px); background: var(--phone);
+           border-radius: 32px; box-shadow: 0 20px 60px rgba(0,0,0,.18); overflow: hidden; display: flex; flex-direction: column; }
+  .bar { padding: 14px 18px 10px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+  .bar .app { font-weight: 700; }
+  .bar .step { font-size: 12px; color: var(--muted); }
+  .demo { font-size: 11px; text-align: center; background: var(--card); color: var(--muted); padding: 4px; }
+  .screen { flex: 1; overflow-y: auto; padding: 16px 18px 24px; }
+  h1 { font-size: 22px; margin: 4px 0 14px; }
+  h2 { font-size: 15px; margin: 18px 0 8px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+  .btn { display: block; width: 100%; padding: 14px; border: 0; border-radius: 12px; background: var(--accent); color: var(--accent-text);
+         font: inherit; font-weight: 600; cursor: pointer; margin-top: 10px; }
+  .btn.secondary { background: var(--card); color: var(--text); border: 1px solid var(--line); }
+  .btn.danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .big { padding: 26px 18px; font-size: 18px; text-align: left; }
+  .big small { display: block; font-weight: 400; font-size: 13px; opacity: .8; margin-top: 4px; }
+  .field { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
+  .field label { display: block; font-size: 12px; color: var(--muted); }
+  .field select, .field input { width: 100%; border: 0; background: transparent; color: var(--text); font: inherit; font-weight: 600; padding: 2px 0; }
+  .locked { color: var(--muted); font-size: 12px; }
+  .seg { display: flex; gap: 6px; }
+  .seg button { flex: 1; padding: 10px 4px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--text); font: inherit; font-size: 13px; cursor: pointer; }
+  .seg button.on { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  .seg button:disabled { cursor: not-allowed; opacity: .6; }
+  .box { border: 1px dashed var(--accent); border-radius: 12px; padding: 10px; margin-top: 8px; }
+  .conn { border: 1px solid var(--line); border-radius: 14px; padding: 12px; margin-bottom: 10px; cursor: pointer; background: var(--phone); }
+  .conn.best { border: 2px solid var(--accent); }
+  .conn.cmp { opacity: .75; cursor: default; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .times { font-size: 18px; font-weight: 700; }
+  .muted { color: var(--muted); font-size: 13px; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--accent); color: var(--accent-text); }
+  .tag.grey { background: var(--line); color: var(--muted); }
+  .modes { display: flex; gap: 4px; margin: 8px 0; }
+  .modes span { height: 6px; border-radius: 3px; }
+  .leg { border-left: 4px solid; padding: 4px 0 10px 12px; margin-left: 6px; }
+  .transfer { margin: 0 0 10px 22px; font-size: 13px; color: var(--muted); }
+  .map { height: 220px; border-radius: 12px; margin: 10px 0; border: 1px solid var(--line); }
+  .legend { display: flex; gap: 12px; font-size: 12px; color: var(--muted); }
+  .legend i { display: inline-block; width: 12px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+  .sum { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; font-weight: 700; }
+  .opt { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 6px; cursor: pointer; }
+  .opt input { accent-color: var(--accent); }
+  .note { background: var(--card); border-radius: 12px; padding: 10px 12px; font-size: 13px; margin: 10px 0; }
+  .strike { text-decoration: line-through; color: var(--muted); font-weight: 400; margin-right: 4px; }
+  .center { text-align: center; padding-top: 120px; }
+  .spinner { width: 48px; height: 48px; border: 5px solid var(--line); border-top-color: var(--accent); border-radius: 50%; margin: 0 auto 16px; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .cancelled { color: var(--danger); font-weight: 700; }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .modal > div { background: var(--phone); border-radius: 16px; padding: 16px; width: 560px; max-width: 100%; max-height: 90vh; display: flex; flex-direction: column; }
+  .modal pre { overflow: auto; background: var(--card); padding: 10px; border-radius: 8px; font-size: 12px; flex: 1; margin: 10px 0; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="bar"><span class="app" id="app">Intermodal demo</span><span class="step" id="step"></span></div>
+  <div class="demo">Lite mockup – all data made up</div>
+  <div class="screen" id="screen"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// ---------- Made-up data ----------
+const PLACES = ["Wettswil am Albis", "Bonstetten", "Winterthur", "Ostermundigen", "Bern Wankdorf", "Mellingen"];
+const CARS = [
+  { make: "Renault", model: "Megane", year: 2015, g_per_km: 110 },
+  { make: "VW", model: "Passat", year: 2013, g_per_km: 134 },
+  { make: "BMW", model: "3er", year: 2020, g_per_km: 120 },
+  { make: "Toyota", model: "Prius", year: 2019, g_per_km: 92 },
+  { make: "Tesla", model: "Model 3", year: 2022, g_per_km: 0 },
+];
+const GEO = {
+  v1: [[47.3416,8.4708],[47.3482,8.4801],[47.3561,8.4893],[47.3622,8.5011],[47.3668,8.5149],[47.3721,8.5277],[47.3779,8.5403]],
+  t:  [[47.3779,8.5403],[47.3912,8.4889],[47.4050,8.4010],[47.3880,8.1800],[47.3910,8.0510],[47.3520,7.9070],[47.2100,7.6300],[47.0600,7.5100],[46.9490,7.4393]],
+  v2: [[46.9490,7.4393],[46.9502,7.4511],[46.9523,7.4630],[46.9546,7.4752],[46.9565,7.4870]],
+};
+const TRAIN_PRICE = { none: 56.00, half: 28.00, ga: 0 };
+const PT_PRICE = { none: 61.00, half: 30.50, ga: 0 };
+const COLORS = { Vertt: "var(--vertt)", SBB: "var(--sbb)", Bus: "var(--bus)" };
+const MAP_COLORS = { Vertt: "#7c3aed", SBB: "#d32f2f" };
+
+// ---------- Helpers ----------
+const r05 = x => Math.round(x * 20) / 20;           // customer prices: CHF 0.05
+const r01 = x => Math.round(x * 100) / 100;         // B2B amounts: exact to the centime
+const chf = x => "CHF " + x.toFixed(2);
+const kg = x => x.toFixed(1) + " kg";
+const sellerName = () => S.app === "vertt" ? "Vertt" : "SBB";
+
+// ---------- State ----------
+let S, maps = [];
+function reset() {
+  S = { app: null, from: PLACES[0], to: PLACES[3], card: "half", swisspass: false, spOpen: false,
+        login: null, promo: 0, pay: null, screen: "app", car: CARS[Math.floor(Math.random() * CARS.length)],
+        booking: null, cancelled: false };
+  render();
+}
+function go(screen) { S.screen = screen; render(); }
+
+// ---------- Journey ----------
+function legs() {
+  const f = 1 - S.promo / 100;
+  const car = S.car;
+  return [
+    { op: "Vertt", from: S.from, to: "Zürich HB", dep: "11:26", arr: "11:47", dur: 21, line: "Vertt", km: 13.2,
+      base: 32.40, price: r05(32.40 * f), co2: 13.2 * car.g_per_km / 1000, geo: GEO.v1 },
+    { op: "SBB", from: "Zürich HB", to: "Bern", dep: "12:02", arr: "12:58", dur: 56, line: "IC 8", platform: "Pl. 31",
+      base: TRAIN_PRICE[S.card], price: TRAIN_PRICE[S.card], co2: 0, geo: GEO.t },
+    { op: "Vertt", from: "Bern", to: S.to, dep: "13:08", arr: "13:21", dur: 13, line: "Vertt", km: 4.1,
+      base: 18.60, price: r05(18.60 * f), co2: 4.1 * car.g_per_km / 1000, geo: GEO.v2 },
+  ];
+}
+const TRANSFERS = [15, 10];
+const total = L => r05(L.reduce((s, l) => s + l.price, 0));
+const totalCo2 = L => L.reduce((s, l) => s + l.co2, 0);
+
+// ---------- Settlement events (PRD section 6) ----------
+function settlement() {
+  const L = S.booking.legs, seller = sellerName();
+  const vertt = r01(L[0].price + L[2].price), train = L[1].price, tot = S.booking.total;
+  const ev = [];
+  const add = (event_type, payer, payee, amount_chf, reason, refers_to_event = null) =>
+    ev.push({ event_id: "ev-" + (ev.length + 1), seq: ev.length + 1, event_type, payer, payee, amount_chf, reason, refers_to_event });
+  add("b2c_payment", "customer", seller, tot, "Customer pays seller for the whole journey");
+  if (seller === "Vertt") {
+    if (train > 0) {
+      add("b2b_transfer", "Vertt", "SBB", train, "Train ticket sold by Vertt");
+      add("commission", "SBB", "Vertt", r01(train * 0.05), "5 % sales commission on train ticket");
+    }
+  } else {
+    add("b2b_transfer", "SBB", "Vertt", vertt, "Vertt rides sold by SBB (no commission)");
+  }
+  if (S.cancelled) {
+    const original = ev.slice();
+    add("refund", seller, "customer", tot, "Journey cancelled – full refund");
+    original.filter(e => e.event_type !== "b2c_payment")
+      .forEach(e => add("reversal", e.payee, e.payer, e.amount_chf, "Reversal of " + e.event_type, e.event_id));
+  }
+  return ev;
+}
+function bookingData() {
+  const b = S.booking;
+  return {
+    booking: { booking_id: b.id, system: S.app, status: S.cancelled ? "cancelled" : "paid", customer: "demo-user-" + b.id.slice(-4),
+               login_method: S.login, travelcard: S.card, promo_percent: S.promo, payment_method: S.pay, booked_at: b.at },
+    trip: { from: S.from, to: S.to, car: S.car,
+            legs: b.legs.map(l => ({ operator: l.op, from: l.from, to: l.to, dep: l.dep, arr: l.arr, line: l.line,
+                                      price_chf: l.price, co2_kg: +l.co2.toFixed(2) })) },
+    settlement_events: settlement(),
+  };
+}
+
+// ---------- Rendering ----------
+const STEPS = { app: "Step 0", plan: "Step 1", detail: "Step 1", login: "Step 2", overview: "Step 3", paying: "", receipt: "Receipt" };
+function render() {
+  maps.forEach(m => m.remove()); maps = [];
+  document.getElementById("app").textContent = S.app ? (S.app === "vertt" ? "Vertt app" : "SBB app") : "Intermodal demo";
+  document.getElementById("step").textContent = STEPS[S.screen];
+  const el = document.getElementById("screen");
+  el.innerHTML = VIEWS[S.screen]();
+  el.scrollTop = 0;
+  document.querySelectorAll("[data-map]").forEach(drawMap);
+}
+
+function legsHtml(L, withPlatform) {
+  return L.map((l, i) => `
+    <div class="leg" style="border-color:${COLORS[l.op]}">
+      <div class="row"><b>${l.dep} ${l.from}</b><span>${chf(l.price)}</span></div>
+      <div class="muted">${l.op === "SBB" ? "🚆 " + l.line + (withPlatform ? " · " + l.platform : "") : "🚗 Vertt · category Vertt"} · ${l.dur} min · CO₂ ${kg(l.co2)}
+        ${l.op === "SBB" && S.card !== "none" ? " · " + (S.card === "ga" ? "covered by GA" : "half-fare price") : ""}
+        ${l.op === "Vertt" && S.promo ? ` · <span class="strike">${chf(l.base)}</span> −${S.promo} % promo` : ""}</div>
+      <div><b>${l.arr} ${l.to}</b></div>
+    </div>
+    ${i < TRANSFERS.length ? `<div class="transfer">⇄ Transfer ${TRANSFERS[i]} min</div>` : ""}`).join("");
+}
+function mapHtml() {
+  return `<div class="map" data-map></div>
+    <div class="legend"><span><i style="background:var(--vertt)"></i>Vertt</span><span><i style="background:var(--sbb)"></i>SBB</span></div>`;
+}
+function drawMap(div) {
+  const m = L.map(div, { zoomControl: false, attributionControl: true });
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "© OpenStreetMap" }).addTo(m);
+  const all = [];
+  legs().forEach(l => { L.polyline(l.geo, { color: MAP_COLORS[l.op], weight: 5 }).addTo(m); all.push(...l.geo); });
+  [[GEO.v1[0], S.from], [GEO.t[0], "Zürich HB"], [GEO.v2[0], "Bern"], [GEO.v2.at(-1), S.to]]
+    .forEach(([p, name]) => L.circleMarker(p, { radius: 6, color: "#1d2330", fillColor: "#fff", fillOpacity: 1 }).bindTooltip(name).addTo(m));
+  m.fitBounds(all, { padding: [20, 20] });
+  maps.push(m);
+}
+
+const VIEWS = {
+  app: () => `
+    <h1>Where do you book?</h1>
+    <p class="muted">Demo: the choice is fixed until you pay or reload.</p>
+    <button class="btn big" onclick="S.app='vertt';go('plan')">Vertt app<small>Vertt sells the whole journey</small></button>
+    <button class="btn big secondary" onclick="S.app='sbb';go('plan')">SBB app<small>SBB sells the whole journey</small></button>`,
+
+  plan: () => {
+    const L = legs(), opts = sel => PLACES.map(p => `<option ${p === sel ? "selected" : ""}>${p}</option>`).join("");
+    const cards = ["none", "half", "ga"], names = { none: "No travelcard", half: "Half-fare", ga: "GA" };
+    return `
+    <h1>Plan your journey</h1>
+    <div class="field"><label>From</label><select onchange="S.from=this.value;render()">${opts(S.from)}</select></div>
+    <div class="field"><label>To</label><select onchange="S.to=this.value;render()">${opts(S.to)}</select></div>
+    <div class="field"><label>Depart at</label><b>Tue 06.10.2026, 11:26</b> <span class="locked">🔒 fixed in demo</span></div>
+    <h2>Travelcard${S.swisspass ? " · from SwissPass 🔒" : ""}</h2>
+    <div class="seg">${cards.map(c => `<button class="${S.card === c ? "on" : ""}" ${S.swisspass ? "disabled" : ""}
+        onclick="S.card='${c}';render()">${names[c]}</button>`).join("")}</div>
+    ${S.swisspass ? "" : `<button class="btn secondary" onclick="S.spOpen=!S.spOpen;render()">Log in with SwissPass</button>`}
+    ${S.spOpen && !S.swisspass ? `<div class="box"><div class="muted">Choose test profile</div><div class="seg" style="margin-top:6px">
+        ${cards.map(c => `<button onclick="S.card='${c}';S.swisspass=true;S.login='swisspass';render()">${names[c]}</button>`).join("")}</div></div>` : ""}
+    <h2>Connections</h2>
+    <div class="conn best" onclick="go('detail')">
+      <div class="row"><span class="tag">Recommended</span><span class="muted">Door to door with one booking</span></div>
+      <div class="row" style="margin-top:6px"><span class="times">11:26 → 13:21</span><span class="muted">1 h 55 · 2 transfers</span></div>
+      <div class="modes"><span style="flex:21;background:var(--vertt)"></span><span style="flex:56;background:var(--sbb)"></span><span style="flex:13;background:var(--vertt)"></span></div>
+      <div class="row"><b>${chf(total(L))}</b><span class="muted">CO₂ ${kg(totalCo2(L))}</span></div>
+    </div>
+    <div class="conn cmp">
+      <div class="row"><span class="tag grey">For comparison</span><span class="muted">Vertt only</span></div>
+      <div class="row" style="margin-top:6px"><span class="times">11:26 → 12:52</span><span class="muted">1 h 26 · direct</span></div>
+      <div class="modes"><span style="flex:1;background:var(--vertt)"></span></div>
+      <div class="row"><b>${chf(168.00)}</b><span class="muted">CO₂ ${kg(128 * S.car.g_per_km / 1000)}</span></div>
+    </div>
+    <div class="conn cmp">
+      <div class="row"><span class="tag grey">For comparison</span><span class="muted">Public transport only</span></div>
+      <div class="row" style="margin-top:6px"><span class="times">11:31 → 13:29</span><span class="muted">1 h 58 · 3 transfers</span></div>
+      <div class="modes"><span style="flex:18;background:var(--bus)"></span><span style="flex:70;background:var(--sbb)"></span><span style="flex:14;background:var(--bus)"></span></div>
+      <div class="row"><b>${chf(PT_PRICE[S.card])}</b><span class="muted">CO₂ ${kg(0.6)}</span></div>
+    </div>`;
+  },
+
+  detail: () => {
+    const L = legs();
+    return `
+    <h1>Your connection</h1>
+    ${mapHtml()}
+    <h2>Legs</h2>${legsHtml(L, true)}
+    <div class="row sum"><span>Total · CO₂ ${kg(totalCo2(L))}</span><span>${chf(total(L))}</span></div>
+    <button class="btn" onclick="go(S.swisspass ? 'overview' : 'login')">Continue</button>
+    <button class="btn secondary" onclick="go('plan')">Back to connections</button>`;
+  },
+
+  login: () => `
+    <h1>Log in</h1>
+    <p class="muted">One click – nothing to type in the demo.</p>
+    ${["Google", "Apple", "SwissPass"].map(p => `<button class="btn secondary" onclick="S.login='${p.toLowerCase()}';go('overview')">Continue with ${p}</button>`).join("")}
+    <h2>Or with email</h2>
+    <div class="field"><label>Email</label><input value="demo@example.com" readonly></div>
+    <div class="field"><label>Password</label><input type="password" value="demopassword" readonly></div>
+    <button class="btn" onclick="S.login='email';go('overview')">Log in</button>`,
+
+  overview: () => {
+    const L = legs();
+    return `
+    <h1>Overview</h1>
+    ${mapHtml()}
+    ${legsHtml(L, false)}
+    <div class="row sum"><span>Total · CO₂ ${kg(totalCo2(L))}</span><span>${chf(total(L))}</span></div>
+    <div class="note">You pay <b>${sellerName()}</b> for the whole journey. Travelcard: <b>${{ none: "none", half: "half-fare", ga: "GA" }[S.card]}</b></div>
+    <h2>Promo code (Vertt rides)</h2>
+    ${[5, 10, 20].map(p => `<label class="opt"><input type="checkbox" ${S.promo === p ? "checked" : ""}
+        onchange="S.promo=this.checked?${p}:0;render()"> ${p} % off Vertt rides</label>`).join("")}
+    <h2>Payment method</h2>
+    ${["Card", "TWINT", "Invoice", "Business"].map(m => `<label class="opt"><input type="radio" name="pay" ${S.pay === m.toLowerCase() ? "checked" : ""}
+        onchange="S.pay='${m.toLowerCase()}';render()"> ${m}</label>`).join("")}
+    <button class="btn" ${S.pay ? "" : "disabled"} onclick="pay()">Pay ${chf(total(L))}</button>`;
+  },
+
+  paying: () => `<div class="center"><div class="spinner"></div><b>Paying ${sellerName()}…</b></div>`,
+
+  receipt: () => {
+    const b = S.booking;
+    return `
+    <h1>${S.cancelled ? '<span class="cancelled">Cancelled</span>' : "✓ Paid"}</h1>
+    <div class="muted">Booking ${b.id} · ${b.at.slice(0, 10)} · seller: ${sellerName()}</div>
+    <h2>${S.from} → ${S.to}</h2>
+    ${b.legs.map(l => `<div class="row"><span>${l.op === "SBB" ? "🚆 " + l.line : "🚗 Vertt"} ${l.from} → ${l.to}</span><span>${chf(l.price)}</span></div>`).join("")}
+    ${S.promo ? `<div class="muted">Promo ${S.promo} % on Vertt rides applied</div>` : ""}
+    <div class="row sum"><span>Total</span><span>${chf(b.total)}</span></div>
+    <div class="muted">Travelcard: ${S.card} · Payment: ${S.pay} · Login: ${S.login}</div>
+    ${S.cancelled ? `<div class="note">Refunded: <b>${chf(b.total)}</b></div>` : ""}
+    <div class="note">Settlement data (for project partners)<br>
+      <a href="#" onclick="showData();return false">booking/${b.id}.json</a></div>
+    ${S.cancelled ? "" : `<button class="btn danger" onclick="cancelJourney()">Cancel journey</button>`}
+    <button class="btn secondary" onclick="reset()">New booking</button>`;
+  },
+};
+
+// ---------- Actions ----------
+function pay() {
+  const L = legs();
+  S.booking = { id: "BK-" + Math.floor(100000 + Math.random() * 900000), at: new Date().toISOString(), legs: L, total: total(L) };
+  go("paying");
+  setTimeout(() => go("receipt"), 1400);
+}
+function cancelJourney() {
+  if (confirm("Really cancel the whole journey?")) { S.cancelled = true; render(); }
+}
+function showData() {
+  const json = JSON.stringify(bookingData(), null, 2);
+  const m = document.createElement("div");
+  m.className = "modal";
+  m.innerHTML = `<div><b>Settlement data – ${S.booking.id}</b><pre></pre>
+    <button class="btn" id="copy">Copy</button><button class="btn secondary" id="close">Close</button></div>`;
+  m.querySelector("pre").textContent = json;
+  m.querySelector("#copy").onclick = e => navigator.clipboard.writeText(json).then(() => e.target.textContent = "Copied ✓");
+  m.querySelector("#close").onclick = () => m.remove();
+  m.onclick = e => { if (e.target === m) m.remove(); };
+  document.body.appendChild(m);
+}
+
+reset();
+</script>
+</body>
+</html>
