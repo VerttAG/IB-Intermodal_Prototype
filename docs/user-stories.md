@@ -239,6 +239,8 @@ General: B2B amounts are calculated **exactly to the centime**, settled **per bo
 
 # v1.1 – proposed additions (not yet agreed)
 
+> **Decision by Tim, 2026-10-05 – trip engine ([PROJ-1-PRD-9](../specs/PROJ-1-intermodal-booking-demo/2_PRDs/PROJ-1-PRD-9-trip-engine.md)):** stories 22, 23, 25, 26, 27 and 28 are accepted with these changes: trips are **calculated live** for any address and a chosen "depart at" time (no preset trips); the Vertt API (24) **calculates** offers with Valhalla + tariff + a car from the car pool, and the recorded rides serve only to validate the calculator. Story 29 changes: the AI model **proposes candidate stations** (max. 3 per side, checked against OJP); the labels Fastest / Cheapest / Greenest are **calculated**, not chosen by the model. The change table at the end of this section is updated by PRD-9 ("Changes to other specs").
+
 Added 2026-10-05. Reason: the data of both partners comes through an interface – **SBB through OJP 2.0 and OJP Fare**, **Vertt through its own API** built from the recorded rides Vertt provided. The Vertt API is reused in the later prototypes. Stories 1–21 above are unchanged; the table at the end lists what the new stories change in them.
 On top of the two interfaces sits a **middleware of our own** that builds whole trips from the partners' leg offers and lets an **AI model** (Jev 1.13 via OpenRouter) label the fastest, cheapest and greenest one (stories 27–29).
 Detailed requirements: `specs/PROJ-1-intermodal-booking-demo/2_PRDs/` (PRD-6 for SBB, PRD-7 for Vertt, PRD-8 for the middleware).

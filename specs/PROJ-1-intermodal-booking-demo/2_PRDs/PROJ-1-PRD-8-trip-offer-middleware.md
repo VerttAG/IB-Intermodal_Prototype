@@ -2,6 +2,8 @@
 
 ## Status: Planned
 
+> **Changed by [PROJ-1-PRD-9](PROJ-1-PRD-9-trip-engine.md) (Tim, 2026-10-05):** the model **no longer chooses the labels** – Fastest / Cheapest / Greenest are decided by calculation only (US-3 and US-4 below are replaced by PRD-9 US-4). The model gets a judgement task instead: it **proposes candidate stations** (1 hub within ~30 km + 2 stations that make sense for the route), each checked against OJP, with a code fallback (PRD-9 US-2). The middleware's role in US-2 (building trips, one private entrance, keys on the server), the trial results and the privacy rule AC-15 still apply. Where this PRD differs, PRD-9 wins.
+
 A service of our own that sits between the partner interfaces and the booking app. It collects the leg offers of SBB (PROJ-1-PRD-6) and Vertt (PROJ-1-PRD-7), combines them into whole trips, asks an AI model which trip is the **fastest**, the **cheapest** and the **greenest**, and serves these trip offers to the app. Source: [docs/user-stories.md](../../../docs/user-stories.md) stories 27, 28, 29 (proposed, v1.1).
 
 The model is **Jev 1.13** by TypeSafe, called through **OpenRouter** (`typesafe/jev-1.13`).

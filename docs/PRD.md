@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | **Draft v0.3** – user stories agreed; to be confirmed with Vertt CTO · **v0.4 proposed** – partner data through APIs and trip offers decided by an AI model, see section 12 |
+| Status | **Draft v0.4** – partner APIs and a live trip engine decided by Tim (2026-10-05), see section 13; to be confirmed with Vertt CTO |
 | Owner | Tim Diethelm (Vertt AG) |
 | Last update | 2026-10-05 |
 | Related | [user-stories.md](user-stories.md) (what each user needs) · [cto-meeting.md](cto-meeting.md) (open topics, APIs) · [PROTOTYPE_1_BRIEF.md](PROTOTYPE_1_BRIEF.md) (original technical brief) |
@@ -128,9 +128,19 @@ All open topics and the technical API overview for the CTO meeting: **[cto-meeti
 4. OJP API spike (station lookup, trip request, check for prices and platforms).
 5. Build: data → settlement → booking interface → data link and export.
 
+## 13. Decided for v0.4: trips calculated live (trip engine)
+
+Decided by Tim, 2026-10-05. Section 12 below was the proposal; where they differ, this section wins. Details: [PROJ-1-PRD-9 trip engine](../specs/PROJ-1-intermodal-booking-demo/2_PRDs/PROJ-1-PRD-9-trip-engine.md).
+
+- **No preset trips.** Every trip is calculated live from the customer's start address, destination address and "depart at" time.
+- **Trip shape:** Vertt ride or walk → train station → train (OJP + OJP Fare) → train station → Vertt ride or walk. Walk if the station is close enough, at both ends.
+- **Vertt legs are calculated:** Valhalla (km, min) × Vertt tariff (Zurich values everywhere, no peak factor), CO₂ with a car drawn from the car pool. The 9 recorded rides are used only to **validate** the calculator.
+- **Candidate stations:** max. 3 per side (1 hub within ~30 km + 2 sensible nearby stations), **proposed by the AI model**, each checked against OJP, with a code fallback. First possible train per station pair only.
+- **Labels Fastest / Cheapest / Greenest are calculated**, not decided by the model. Max. 3 bookable cards + the two comparison cards ("Vertt only", "Public transport only", not clickable).
+
 ## 12. Proposed for v0.4: partner data through APIs, trip offers by an AI model
 
-Proposed 2026-10-05, not yet agreed. Stories 22–29 in [user-stories.md](user-stories.md); detailed requirements in `specs/PROJ-1-intermodal-booking-demo/2_PRDs/`.
+Proposed 2026-10-05 by Aleksandar; superseded in parts by section 13. Stories 22–29 in [user-stories.md](user-stories.md); detailed requirements in `specs/PROJ-1-intermodal-booking-demo/2_PRDs/`.
 
 Both partners deliver their part of a journey through an interface. The booking demo is a **partner app** that only combines what the two interfaces deliver.
 

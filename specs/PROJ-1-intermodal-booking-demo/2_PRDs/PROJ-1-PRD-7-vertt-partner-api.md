@@ -2,6 +2,8 @@
 
 ## Status: Planned
 
+> **Changed by [PROJ-1-PRD-9](PROJ-1-PRD-9-trip-engine.md) (Tim, 2026-10-05):** the API **calculates every offer** for the exact positions it receives: distance and time from Valhalla, price with the Vertt tariff (Zurich values everywhere, factor 1.0 – to confirm with CTO), CO₂ with a car from the car pool. The recorded rides are **no longer offers**; they are used only once to validate the calculator (PRD-9 US-5). Open questions on prices of recorded routes and on several rides per route no longer apply. The tariff section and the privacy rules below remain valid. Where this PRD differs, PRD-9 wins.
+
 Vertt gets its own interface, the counterpart to OJP on the SBB side: a partner asks it which places Vertt serves and what a ride between two places looks like and costs. It is built from the recorded rides Vertt provided and is a building block for the later prototypes. Source: [docs/user-stories.md](../../../docs/user-stories.md) stories 24, 25, 26 (proposed, v1.1).
 
 ## What the provided data contains

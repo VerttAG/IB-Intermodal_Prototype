@@ -2,6 +2,8 @@
 
 ## Status: Planned
 
+> **Changed by [PROJ-1-PRD-9](PROJ-1-PRD-9-trip-engine.md) (Tim, 2026-10-05):** start and destination are address fields with typing and swisstopo suggestions (pre-filled with an example); no "use my location"; the customer chooses the "depart at" date and time. Place lists, preset scenario times and the snap to known places no longer apply. Where this PRD differs, PRD-9 wins.
+
 Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/PRD.md) section 4, [docs/user-stories.md](../../../docs/user-stories.md) stories 1a, 2, 3, 4, 5. Story numbers are given in brackets.
 
 ## User Stories

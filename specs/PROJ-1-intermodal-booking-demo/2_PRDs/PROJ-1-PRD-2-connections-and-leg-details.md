@@ -2,6 +2,8 @@
 
 ## Status: Planned
 
+> **Changed by [PROJ-1-PRD-9](PROJ-1-PRD-9-trip-engine.md) (Tim, 2026-10-05):** the list shows up to 3 calculated trips labelled Fastest / Cheapest / Greenest plus the two comparison cards ("Vertt only", "Public transport only"), which are not bookable and **not clickable**. The car of a Vertt leg is drawn from the car pool (per Vertt leg, fixed for the run), not taken from a recorded ride. Where this PRD differs, PRD-9 wins.
+
 Covers the connection list and the connection details of step 1 (the most important part of the demo). Source: [docs/PRD.md](../../../docs/PRD.md) section 4, [docs/user-stories.md](../../../docs/user-stories.md) stories 6–11. Story numbers are given in brackets.
 
 ## User Stories
