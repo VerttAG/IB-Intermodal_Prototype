@@ -91,7 +91,7 @@ Covers the connection list and the connection details of step 1 (the most import
 
 ## Open Questions
 - **Car from the ride offer instead of a pool (AC-9).** With the Vertt API, each recorded ride brings its own car. The agreed story 7 draws one car from a pool for the whole run. With the trip offer middleware (PROJ-1-PRD-8) nothing is drawn at random any more: each trip offer is built from one recorded ride and brings its car. → Tim.
-- **Journey shapes.** The provided Vertt data allows Vertt → SBB and SBB → Vertt, but no Vertt → SBB → Vertt journey and no long "Vertt only" comparison (PROJ-1-PRD-7, open questions). → Tim / CTO.
+- **Journey shapes.** With recorded rides alone, only Vertt → SBB and SBB → Vertt are possible. With the Vertt tariff (PROJ-1-PRD-7) a second Vertt leg and the "Vertt only" comparison can be calculated – once a route service is chosen. → CTO.
 - **Do the comparison cards open details?** Story 6 says tapping a card opens the details, story 10 says the map exists only for the bookable connection, and in the lite mockup the comparison cards do nothing. AC-4 covers only the bookable card until this is decided. → Tim.
 - **Total CO₂ when one leg is "not available":** show "not available" for the total, or the sum of the known legs with a note? → Tim.
 - Should estimated or placeholder values be marked on screen (cto-meeting B1)?

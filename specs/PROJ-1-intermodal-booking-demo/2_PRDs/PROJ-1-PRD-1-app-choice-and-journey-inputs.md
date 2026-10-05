@@ -26,6 +26,10 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 
 **Acceptance Criteria:**
 - [ ] AC-5: Start and destination can each be set, including known places that are not stations. The known places are the places Vertt serves (PROJ-1-PRD-7) and official stations (PROJ-1-PRD-6); the app keeps no place list of its own.
+- [ ] AC-5a: The customer can type an address. While typing, a list of matching official Swiss addresses is suggested; choosing one sets the place. Nothing is taken over without the customer choosing it.
+- [ ] AC-5b: The chosen address is turned into coordinates, and the coordinates – not the address – are passed on to get the Vertt offers (PROJ-1-PRD-7).
+- [ ] AC-5c *(Could)*: Instead of typing, the customer can use the current position of the device. The address found for that position is shown so the customer can check it.
+- [ ] AC-5d: Typing is the one exception to the rule "nothing has to be typed": a pre-filled start and destination let a presenter click through without typing.
 - [ ] AC-6: If the input is not a known place, the nearest known place is used and a message names it with the distance (e.g. "We use Wettswil am Albis, 2.1 km from your address").
 - [ ] AC-7: If the nearest known place is farther away than the maximum snap distance, a message says the area is not covered and no connections are shown.
 - [ ] AC-8: If there is no connection for a combination, a message says so and no connections are shown.
@@ -71,6 +75,11 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 
 ## Edge Cases
 - Start and destination are the same place, or both snap to the same known place: treated as "no connection" (AC-8).
+- The typed text matches no address: the list says so; the previous place stays.
+- The customer types but picks nothing from the list: the place is not changed.
+- The address search does not answer: a message says so; the pre-filled places still work.
+- The device position is refused or not available (AC-5c): the customer can still type.
+- The position has no building nearby (e.g. inside a station hall or in a field): the locality is shown instead of an address.
 - The profile box is opened and closed without picking a profile: nothing changes, travelcard stays editable.
 - A SwissPass profile differs from the travelcard chosen before: the profile wins, prices update.
 - Start or destination is changed after the connection details were opened: the list shows the new combination; nothing from the old one is kept.
@@ -78,8 +87,11 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 - The car for the run (PROJ-1-PRD-2) is drawn once per run and does not change when places or travelcard change.
 
 ## Open Questions
-- **Typed address or list?** The general demo rule says "nothing has to be typed", but story 2 describes typed addresses that are snapped to a known place. The lite mockup uses a dropdown of known places only. If Prototype 1 keeps the dropdown, AC-6, AC-7 and AC-11 do not apply. → Tim / CTO.
-- **Few places in the Vertt data.** The provided rides cover Wettswil am Albis and four stations only (PROJ-1-PRD-7). Which destinations does Prototype 1 offer on the train side: a fixed list of stations, or any Swiss station through OJP? → Tim / CTO.
+- **Address search – decided 2026-10-05: swisstopo.**
+- **Typed address – decided 2026-10-05:** the customer enters an address, it is turned into coordinates and these go to the Vertt API. The lite mockup still shows a dropdown. Trial and findings: [docs/api/geocoding.md](../../../docs/api/geocoding.md).
+- **Is "use my location" (AC-5c) wanted?** It is the only case that needs reverse geocoding (coordinates → address). Typing an address needs the forward direction only. → Tim.
+- Addresses outside Switzerland cannot be found by the address search: treated as "area not covered" (AC-7).
+- **Places.** With the Vertt tariff known (PROJ-1-PRD-7), Vertt offers can be calculated for any address in the area Vertt serves, once a route service is chosen. Until then only the recorded routes work (Wettswil am Albis and four stations). Which destinations does Prototype 1 offer on the train side: a fixed list of stations, or any Swiss station through OJP? → Tim / CTO.
 - What is the maximum snap distance (cto-meeting T2, question 3)?
 
 ## Dependencies
@@ -90,12 +102,12 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 ## Technical Requirements
 - Phone layout; on a laptop the phone-sized screen sits in the middle of the page.
 - Everything on these screens works with a pointer and with the keyboard; the locked time and locked travelcard are announced as not editable.
-- No login, account or address data leaves the browser.
+- No login or account data leaves the browser. A typed address goes only to the official address search (swisstopo), never to our own server; coordinates passed on are rounded to about 100 m and not stored.
 
 ## UI Implementation Notes
 - Project mode: new prototype, built in this repo (full chain).
 - Reuse: screens "app" and "plan" of the lite mockup, [mockup/index.html](../../../mockup/index.html), live at https://ib-intermodal-prototype.vercel.app.
-- New component candidates: address input with "nearest known place" message (only if the open question is answered with "typed address").
+- New component candidates: address input with suggestion list and "nearest known place" message; optional "use my location" button. Neither is in the mockup.
 - Design tokens: none defined yet; the mockup's carrier colours are the only fixed values.
 - Interaction contract: fixed app choice, locked time, travelcard switch updating prices, SwissPass profile box, locked travelcard.
 - Implementation tolerance: layout and wording may change; the behaviours in the acceptance criteria may not.

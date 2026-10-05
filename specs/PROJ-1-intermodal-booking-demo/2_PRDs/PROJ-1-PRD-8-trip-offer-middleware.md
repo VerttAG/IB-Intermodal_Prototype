@@ -62,6 +62,9 @@ Real calls to `typesafe/jev-1.13` through OpenRouter, each asking for fastest, c
 - [ ] AC-10: Its answer contains every offered trip with all legs, the leg offers they came from, the totals, and the labels.
 - [ ] AC-11: The booking app gets its trip offers only from the middleware, and the middleware's answer is enough to show the list, the details and the overview.
 - [ ] AC-12: The answer is JSON and documented in `docs/api/trip-offers.md`.
+- [ ] AC-12a: The middleware is not a public service (decided 2026-10-05): it has exactly one entrance, for our own frontend, and that entrance only returns trip offers.
+- [ ] AC-12b: Requests from other websites are refused, and the number of requests one visitor can make is limited.
+- [ ] AC-12c: Everything behind the entrance – the Vertt API, OJP, OJP Fare, the route service and the model – is called from the server only, with secrets the browser never sees.
 
 ### US-3: As a demo presenter, I want the labels to be decided by the AI model so that I can show a model working on real partner offers (story 29)
 **Given** the middleware has built the possible trips
@@ -101,6 +104,7 @@ Real calls to `typesafe/jev-1.13` through OpenRouter, each asking for fastest, c
 - A promo code (PROJ-1-PRD-3) is applied after the trip was chosen and does not change the labels.
 - The model chooses a trip that is not in the list, or answers something unusable: treated like "no answer" (AC-21).
 - No trip can be built at all: the middleware says so clearly (PROJ-1-PRD-1 AC-8).
+- Someone calls the entrance from outside our frontend, or very often: refused or slowed down (AC-12b); the partner interfaces and the model are not reached.
 - OpenRouter's limit or credit is used up during a demo: AC-21 applies; the presenter is not shown an error page.
 
 ## Open Questions
@@ -109,7 +113,8 @@ Real calls to `typesafe/jev-1.13` through OpenRouter, each asking for fastest, c
 - **Three labelled offers and the old list.** Story 6 has one bookable connection plus two comparisons; story 11 marks it "recommended". Proposed: the labelled offers replace the single bookable connection; the two comparison cards stay. → Tim.
 - **How many trips to choose from?** With the provided data there are few: e.g. 4 recorded rides Wettswil am Albis → Zürich HB with different cars and prices, times the next trains. Is that enough for a convincing demo, or should cheaper/slower train options (regional trains, saver vs normal ticket) be included on purpose?
 - **How sure is sure enough** for AC-21? The trial suggests a threshold around 0.8 (right answers were at 0.80 or above, wrong ones at 0.76 or below). To be confirmed with real partner offers.
-- The OpenRouter endpoint for this model is marked **alpha**. If it changes or is withdrawn, TypeSafe's own interface takes the same request. Accept this risk for the demo? → CTO.
+- ~~The OpenRouter endpoint for the model is marked alpha~~ → **Risk accepted 2026-10-05.** If it changes or is withdrawn, TypeSafe's own interface takes the same request, and AC-21 keeps the demo running meanwhile.
+- **How private can the middleware be?** Decided: not public (AC-12a to AC-12c). But the page runs in the customer's browser, so the one entrance it calls can technically be called by anyone who looks it up. **Proposed: a user name and password in front of the whole demo** (browser's built-in login box, "basic auth"). It is possible on Vercel's free plan with a few lines of our own in front of the app; Vercel's ready-made password protection is a paid add-on of the Pro plan. Consequences: presenters and partners need the password; every request of the page, including the one to the middleware, then carries it. Switch it on? → Tim / CTO.
 - Data sent to OpenRouter leaves Switzerland. It contains no personal data (AC-15) – still OK for Vertt and the partners? → CTO.
 
 ## Dependencies

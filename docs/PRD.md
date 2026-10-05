@@ -163,7 +163,7 @@ What it changes in this PRD:
 |---|---|
 | 3 – SBB fare | "From OJP Fare", no longer "otherwise public reference prices". A missing price is shown as not available. |
 | 4 – Step 1 | Places to choose from = places the Vertt API serves + stations. With the provided rides: Wettswil am Albis and the stations Zürich HB, Zürich Enge, Schlieren, Zürich Flughafen. |
-| 4 – Step 1 | Vertt → SBB and SBB → Vertt journeys are covered by the data. Vertt → SBB → Vertt and the "Vertt only" comparison for long routes are **not** – to decide. |
+| 4 – Step 1 | Vertt → SBB and SBB → Vertt journeys are covered by the recorded rides. Vertt → SBB → Vertt and the "Vertt only" comparison can be **calculated** with the Vertt tariff (now known, see PRD-7) once a route service is chosen. |
 | 4 – Step 1 | The one bookable connection becomes up to three trip offers labelled "Fastest", "Cheapest", "Greenest". The comparison connections stay. |
 | 7 – Data link | Trip part also stores the SBB price details (product, net price, VAT rate), the Vertt offer ID with "recorded / constructed", and the labels of the booked trip with where each came from (model / calculated). |
 | 8 – Not in scope | Add: booking or cancelling a ride through the Vertt API; Vertt offers calculated live for any address. |

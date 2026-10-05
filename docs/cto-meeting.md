@@ -40,6 +40,7 @@ Recommendation: **B**, validated against the 9 recorded rides ("engine within ±
 
 **Questions for the CTO:**
 1. What is the **Vertt tariff formula** (base, per km, per minute, minimum, surcharges)? The values in the export (1.80/km, 0.30/min) do not reproduce the ride prices.
+   > **Answered 2026-10-05** from Vertt's tariff engine specification: initial price 3.00 + 1.80/km + 0.30/min, minimum 10.00, times a peak-time factor. It reproduces the export's "Base fare" column for 7 of 9 rides within CHF 0.05; the charged price differs because it is calculated before the ride from estimated distance and time. Details: PRD-7 in `specs/`. Publishing these values in this public repo: **approved 2026-10-05**. Still open: route service for distance and time (T3 row 6 – swisstopo has none; open services tried in `docs/api/routing.md`), tariff outside Zurich.
 2. Does Vertt have an **internal price/ETA (quote) API** we could use – or which routing provider does Vertt use (the export polylines are in Google format)?
 3. Which **known places** should the demo cover? Maximum snap distance (e.g. 5 km)?
 4. Is a changeable **time / "arrive by"** wanted later (affects engine choice)?
@@ -72,6 +73,8 @@ A middleware of our own builds whole trips from the partners' leg offers and ask
 - The model's own documentation says it is **not reliable at comparing numbers and times**. Our design therefore calculates everything and checks each decision; a wrong decision is replaced by the calculated one.
 - Needs a backend (the OpenRouter key must not be in the browser) → same decision as **T1** and hosting.
 - Cost is negligible (USD 0.042 per million input tokens).
+
+**Decided 2026-10-05:** the risk of OpenRouter's alpha endpoint is accepted. The Vertt API is reachable only by our own app; the middleware is not a public service.
 
 **To decide:** Is a checked "second opinion" the right showcase, or should the model get a task that is a real judgement (a "Recommended" label weighing time, price, CO₂ and comfort)? May trip values (no personal data) be sent to OpenRouter, outside Switzerland?
 

@@ -281,6 +281,7 @@ New role: **Partner app** – any app that plans and sells a journey with anothe
 - `docs/api/vertt.md` describes every request and field with an example, next to the OJP documents.
 - Answers are JSON and carry a version; field names do not change silently.
 - Read-only in Prototype 1: no booking or cancelling of rides through the API.
+- Access (decided 2026-10-05): in Prototype 1 only our own app can call the API; partners get the description, and access with a key of their own later.
 
 ### 26 · No trace of the passenger in the Vertt API *(Vertt · Must)*
 > As Vertt, I want the API to give away nothing about the passenger behind the recorded rides, so that we can run it openly and share it with partners.
@@ -310,6 +311,7 @@ New role: **Partner app** – any app that plans and sells a journey with anothe
 - A trip is only built if every transfer has at least 8 minutes.
 - It calculates total duration, total price and total CO₂ of every trip.
 - The booking demo gets its trip offers only from the middleware.
+- The middleware is not a public service (decided 2026-10-05): one entrance for our own frontend; the partner interfaces and the model are called from the server only.
 - The answer is JSON and documented in `docs/api/trip-offers.md`.
 
 ### 29 · The model decides, the numbers stay right *(Demo presenter · Must)*
@@ -326,6 +328,7 @@ New role: **Partner app** – any app that plans and sells a journey with anothe
 
 | Story | Change |
 |---|---|
+| 2 · Start and destination | **The customer types an address** (suggestions from the official Swiss address search, swisstopo); it is turned into coordinates, which go to the Vertt API. The API uses the nearest place it serves. The demo rule "nothing has to be typed" gets this one exception; pre-filled places keep the demo clickable. Findings: `docs/api/geocoding.md`. |
 | 2 · Start and destination | The known places are no longer a list in the demo: they are the places the Vertt API serves plus official stations. The provided rides cover **Wettswil am Albis** and the stations **Zürich HB, Zürich Enge, Schlieren, Zürich Flughafen**. |
 | 6 · List of connections | "Vertt only" is shown only if the Vertt API has an offer for the whole route – with the provided rides it has none for long routes. A Vertt → SBB → Vertt journey needs a Vertt offer at the destination, which the provided rides do not contain. |
 | 6 · List of connections | The single bookable connection becomes up to three trip offers labelled fastest / cheapest / greenest (story 27). The two comparison cards stay. |
@@ -336,5 +339,5 @@ New role: **Partner app** – any app that plans and sells a journey with anothe
 | 10 · Map | Train geometry from OJP, street geometry from the Vertt API, cut near the home (story 26). |
 | 17 · Booking data | The data link also stores the SBB price details (product, net price, VAT rate), the Vertt offer ID with "recorded / constructed", and the labels of the booked trip with where each came from. |
 
-**To decide (with Tim / CTO):** offer places without recorded rides as marked, constructed offers (needs the Vertt tariff formula) or leave them out; saver price as "the" SBB price; who may call the Vertt API; train CO₂ on screen; what the model should really decide (labels as a checked second opinion, or an own "Recommended" label); whether trip values may be sent to OpenRouter (outside Switzerland, no personal data).
+**To decide (with Tim / CTO):** the route service that gives distance and ride time for calculated Vertt offers (decided: Valhalla – see `docs/api/routing.md`); saver price as "the" SBB price; train CO₂ on screen; whether the whole demo gets an access code; what the model should really decide (labels as a checked second opinion, or an own "Recommended" label); whether trip values may be sent to OpenRouter (outside Switzerland, no personal data).
 
