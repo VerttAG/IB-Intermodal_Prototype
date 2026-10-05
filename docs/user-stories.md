@@ -184,7 +184,7 @@ Context: [PRD.md](PRD.md). Technical questions and open topics: [cto-meeting.md]
 > As an IB partner, I want a link to the complete data of each booking, so that I can feed real-looking bookings into our transaction layer and test it.
 
 - The receipt shows a link "Settlement data (for project partners)" with a copy button.
-- Opening it shows the booking as JSON: booking details, trip with all legs, settlement events (money movements).
+- Opening it shows the booking as JSON – **transactional data only**: booking details, amount per operator and leg, settlement events (money movements) incl. cancellation. No addresses, coordinates or trip details.
 - After a cancellation, the **same link** shows the updated content.
 - **Export of all bookings** as one file: all bookings since the page was first opened in this browser, across reloads, including cancellations, until "clear" is clicked.
 - No personal data; field names documented in `docs/schema.md` and kept stable.
@@ -229,7 +229,7 @@ General: B2B amounts are calculated **exactly to the centime**, settled **per bo
 > As Vertt, I want the demo, the code and the data links to contain no personal customer data, so that we comply with data protection (nDSG) and can share everything freely with the partners – the repo is public.
 
 - No names, emails, home addresses or real passenger IDs in the repo, on the page, in data links or in the export.
-- Addresses typed by the customer go only to swisstopo, our server and the AI model (all trips are mock trips – decided by Tim 2026-10-05). Whether the data link may contain them is open (PROJ-1-PRD-1).
+- Addresses typed by the customer go only to swisstopo, our server and the AI model (all trips are mock trips – decided by Tim 2026-10-05); they are not stored and never appear in the data link.
 - The recorded Vertt rides (real passenger) are used only locally to validate the calculator; nothing from them reaches the repo, the page or an API answer.
 - Customer ID = pseudonymous demo ID.
 - The car pool contains make, model, year and CO₂ only – no number plates.
@@ -261,7 +261,6 @@ New role: **Partner app** – any app that plans and sells a journey with anothe
 
 - Price for 1 adult, 2nd class from **OJP Fare (beta)**, for "no travelcard" and "half-fare" – both fetched in the same search.
 - GA = CHF 0.00 by the demo's own rule (OJP Fare does not know GA).
-- Product name, price without VAT and VAT rate are stored in the data link.
 - A booking keeps its price even if OJP Fare changes it later (saver prices).
 - A missing price shows "not available", never CHF 0.00, and the trip is not offered.
 
@@ -315,5 +314,5 @@ New role: **Partner app** – any app that plans and sells a journey with anothe
 - The model can only choose from the list – it cannot name a station that does not exist.
 - The model receives the addresses (mock trips) and the station options – nothing about login, payment or travelcard.
 - If the model is unsure, slow or unreachable, the code chooses the stations; a search never fails because of the model.
-- The data link stores for each candidate station whether it came from the model or the code.
+- The server log records for each candidate station whether it came from the model or the code (demo statistics).
 - The model **never** decides the labels Fastest / Cheapest / Greenest (its makers say it is not reliable at comparing numbers).

@@ -25,12 +25,13 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 
 **Acceptance Criteria:**
 - [ ] AC-5: Start and destination are address fields. While typing, matching official Swiss addresses are suggested by the swisstopo address search; choosing one sets the address. Nothing is taken over without the customer choosing it.
-- [ ] AC-6: Both fields are pre-filled with a working example (start and destination for which a trip can be built), so a presenter can click through without typing. Typing is the one exception to the rule "nothing has to be typed".
+- [ ] AC-6: In the first version both fields start **empty**; typing is the one exception to the rule "nothing has to be typed". A pre-filled example pair is added later, once the engine has been tried (decided by Tim 2026-10-05).
 - [ ] AC-7: The chosen address is turned into coordinates by swisstopo. Address and coordinates are passed to the trip engine (PROJ-1-PRD-9), which may also send them to the AI model (PROJ-1-PRD-8) – all trips in the demo are mock trips.
 - [ ] AC-8: An address that swisstopo cannot find, or that lies outside Switzerland, cannot be chosen; a message says so.
 - [ ] AC-9: If no trip can be built for the addresses and time, a message says so and no connections are shown.
 - [ ] AC-10: There is no swap button and no "use my location" button.
-- [ ] AC-11: The search starts with a **"Search"** button once start, destination and time are set (each search costs live API calls, PROJ-1-PRD-9). While it runs, a loading state is shown.
+- [ ] AC-11: The search starts **only** with the **"Search"** button, which is enabled once start, destination and time are set (each search costs live API calls, PROJ-1-PRD-9). While it runs, a loading state is shown. A travelcard change after a search needs no new search (AC-15).
+- [ ] AC-11a: Addresses and coordinates are used only for the search; they are not stored and do not appear in the data link or the export (PROJ-1-PRD-5).
 
 ### US-3: As a customer, I want to choose when I travel so that the trips fit my plans (story 3)
 **Given** I am on the planning screen
@@ -71,7 +72,7 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 - Start and destination are the same address, or very close to each other: see PROJ-1-PRD-9 (open question "very short trips").
 - The typed text matches no address: the suggestion list says so; the previous address stays.
 - The customer types but picks nothing from the list: the address is not changed and "Search" stays disabled until both are chosen.
-- The address search does not answer: a message says so; the pre-filled example still works.
+- The address search does not answer: a message says so; no search is possible.
 - The chosen time is in the past, or so late that no train runs anymore: the engine finds no trip → message (AC-9).
 - Start, destination or time is changed after a search: the old results are cleared; the customer searches again.
 - The profile box is opened and closed without picking a profile: nothing changes, travelcard stays editable.
@@ -79,9 +80,8 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 - The page is reloaded in the middle of a run: the run starts again at step 0, nothing is booked or stored.
 
 ## Open Questions
-- **"Search" button (AC-11)** instead of updating automatically on every change – proposed because every search costs live API calls (limit 50/min for OJP). → Tim.
-- **Default example addresses (AC-6):** which start and destination should be pre-filled? Proposed: an address in Wettswil am Albis → an address in Bern. → Tim.
-- Story 21 says a typed address is never stored or put into the data link. Since all trips are mock trips, may the data link contain the address (useful for the partners), or only the locality? → Tim.
+- Answered 2026-10-05 (Tim): "Search" button only · fields empty in the first version, example pair later · no addresses or coordinates in the data link.
+- **Later:** which example pair to pre-fill (e.g. Wettswil am Albis → Ostermundigen), once the engine has been tried.
 
 ## Dependencies
 - Requires: swisstopo address search ([docs/api/geocoding.md](../../../docs/api/geocoding.md)), PROJ-1-PRD-9 (trip engine).

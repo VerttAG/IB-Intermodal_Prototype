@@ -44,7 +44,7 @@ Every trip is **built live** from the customer's start address, destination addr
 | Vertt tariff | Zurich values for every Vertt leg in Switzerland, **factor 1.0** – to confirm with CTO. |
 | Car | Drawn from the **car pool** (Tim), once per Vertt leg. |
 | Pickup | **5 min** after the chosen departure time at the start; **2 min** after the train arrival at the destination station (transfer). Both configurable. |
-| Train prices | Only the **half-fare** price is fetched from OJP Fare. No travelcard = 2 × half-fare price, GA = CHF 0.00. Shown as normal prices; the data link records the source in `price_source`. |
+| Train prices | Only the **half-fare** price is fetched from OJP Fare. No travelcard = 2 × half-fare price, GA = CHF 0.00. Shown as normal prices. |
 | Response time | Results within ~5 s, with a loading state. Partner calls run in parallel. |
 | Offers shown | Only the labelled trips (max. 3); other candidates are not shown. |
 | Comparison cards | Both stay; not bookable, not clickable. |
@@ -71,7 +71,7 @@ Every trip is **built live** from the customer's start address, destination addr
 - [ ] AC-4a: For every option the code calculates the detour (straight-line distances, no API call). Options are given to the model sorted by detour and marked "on the way" or "away from destination"; the code fallback also chooses by smallest detour, not by smallest distance.
 - [ ] AC-5: The candidates are chosen by the AI model from an option list of real stations built from OJP (PROJ-1-PRD-8 US-2). The model cannot add stations.
 - [ ] AC-6: If the model fails, the code chooses (PROJ-1-PRD-8 US-3). A search never fails because of the model.
-- [ ] AC-7: The data link stores the candidates and whether each came from the model or the code fallback.
+- [ ] AC-7: For each search, the server log records the candidates and whether each came from the model or the code fallback (for the demo statistics, PROJ-1-PRD-8 AC-16). Not part of the data link.
 
 ### US-3: As a customer, I want each candidate trip calculated with real partner data so that times, prices and CO₂ are believable
 **Given** the candidate stations
@@ -84,8 +84,8 @@ Every trip is **built live** from the customer's start address, destination addr
 - [ ] AC-10: First Vertt leg: pickup = chosen departure time + 5 min. Last Vertt leg: pickup = train arrival + 2 min.
 - [ ] AC-10a: Start and destination less than 10 km apart (straight line): no stations, no trips; the message "Trip not suitable for intermodal journey" is shown.
 - [ ] AC-11: Train leg: the first train from OJP that leaves at least 8 minutes after the arrival at the station. Times, line, platform, route geometry and distance from OJP.
-- [ ] AC-12: Only the **half-fare** price (2nd class) is fetched from OJP Fare (PROJ-1-PRD-6). No travelcard = 2 × half-fare price; GA = CHF 0.00. All three are shown as normal prices; the data link stores `price_source` (`ojp_fare`, `half_fare_x2`, `ga_rule`). A travelcard change needs no new search.
-- [ ] AC-13: Train CO₂ as decided in CTO topic B7 (tailpipe rule 0.0 kg, or OJP value). The OJP value is always stored in the data link.
+- [ ] AC-12: Only the **half-fare** price (2nd class) is fetched from OJP Fare (PROJ-1-PRD-6). No travelcard = 2 × half-fare price; GA = CHF 0.00. All three are shown as normal prices. A travelcard change needs no new search.
+- [ ] AC-13: Train CO₂ as decided in CTO topic B7 (tailpipe rule 0.0 kg, or OJP value).
 - [ ] AC-14: A trip with a missing train price, or a leg that cannot be calculated, is not offered.
 - [ ] AC-15: If both ends are walks, the trip is a train-only trip. It is offered like any other trip, because it costs no extra calls.
 
@@ -119,15 +119,15 @@ Every trip is **built live** from the customer's start address, destination addr
 
 ## Open Questions
 - **Train CO₂ on screen** (CTO topic B7): 0.0 kg (tailpipe) or the OJP value?
-- Answered 2026-10-05 (Tim): walk threshold 1 km · waiting time 5 / 2 min · hub list + 25 km + detour rule · short trips under 10 km → message · ~5 s response · half-fare only, × 2 for no travelcard.
+- Answered 2026-10-05 (Tim): search only with the "Search" button · address fields empty in the first version · no addresses, coordinates or sources in the data link · walk threshold 1 km · waiting time 5 / 2 min · hub list + 25 km + detour rule · short trips under 10 km → message · ~5 s response · half-fare only, × 2 for no travelcard.
 
 ## Dependencies
 - Requires: swisstopo address search (`docs/api/geocoding.md`), Valhalla (`docs/api/routing.md`), OJP 2.0 and OJP Fare (`docs/api/ojp20.md`, `docs/api/ojpfare.md`), Vertt API (PROJ-1-PRD-7), car pool (`config/car_pool.yaml`), AI station choice (PROJ-1-PRD-8).
-- Feeds: PROJ-1-PRD-2 (connection list), PROJ-1-PRD-3 (overview), PROJ-1-PRD-5 (data link: candidates, sources, assumptions).
+- Feeds: PROJ-1-PRD-2 (connection list), PROJ-1-PRD-3 (overview), PROJ-1-PRD-5 (amounts per operator for the data link).
 - Needs a server (keys for OJP, OJP Fare, Vertt API, OpenRouter must not reach the browser) → CTO topic T1 / hosting; password gate (`mockup/middleware.js`).
 
 ## Technical Requirements
 - All keys stay on the server; the browser calls one entrance of our own (PROJ-1-PRD-8 AC-4 to AC-6).
 - API calls per search are capped: max. 3 stations per side, first train only. All answers are cached so a repeated search costs no calls.
 - All money, time and CO₂ calculations happen in code, never in the model.
-- Every assumption (tariff region, factor 1.0, waiting time, pool car, walk threshold) is configurable and stored with each trip in the data link.
+- Every assumption (tariff region, factor 1.0, waiting time, pool car, walk threshold, hub list, minimum trip distance) is configurable.

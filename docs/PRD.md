@@ -100,7 +100,7 @@ Example (made-up numbers: Vertt ride CHF 30.00, train ticket CHF 8.40):
 Each booking has one link (copy button) showing JSON:
 
 1. **Booking** – `booking_id`, `system` (vertt / sbb), `login_method`, `travelcard`, `promo_percent`, `promo_chf`, `payment_method`, `booked_at`, `status`, pseudonymous demo customer ID.
-2. **Trip** – start and destination, legs (Vertt / walk / train) with carrier, times, line / car category, car drawn from the pool (make, model, year, CO₂ factor), price, CO₂, data source and assumptions of each value; OJP Fare details (product, net price, VAT rate); the trip's labels and the candidate stations with their origin (AI model / code fallback).
+2. **Amounts per leg** – only what the settlement needs: operator (Vertt / SBB), type (Vertt ride / train), amount in CHF. **No** addresses, coordinates, stations, times, car, CO₂ or labels (decided by Tim 2026-10-05: transactional data only).
 3. **Settlement events** – append-only list: `event_id, booking_id, seq, timestamp, event_type (b2c_payment | b2b_transfer | commission | refund | reversal), payer, payee, amount_chf, reason, refers_to_event`.
 
 After a cancellation the **same link** shows the updated content. **Export** of all bookings since the page was first opened in this browser (across reloads, incl. cancellations) until "clear". Field names documented in `docs/schema.md`.

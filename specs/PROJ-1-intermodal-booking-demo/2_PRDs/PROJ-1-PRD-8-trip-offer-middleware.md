@@ -57,7 +57,7 @@ Checked on 2026-10-05 against OpenRouter and the TypeSafe documentation.
 **Acceptance Criteria:**
 - [ ] AC-13: If the model chooses fewer valid stations than needed, the code fills up: the nearest hub within ~30 km, then the nearest stations.
 - [ ] AC-14: If the model is below the certainty threshold, does not answer within the time limit, or cannot be reached, the code chooses all stations (AC-13). The customer still gets trips.
-- [ ] AC-15: For each candidate station, the data link stores where it came from: "model" or "code fallback" (PROJ-1-PRD-5).
+- [ ] AC-15: For each candidate station, the server log records where it came from: "model" or "code fallback". It is not part of the data link (PROJ-1-PRD-5 contains only transactional data).
 - [ ] AC-16: How often the model was used, unsure or unavailable can be read out after a demo.
 
 ## Edge Cases
@@ -79,7 +79,7 @@ Checked on 2026-10-05 against OpenRouter and the TypeSafe documentation.
 
 ## Dependencies
 - Requires: PROJ-1-PRD-6 (stations, trains, prices), PROJ-1-PRD-7 (Vertt offers), PROJ-1-PRD-9 (trip engine rules), an OpenRouter account with credit and an access key.
-- Feeds: PROJ-1-PRD-2 (connection list, details), PROJ-1-PRD-3 (overview), PROJ-1-PRD-5 (candidates, sources, labels and assumptions in the data link).
+- Feeds: PROJ-1-PRD-2 (connection list, details), PROJ-1-PRD-3 (overview), PROJ-1-PRD-5 (amounts per operator).
 
 ## Technical Requirements
 - The OpenRouter key never appears in the page, the repo, a data link or an export. The middleware runs on a server, not in the browser.
