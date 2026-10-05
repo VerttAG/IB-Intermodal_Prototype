@@ -1,0 +1,23 @@
+# --- Secrets ---
+.env
+
+# --- Personal / raw data (never commit: contains passenger IDs and home addresses) ---
+data/raw/
+*.xlsx
+
+# --- OJP API response cache ---
+data/cache/
+
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+~$*

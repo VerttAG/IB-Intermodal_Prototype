@@ -1,0 +1,9 @@
+pandas
+openpyxl
+httpx
+lxml
+pydantic>=2
+polyline
+python-dotenv
+pyyaml
+pytest

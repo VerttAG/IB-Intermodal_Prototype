@@ -1,0 +1,67 @@
+# Prototype 1 – trip definitions and open-decision values.
+# See docs/PROTOTYPE_1_BRIEF.md, sections 4 and 7. Values marked "OPEN" are pending decisions.
+
+settings:
+  timezone: Europe/Zurich          # OPEN: timezone of Vertt timestamps unconfirmed
+  buffer_min: 8                    # transfer window, minutes
+  buffer_max: 15
+  car_co2_unit: g_per_km           # OPEN: sheet header says g/100km, values look like g/km
+  vertt_occupancy: 1               # passengers per Vertt ride
+  rail_co2_g_per_pkm: null         # OPEN: rail CO2 factor per passenger-km
+  coord_rounding_decimals: 3       # privacy: rounding for residential endpoints
+
+trips:
+  - trip_id: mock-1
+    journey_type: vertt_sbb
+    mock_date: null                # null = next date with same weekday as recorded ride
+    segments:
+      - operator: Vertt
+        source_ref: 05017317-febc-4aa9-9fe0-5c51f574b899
+        from_name: Wettswil am Albis
+        to_name: Schlieren
+        time_shift_min: 0          # OPEN: +8 would bring the transfer gap into the window
+      - operator: SBB
+        from_stop: "8503509"       # Schlieren
+        to_stop: "8516219"         # Mellingen Heitersberg
+        anchor: depart_after_previous
+        fare_chf: null             # OPEN: SBB fare source
+
+  - trip_id: mock-2
+    journey_type: sbb_vertt
+    mock_date: null
+    segments:
+      - operator: SBB
+        from_stop: "8506000"       # Winterthur
+        to_stop: "8503010"         # Zürich Enge
+        anchor: arrive_before_next # OPEN: anchor on pickup (default) or order time
+        fare_chf: null
+      - operator: Vertt
+        source_ref: 3d8ac3fb-74e4-40b5-bb7c-53b9c0931f5b
+        from_name: Zürich Enge
+        to_name: Wettswil am Albis
+        time_shift_min: 0
+
+  - trip_id: mock-3
+    journey_type: vertt_sbb_vertt
+    mock_date: null
+    segments:
+      - operator: Vertt
+        source_ref: e86e147a-3573-49dd-9287-9752ab1b9850
+        from_name: Wettswil am Albis
+        to_name: Zürich HB
+        time_shift_min: 0
+      - operator: SBB
+        from_stop: "8503000"       # Zürich HB
+        to_stop: "8507000"         # Bern
+        anchor: depart_after_previous
+        fare_chf: null
+      - operator: Vertt
+        constructed: true          # OPEN: all values below are placeholders
+        from_name: Bern Bahnhof
+        to_name: Ostermundigen
+        to_lat: null
+        to_lng: null
+        distance_m: null
+        duration_min: null
+        vehicle: null
+        passenger_price_chf: null
