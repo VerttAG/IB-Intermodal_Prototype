@@ -2,7 +2,7 @@
 
 ## Status: Planned
 
-Covers the money movements each booking produces and what a cancellation adds. No screen shows the settlement; it exists as data (PROJ-1-PRD-5). Source: [docs/PRD.md](../../../docs/PRD.md) section 6, [docs/user-stories.md](../../../docs/user-stories.md) stories 18, 19, 20. Story numbers are given in brackets.
+Covers the money movements each booking produces and what a cancellation adds. No screen shows the settlement; it exists as data (PROJ-1-PRD-5). Source: [docs/PRD.md](../../../docs/PRD.md) section 6, [docs/PRD.md](../../../docs/PRD.md) section 5 stories 18, 19, 20. Story numbers are given in brackets.
 
 Terms used below: **train part** = price of all SBB legs after travelcard. **Vertt part** = price of all Vertt legs after promo. **Total** = train part + Vertt part. The train part is the price stored in the booking (from OJP Fare, PROJ-1-PRD-6); the Vertt part is based on the Vertt ride offers (PROJ-1-PRD-7).
 
@@ -41,6 +41,7 @@ Terms used below: **train part** = price of all SBB legs after travelcard. **Ver
 
 **Acceptance Criteria:**
 - [ ] AC-11: B2B amounts (transfer, commission) are exact to the centime. Customer amounts are rounded to CHF 0.05.
+- [ ] AC-11a: The settlement starts from the **rounded** leg amounts the customer paid (e.g. the Vertt part CHF 33.05, not the API's exact CHF 33.04), so that customer payment and B2B transfers add up.
 - [ ] AC-12: Settlement is per booking: every event belongs to exactly one booking.
 - [ ] AC-13: Vertt is one party. No event names a driver.
 - [ ] AC-14: For a paid booking, what Vertt ends with plus what SBB ends with equals the customer payment.
@@ -73,17 +74,17 @@ Terms used below: **train part** = price of all SBB legs after travelcard. **Ver
 - Vertt app + GA: the only event is the customer payment. A cancellation adds only the refund.
 - SBB app + GA: customer payment and transfer have the same amount. A cancellation adds a refund and one reversal.
 - Vertt app + promo 20 %: transfer and commission are identical to the same booking without promo (AC-6).
-- 5 % of the train part is not a whole centime (e.g. 5 % of CHF 8.45 = 0.4225): see open question.
+- 5 % of the train part is not a whole centime: rounded **half up** to the centime (0.4225 → 0.42, 0.425 → 0.43).
 - "Cancel journey" is clicked twice quickly: one set of cancellation events.
 - The events of a cancellation have a later time and a higher sequence number than the events of the payment.
 - "New booking" after a cancellation starts a new run; the cancelled booking stays in the export.
 
 ## Open Questions
-- **Rounding of the commission to the centime:** half up (0.4225 → 0.42, 0.425 → 0.43)? Proposed: half up. → Tim / CTO.
-- **Cancel after leaving the receipt:** the receipt is gone after "New booking" or a reload, so an older booking cannot be cancelled. Is that fine for the demo? → Tim.
-- Should the refund event refer to the original customer payment (like reversals refer to their event)? The lite mockup leaves it empty. → align with partners (cto-meeting B9).
-- Is the commission asymmetry OK to present to partners (cto-meeting B2)?
-- Real cancellation rules (B6) and settlement timing per booking vs. monthly (B3) are out of scope but should be confirmed.
+- ~~Rounding of the commission~~ → **Decided (Tim 2026-10-05):** half up to the centime.
+- ~~Cancel after leaving the receipt~~ → **Decided (Tim 2026-10-05):** not possible. Once the receipt is left ("New booking" or reload), the booking stays "paid" in the export.
+- Should the refund event refer to the original customer payment (like reversals refer to their event)? The lite mockup leaves it empty. → align with partners ([open topics](../../../docs/open-topics.md) #10).
+- Is the commission asymmetry OK to present to partners? ([open topics](../../../docs/open-topics.md) #1)
+- Real cancellation rules and settlement timing per booking vs. monthly ([open topics](../../../docs/open-topics.md) #7, #4) are out of scope but should be confirmed.
 
 ## Dependencies
 - Requires: PROJ-1-PRD-3 (payment creates the booking; "Cancel journey" sits on the receipt), PROJ-1-PRD-2 (leg prices), PROJ-1-PRD-6 and PROJ-1-PRD-7 (where the prices come from).

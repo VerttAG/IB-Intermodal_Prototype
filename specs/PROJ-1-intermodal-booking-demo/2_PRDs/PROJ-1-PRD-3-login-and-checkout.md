@@ -2,12 +2,12 @@
 
 ## Status: Planned
 
-Covers step 2 (log in), step 3 (overview and pay) and the receipt. Source: [docs/PRD.md](../../../docs/PRD.md) section 4, [docs/user-stories.md](../../../docs/user-stories.md) stories 1b, 12–16. Story numbers are given in brackets. Cancelling from the receipt is in PROJ-1-PRD-4; the data link on the receipt is in PROJ-1-PRD-5.
+Covers step 2 (log in), step 3 (overview and pay) and the receipt. Source: [docs/PRD.md](../../../docs/PRD.md) sections 4 and 5: stories 1b, 12–16. Story numbers are given in brackets. Cancelling from the receipt is in PROJ-1-PRD-4; the data link on the receipt is in PROJ-1-PRD-5.
 
 ## User Stories
 
 ### US-1: As a customer, I want to book my whole door-to-door journey in the app I already use so that I don't switch between apps (story 1b)
-**Given** I chose a Vertt + SBB connection in either app
+**Given** I chose one of the labelled trips in either app
 **When** I go through login, overview and payment
 **Then** all legs are booked together with one payment
 
@@ -79,7 +79,7 @@ Covers step 2 (log in), step 3 (overview and pay) and the receipt. Source: [docs
 
 ## Edge Cases
 - "Pay" is clicked twice quickly: exactly one booking is created.
-- The page is reloaded during the payment animation: see open question.
+- The page is reloaded during the payment animation: the booking exists from the moment "Pay" is clicked – it is in the export with its settlement events, but its receipt is not shown and it cannot be cancelled any more (PROJ-1-PRD-4).
 - Promo with two Vertt legs: each leg is discounted and rounded on its own; the stored discount in CHF is the difference between the totals before and after.
 - Promo with GA: the customer pays the discounted Vertt part only.
 - A promo is ticked, then the customer pays without removing it: the discounted prices are the booked prices and appear on the receipt.
@@ -89,9 +89,9 @@ Covers step 2 (log in), step 3 (overview and pay) and the receipt. Source: [docs
 - A leg price is "not available": "Pay" stays disabled.
 
 ## Open Questions
-- **Reload during the payment animation:** does the booking exist (it is in the export) or not? Proposed: the booking exists from the moment "Pay" is clicked. → Tim.
-- `booked_at`: the real clock time of the click, or a time before the scenario departure? With the real time, a booking can be "made" after the journey's fixed departure. → Tim.
-- Real-world topics that the demo ignores and the CTO should confirm: unpaid invoice (cto-meeting B4), payment fees (B5).
+- ~~Reload during the payment animation~~ → **Decided (Tim 2026-10-05):** the booking exists from the moment "Pay" is clicked.
+- ~~`booked_at` vs. a fixed scenario departure~~ → no longer an issue: the customer chooses the departure time (PROJ-1-PRD-1), so `booked_at` is the real clock time of the click. A trip whose departure has already passed cannot be booked.
+- Real-world topics that the demo ignores and the CTO should confirm: unpaid invoice, payment fees ([open topics](../../../docs/open-topics.md) #5, #6).
 
 ## Dependencies
 - Requires: PROJ-1-PRD-1 (app, travelcard, SwissPass login), PROJ-1-PRD-2 (legs, prices, CO₂, map, car), and through it PROJ-1-PRD-6 (train prices) and PROJ-1-PRD-7 (Vertt prices).

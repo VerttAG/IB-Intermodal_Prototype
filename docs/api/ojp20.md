@@ -1,7 +1,7 @@
 # OJP 2.0 – Data model (journey planner)
 
 Status: derived from **real responses** on 2026-10-05 (spike). Field names below appear exactly like this in the responses.
-Related: [ojpfare.md](ojpfare.md) (prices) · [PRD](../PRD.md) · [CTO meeting](../cto-meeting.md)
+Related: [ojpfare.md](ojpfare.md) (prices) · [PRD](../PRD.md) · [open topics](../open-topics.md)
 
 ## 1. Overview
 
@@ -232,7 +232,7 @@ TransferLeg
 `CO₂ [kg] = TrackSection/Length [m] / 1000 × EmissionCO2/KilogramPerPersonKm`
 → IC 8 Zürich–Bern: 118.217 km × 0.007 = **0.83 kg**.
 
-⚠️ The method behind 0.007 kg/pkm is not stated in the response (probably includes electricity production). This conflicts with the PRD decision "tailpipe only → trains 0 kg" – see CTO topic **B7** and issue #13.
+The method behind 0.007 kg/pkm is not stated in the response (probably includes electricity production). **Decided 2026-10-05:** the demo uses this OJP value for train legs (issue #13).
 
 ## 5. Quirks and findings
 
