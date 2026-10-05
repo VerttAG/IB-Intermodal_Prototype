@@ -16,8 +16,8 @@ Covers the output for the Innovation Booster partners: one data link per booking
 - [ ] AC-2: The copy button puts the link on the clipboard and confirms it.
 - [ ] AC-3: Opening the link shows valid JSON with three parts: booking, trip, settlement events.
 - [ ] AC-4: The booking part contains `booking_id`, `system` (vertt / sbb), `login_method`, `travelcard`, `promo_percent`, `promo_chf`, `payment_method`, `booked_at`, `status` and a pseudonymous demo customer ID.
-- [ ] AC-5: The data link contains **only transactional data** (decided by Tim 2026-10-05): per leg only `seq`, `operator` (Vertt / SBB), `type` (vertt_ride / train) and `amount_chf` – what the settlement needs. Walk legs are not listed (no amount).
-- [ ] AC-5a: The data link contains **no** addresses, coordinates, route lines, stations, times of the legs, car, CO₂, labels, AI candidates or OJP Fare details.
+- [ ] AC-5: The data link contains **only transactional data** (decided by Tim 2026-10-05): per leg only `seq`, `operator` (Vertt / SBB), `type` (vertt_ride / train), `amount_chf` and `co2_kg`, plus the trip's total `co2_kg`. Walk legs are not listed (no amount, 0.0 kg).
+- [ ] AC-5a: The data link contains **no** addresses, coordinates, route lines, stations, times of the legs, car, labels, AI candidates or OJP Fare details.
 - [ ] AC-6: Each settlement event contains `event_id`, `booking_id`, `seq`, `timestamp`, `event_type` (b2c_payment, b2b_transfer, commission, refund, reversal), `payer`, `payee`, `amount_chf`, `reason`, `refers_to_event`.
 - [ ] AC-7: The values in the link equal what the customer saw on the receipt (legs, prices, discount, total, travelcard, payment method).
 - [ ] AC-8 *(pending T1)*: A partner can open the link on their own computer, not only in the browser where the booking was made.

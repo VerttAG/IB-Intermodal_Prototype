@@ -184,7 +184,7 @@ Context: [PRD.md](PRD.md). Technical questions and open topics: [cto-meeting.md]
 > As an IB partner, I want a link to the complete data of each booking, so that I can feed real-looking bookings into our transaction layer and test it.
 
 - The receipt shows a link "Settlement data (for project partners)" with a copy button.
-- Opening it shows the booking as JSON – **transactional data only**: booking details, amount per operator and leg, settlement events (money movements) incl. cancellation. No addresses, coordinates or trip details.
+- Opening it shows the booking as JSON – **transactional data only**: booking details, amount and CO₂ per operator and leg (plus total CO₂), settlement events (money movements) incl. cancellation. No addresses, coordinates or trip details.
 - After a cancellation, the **same link** shows the updated content.
 - **Export of all bookings** as one file: all bookings since the page was first opened in this browser, across reloads, including cancellations, until "clear" is clicked.
 - No personal data; field names documented in `docs/schema.md` and kept stable.
