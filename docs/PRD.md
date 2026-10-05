@@ -2,172 +2,128 @@
 
 | | |
 |---|---|
-| Status | **Draft v0.2** – to be confirmed with Vertt CTO |
+| Status | **Draft v0.3** – user stories agreed; to be confirmed with Vertt CTO |
 | Owner | Tim Diethelm (Vertt AG) |
 | Last update | 2026-10-05 |
-| Details | Technical details, data sources and calculations: [PROTOTYPE_1_BRIEF.md](PROTOTYPE_1_BRIEF.md). This PRD **extends** the brief; where they differ, this PRD wins. |
+| Related | [user-stories.md](user-stories.md) (what each user needs) · [cto-meeting.md](cto-meeting.md) (open topics, APIs) · [PROTOTYPE_1_BRIEF.md](PROTOTYPE_1_BRIEF.md) (original technical brief) |
+
+This PRD **extends** the brief; where they differ, this PRD wins.
 
 ## 1. Why are we building this?
 
 The Innovation Booster project aims at a settlement layer that bills and splits one intermodal journey (train + ride-hailing) between operators. Prototype 1 makes this tangible:
 
 - From the **customer's view**: a clickable booking app that shows one door-to-door journey combining Vertt and SBB – route, times, price and CO₂ per carrier – similar to the SBB app.
-- From the **settlement view**: every booking produces a **data link** with the full trip and all B2B transactions (who owes whom). The Innovation Booster partners use this data as input for their transaction layer (blockchain), and Prototype 2 builds on it.
+- From the **settlement view**: every booking produces a **data link** with the full trip and all B2B money movements. The Innovation Booster partners use this data as input for their transaction layer (blockchain); Prototype 2 builds on it.
 
-The customer pays only **one** operator. The interesting part is the **B2B settlement** between the operators, which is captured in the data, not shown as an animation.
+The customer pays only **one** operator. The interesting part is the **B2B settlement** between the operators – it is captured in the data, not animated.
 
 ## 2. Who uses it?
 
 | Order | User | What they want to get out of it |
 |---|---|---|
-| 1 | **Vertt CTO** | Click through the customer flow, check that the trip data and settlement rules are right, decide on the open points. |
-| 2 | **Innovation Booster partners** | Click through realistic bookings (incl. travelcards, payment methods, cancellations) and **collect the generated data links** to feed their transaction layer. |
-| (3) | Project team | Single reference for what booking, trip and settlement data look like. |
+| 1 | **Vertt CTO** | Click through the customer flow, check trip data and settlement rules, decide the open topics. |
+| 2 | **Innovation Booster partners** | Click through realistic bookings (travelcards, promo, payment methods, cancellation) and **collect the data** for their transaction layer. |
+| (3) | Project team | Single reference for booking, trip and settlement data. |
+
+Roles used in the user stories: Customer, Vertt, SBB, IB partner, Demo presenter.
 
 ## 3. Changes compared to the brief
 
 | Topic | Brief | PRD |
 |---|---|---|
-| Interaction | Static page showing 3 trips | Clickable booking app (phone layout) with 4 steps (section 4) |
-| Connections | One trip per route | Per route: intermodal trip (recommended) + Vertt-only + public-transport-only alternative |
-| SBB fare | Placeholder `null` | From OJP if available, otherwise public reference prices (marked) |
-| Payment settlement | Out of scope | **Simulated** – B2B transactions generated as data (no real money, no animation) |
-| Edge cases | none | Travelcards (none / half-fare / GA), promo code, cancellation (whole trip / one leg) |
-| Output | Trip records | **Data link** per booking: booking + trip record + settlement events (JSON) |
-| Hosting | local | Partners must open the links → proposal: **GitHub Pages** (repo is public); confirm with CTO |
+| Interaction | Static page showing 3 trips | Clickable booking app (phone layout), steps 0–3 + receipt |
+| Connections | One trip per route | Intermodal (bookable) + Vertt-only + public-transport-only (comparison) |
+| SBB fare | Placeholder `null` | From OJP if available, otherwise public reference prices |
+| Payment settlement | Out of scope | **Simulated** – B2B money movements generated as data |
+| Edge cases | none | Travelcards (none / half-fare / GA), promo, cancellation of the whole journey |
+| CO₂ | Car + rail factor | **Tailpipe only** → trains and electric cars = 0 kg |
+| Output | Trip records | **Data link** per booking + **export of all bookings** |
+| Hosting | local | Partners must open links → to decide with CTO |
 
-Unchanged: real data where possible (recorded Vertt rides, OJP timetable), no backend, no real payments or logins, no blockchain inside this prototype, privacy rules (brief section 8).
+Unchanged: no real payments or logins, no blockchain inside this prototype, privacy rules (brief section 8).
 
 ## 4. The customer flow
 
-One neutral design for both systems; only a label shows which operator's app is used. Phone layout (on a laptop: phone-sized screen in the middle). Nothing has to be typed – everything is clickable.
+Phone layout (on a laptop: phone-sized in the middle). One neutral design for both apps – no official logos. Nothing has to be typed. 1 adult, 2nd class.
 
-### Step 0 – Choose system
-"Vertt app" or "SBB app". This decides who sells the trip and collects the money (the **seller**, see section 6).
-
-### Step 1 – Route and travelcard  *(most important screen)*
-- **From / To:** chosen from fixed lists (e.g. Wettswil am Albis, Winterthur, Mellingen Heitersberg, Ostermundigen). Only combinations with a prepared scenario can be chosen.
-- **Date / time:** shown like in the SBB app, pre-filled with the scenario time, not changeable.
-- **Travelcard:** quick choice *no travelcard / half-fare / GA*.
-- **"Log in with SwissPass"** button as alternative: after the click, a small box below lets the user pick the test profile *no travelcard / half-fare / GA*. Step 2 is then skipped.
-- **Connection list**, styled like the SBB app:
-  1. **Intermodal trip (Vertt + SBB)** – on top, marked as recommended. Built from the real recorded Vertt ride(s) and the OJP train leg.
-  2. **Vertt only** – car the whole way. Constructed (marked).
-  3. **Public transport only** – from OJP (e.g. bus + train), real timetable data.
-- Each connection shows per leg: carrier (Vertt / SBB and line, e.g. S11, IC 8), departure and arrival time, duration, transfer time, **price** and **CO₂**; plus totals. Constructed or reference values are visibly marked.
-- Opening a connection shows the **map** (Vertt leg along the real street route, train leg along the track) and the detailed timeline.
-
-### Step 2 – Log in
-One click on **Google**, **Apple** or **SwissPass** (fake, no data entered). Skipped if SwissPass was used in step 1.
-
-### Step 3 – Overview and payment
-- Route again with map, price per carrier and total, CO₂ per leg and total.
-- Optional **promo code** field.
-- Payment method: **card**, **TWINT**, **invoice** (private), or **business** (invoice to company + receipt with VAT shown). All fake, one click.
-- **"Pay"** → short confirmation.
-
-### After payment – Data link and cancellation
-- A **link** is generated with all data of this booking (section 7), with a **copy** button. Opening it shows the JSON in the browser.
-- **Cancel** buttons: *cancel whole trip* or *cancel one leg* → generates a **new link** containing the original events plus the refund / reversal events.
+| Step | What happens | Stories |
+|---|---|---|
+| **0 – Choose app** | "Vertt app" or "SBB app". Decides who sells and collects the money. Fixed for the run. | 1a, 1b |
+| **1 – Plan** *(most important)* | Start + destination (snapped to the nearest known place); time pre-filled and locked ("depart at"); travelcard (default half-fare) **or** "Log in with SwissPass" with test profile → travelcard locked. List of 3 connections with price and CO₂ per card; Vertt + SBB on top, "recommended – door to door with one booking". Details: legs, line, car category, transfers, map. | 2–11 |
+| **2 – Log in** | Google / Apple / SwissPass / email + password (pre-filled, not editable) – one click. Skipped after SwissPass in step 1. | 12 |
+| **3 – Overview & pay** | Map, legs, price per leg + total, CO₂, travelcard, "You pay [Vertt/SBB] for the whole journey". Promo tick 5 / 10 / 20 % on the Vertt part. Payment: card / TWINT / invoice / business (none pre-selected). No back button. | 13–15 |
+| **Receipt** | Short payment animation → receipt for everyone. Buttons "Cancel journey" and "New booking". Data link "Settlement data (for project partners)" + copy; export of all bookings. | 16–18 |
 
 ## 5. User stories
 
-### Epic A – Choose and compare (step 0 + 1)
-- **A1** As a **customer**, I want to choose whether I book in the Vertt or the SBB app, so that I use the app I'm used to.
-- **A2** As a **customer**, I want to choose start and destination and see my connections, so that I can decide how to travel.
-- **A3** As a **customer**, I want to see each leg with carrier, times, price and CO₂ like in the SBB app, so that I understand what I'm buying.
-- **A4** As a **customer**, I want to compare the intermodal trip with Vertt-only and public-transport-only, so that I see why the combination is recommended.
-- **A5** As a **customer**, I want to see the trip on a map, so that I see where the car drives and where I take the train.
-- **A6** As a **customer**, I want to state my travelcard (or log in with SwissPass), so that I see my real price.
-- **A7** As the **CTO**, I want every constructed or reference value marked, so that nobody mistakes it for real data.
-
-### Epic B – Log in and pay (step 2 + 3)
-- **B1** As a **customer**, I want to log in with one click (Google / Apple / SwissPass), so that booking is fast.
-- **B2** As a **customer**, I want to see a final overview with map, price and CO₂ before paying.
-- **B3** As a **customer**, I want to pay by card, TWINT, invoice or as a business with receipt, so that I can pay the way I need.
-- **B4** As a **customer**, I want to enter a promo code, so that I get my discount.
-
-### Epic C – Settlement data
-- **C1** As a **partner**, I want a link with all booking, trip and settlement data after each payment, so that I can feed it into our transaction layer.
-- **C2** As a **partner**, I want each B2B transaction listed with payer, payee, amount and reason, so that our layer can process it.
-- **C3** As a **partner**, I want cancellation (whole trip / one leg) to produce refund and reversal events, so that we can test reversals.
-- **C4** As the **project team**, I want the data format documented and stable, so that Prototype 2 can build on it.
+21 agreed stories in 7 epics: see **[user-stories.md](user-stories.md)**.
 
 ## 6. Settlement rules
 
 - The passenger pays **one** operator the full price: the **seller** = the app chosen in step 0.
-- The seller forwards the other operator's share. Rules are **fixed in the code** (not configurable) to show two different cases:
+- Rules are **fixed in the code**:
 
-| Seller | Passenger pays | B2B transfer | Commission |
-|---|---|---|---|
-| **Vertt app** | Vertt part + train ticket → **Vertt** | Vertt → SBB: train ticket **− 5 %** | Vertt keeps **5 % of the train ticket** |
-| **SBB app** | Vertt part + train ticket → **SBB** | SBB → Vertt: **full** Vertt part | none |
+| Seller | Passenger pays | Settlement events |
+|---|---|---|
+| **Vertt app** | total → **Vertt** | Vertt → SBB: train ticket price · SBB → Vertt: **commission 5 % of the train ticket** (separate entry) |
+| **SBB app** | total → **SBB** | SBB → Vertt: full Vertt part · **no commission** |
 
-Example (made-up numbers: Vertt ride CHF 30, train ticket CHF 50):
+> **Deliberate demo decision:** the asymmetry (Vertt earns a commission, SBB does not) is chosen to show two different settlement rules in the data. It is **not** a business agreement with SBB.
 
-| Seller | Passenger pays | B2B transfer | Vertt ends with | SBB ends with |
+Example (made-up numbers: Vertt ride CHF 30.00, train ticket CHF 8.40):
+
+| Seller | Passenger pays | Events | Vertt ends with | SBB ends with |
 |---|---|---|---|---|
-| Vertt app | 80 → Vertt | Vertt → SBB 47.50 | 32.50 | 47.50 |
-| SBB app | 80 → SBB | SBB → Vertt 30.00 | 30.00 | 50.00 |
+| Vertt app | 38.40 → Vertt | Vertt → SBB 8.40; SBB → Vertt 0.42 | 30.42 | 7.98 |
+| SBB app | 38.40 → SBB | SBB → Vertt 30.00 | 30.00 | 8.40 |
 
-- Vertt is **one party**; its internal split (driver earnings, service fee, VAT) stays in the data but is not part of the B2B transactions.
-- All amounts in CHF incl. VAT. VAT treatment of B2B transfers is out of scope (assumption).
+- Customer prices rounded to CHF 0.05; **B2B amounts exact to the centime**.
+- Settled **per booking**.
+- Vertt is **one party** – no driver share in the settlement.
+- Amounts in CHF incl. VAT; VAT treatment of B2B transfers out of scope.
 
-### Edge cases
+### Variations
 
 | Case | Rule |
 |---|---|
-| **Half-fare** | Train ticket = half-fare price; Vertt commission = 5 % of that price |
-| **GA** | Train ticket = CHF 0 → no transfer to SBB and no commission (Vertt app); SBB app still forwards the full Vertt part |
-| **Promo code** | Discount on the Vertt part, carried by Vertt (issuer). Passenger pays less; if sold by SBB, SBB forwards the discounted Vertt part |
-| **Cancel whole trip** | Seller refunds the passenger in full; all B2B transfers reversed (incl. commission) |
-| **Cancel one leg** | Seller refunds that leg; the matching B2B transfer (and commission, if any) reversed; the other leg stays paid |
-| **Invoice / business payment** | Treated as paid at booking (simplification); payment method recorded in the data |
+| Half-fare | Train ticket = half-fare price; commission (Vertt app) = 5 % of that |
+| GA | Train ticket = CHF 0 → Vertt app: no transfer, no commission. SBB app: SBB passes the full Vertt part on and keeps CHF 0 |
+| Promo (5/10/20 %) | Reduces only the Vertt part; carried by Vertt. SBB's share and commission unaffected |
+| Cancel journey | Whole journey only. Full refund, no fee. New events: refund, reversal of B2B transfer, reversal of commission. Nothing is edited or deleted |
+| Payment method | All count as paid immediately; no payment fees |
 
-## 7. Data link (output)
+## 7. Output: data link and export
 
-Each booking produces one JSON document, reachable via the link:
+Each booking has one link (copy button) showing JSON:
 
-1. **Booking** – `booking_id`, `system` (vertt / sbb), `login_method`, `travelcard`, `promo_code`, `payment_method`, `booked_at`. Customer is a pseudonymous demo ID – no personal data.
-2. **Trip record** – schema v0 from the brief (section 6), incl. segments, `data_basis` flags, fares and CO₂.
-3. **Settlement events** – append-only list, one entry per money movement:
-   `event_id, booking_id, seq, timestamp, event_type (b2c_payment | b2b_transfer | commission | refund | reversal), payer, payee, amount_chf, segment_seq, reason, refers_to_event`.
-   An append-only event list is close to how a blockchain / transaction layer records entries, so partners can replay it directly. A cancellation adds new events; it never edits old ones.
+1. **Booking** – `booking_id`, `system` (vertt / sbb), `login_method`, `travelcard`, `promo_percent`, `promo_chf`, `payment_method`, `booked_at`, `status`, pseudonymous demo customer ID.
+2. **Trip** – legs with carrier, times, line / car category, car drawn from the pool (make, model, year, CO₂ factor), price, CO₂, data source of each value.
+3. **Settlement events** – append-only list: `event_id, booking_id, seq, timestamp, event_type (b2c_payment | b2b_transfer | commission | refund | reversal), payer, payee, amount_chf, reason, refers_to_event`.
 
-Field names will be documented in `docs/schema.md` and kept stable.
+After a cancellation the **same link** shows the updated content. **Export** of all bookings since the page was first opened in this browser (across reloads, incl. cancellations) until "clear". Field names documented in `docs/schema.md`.
 
 ## 8. Not in scope (Prototype 1)
 
-Real payments and logins, live search for any address or time, settlement animation or operator dashboard, blockchain integration, production hosting, delay / missed connection / no-show / price-difference cases (candidates for Prototype 2), official SBB or Vertt logos.
+Real payments and logins, changeable time / "arrive by", more than 1 passenger, 1st class, settlement animation or operator dashboard, cancellation of a single leg, payment fees, business VAT receipt, blockchain integration, production hosting, delay / missed connection / no-show cases, official SBB or Vertt logos.
 
-## 9. Open decisions
+## 9. Open topics
 
-Existing (brief section 7): GitHub issues #8–#16. New from this PRD:
-
-| Topic | Default |
-|---|---|
-| Can OJP deliver SBB prices? (brief says OJP 2.0 has no fares) | check in OJP spike; else public reference prices |
-| Vertt-only alternative: price and CO₂ without a tariff formula | constructed estimate, marked |
-| Is only the intermodal connection bookable, or all three? | only intermodal is bookable; others for comparison |
-| Cancellation fee / refund policy | full refund, no fee |
-| VAT rate shown on business receipt | 8.1 % (to verify) |
-| Settlement data format – align with partners' transaction layer | draft in section 7 |
-| Hosting for partners (GitHub Pages?) | to decide with CTO |
-| Demo date / audience meeting | not decided |
+All open topics and the technical API overview for the CTO meeting: **[cto-meeting.md](cto-meeting.md)**.
 
 ## 10. Definition of done
 
-- A user can click through steps 0–3 for every prepared route, both systems, all travelcards, with and without promo, all four payment methods.
-- Cancellation of the whole trip and of one leg works and produces a new data link.
-- Every number on screen is traceable to recorded data, timetable data or a marked assumption.
-- Data links contain valid JSON that matches the documented schema.
-- No personal data in the repo, on the page or in the links.
-- The CTO has reviewed the demo and the open decisions.
+- A user can click through steps 0–3 and the receipt for every prepared route, both apps, all travelcards, with and without promo, all four payment methods.
+- Cancellation works and updates the data link; export contains all bookings.
+- Every number on screen is traceable to its source.
+- Data links and export are valid JSON matching `docs/schema.md`.
+- No personal data in the repo, on the page, in links or exports.
+- The CTO has reviewed the demo and the open topics.
 
 ## 11. Next steps
 
-1. Review this PRD (Tim → CTO).
-2. Clickable **mockup with fake data** of steps 0–3, to agree on look and flow before real code.
-3. Rework the GitHub issues to follow the epics above.
-4. In parallel: **OJP API spike** – one real station lookup + trip request, and check whether prices are returned.
-5. Then build: data pipeline → settlement engine → booking interface → data link.
+1. CTO meeting: discuss [cto-meeting.md](cto-meeting.md), confirm this PRD.
+2. Clickable mockup with fake data (optional, before the meeting).
+3. Rework the GitHub issues to follow the user stories and the meeting decisions.
+4. OJP API spike (station lookup, trip request, check for prices and platforms).
+5. Build: data → settlement → booking interface → data link and export.
