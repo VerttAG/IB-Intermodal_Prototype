@@ -81,7 +81,7 @@ Covers the output for the Innovation Booster partners: one data link per booking
   - B (data inside the link, second link after cancellation): AC-8 holds, AC-9 changes to "a new link shows the cancelled booking".
   - C (export file only): AC-8 and AC-9 are dropped; the link works only in the presenter's browser.
   → CTO. The lite mockup shows the JSON in a pop-up and has no export yet.
-- Does "Clear" also invalidate data links already sent to partners (only relevant for option A)? → Tim.
+- ~~Does "Clear" invalidate links already sent?~~ → **Decided (Tim 2026-10-05):** no. "Clear" only empties the local list in the browser; data links already sent keep working.
 - Align the event format with the partners' transaction layer before building (cto-meeting B9)?
 - Mark estimated values in the data link only, or also on screen (B1)?
 

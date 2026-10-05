@@ -74,14 +74,14 @@ Terms used below: **train part** = price of all SBB legs after travelcard. **Ver
 - Vertt app + GA: the only event is the customer payment. A cancellation adds only the refund.
 - SBB app + GA: customer payment and transfer have the same amount. A cancellation adds a refund and one reversal.
 - Vertt app + promo 20 %: transfer and commission are identical to the same booking without promo (AC-6).
-- 5 % of the train part is not a whole centime (e.g. 5 % of CHF 8.45 = 0.4225): see open question.
+- 5 % of the train part is not a whole centime: rounded **half up** to the centime (0.4225 → 0.42, 0.425 → 0.43).
 - "Cancel journey" is clicked twice quickly: one set of cancellation events.
 - The events of a cancellation have a later time and a higher sequence number than the events of the payment.
 - "New booking" after a cancellation starts a new run; the cancelled booking stays in the export.
 
 ## Open Questions
-- **Rounding of the commission to the centime:** half up (0.4225 → 0.42, 0.425 → 0.43)? Proposed: half up. → Tim / CTO.
-- **Cancel after leaving the receipt:** the receipt is gone after "New booking" or a reload, so an older booking cannot be cancelled. Is that fine for the demo? → Tim.
+- ~~Rounding of the commission~~ → **Decided (Tim 2026-10-05):** half up to the centime.
+- ~~Cancel after leaving the receipt~~ → **Decided (Tim 2026-10-05):** not possible. Once the receipt is left ("New booking" or reload), the booking stays "paid" in the export.
 - Should the refund event refer to the original customer payment (like reversals refer to their event)? The lite mockup leaves it empty. → align with partners (cto-meeting B9).
 - Is the commission asymmetry OK to present to partners (cto-meeting B2)?
 - Real cancellation rules (B6) and settlement timing per booking vs. monthly (B3) are out of scope but should be confirmed.
