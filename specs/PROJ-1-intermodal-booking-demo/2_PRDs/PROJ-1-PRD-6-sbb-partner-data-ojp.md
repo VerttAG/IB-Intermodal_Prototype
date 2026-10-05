@@ -94,7 +94,7 @@ This PRD says **what** the demo gets from SBB. Whether the answers are fetched w
 - **Train CO₂:** OJP delivers a factor (0.007 kg per person-km → 0.8 kg for Zürich–Bern), while the agreed rule is "tailpipe only → trains 0.0 kg". Keep 0.0 on screen and store the OJP value in the data link only? → CTO (B7).
 - ~~Live or prepared in advance?~~ → **Decided 2026-10-05: live** for every search (PROJ-1-PRD-9). The demo needs internet access to SBB during the presentation; answers are cached.
 - ~~SBB → Vertt journeys: search by arrival time?~~ → **Decided:** no "arrive by"; the last Vertt pickup follows the train arrival + waiting time (PROJ-1-PRD-9 AC-10).
-- Both prices ("no travelcard" and "half-fare") are fetched in every search (PROJ-1-PRD-9 AC-12) – twice the OJP Fare calls. OK within the limit of 50 calls/min? → spike.
+- ~~Both prices per search?~~ → **Decided 2026-10-05:** only the half-fare price is fetched; no travelcard = 2 × half-fare, GA = CHF 0.00, shown as normal prices (PROJ-1-PRD-9 AC-12). Halves the OJP Fare calls.
 
 ## Dependencies
 - Feeds: PROJ-1-PRD-8 (train legs and prices as leg offers), PROJ-1-PRD-2 (train legs, prices, map), PROJ-1-PRD-4 (train part of the settlement), PROJ-1-PRD-5 (data sources and price details in the data link).

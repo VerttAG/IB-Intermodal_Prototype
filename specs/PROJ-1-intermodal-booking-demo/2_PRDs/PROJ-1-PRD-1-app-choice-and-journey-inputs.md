@@ -49,7 +49,7 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 
 **Acceptance Criteria:**
 - [ ] AC-14: Three options are offered: no travelcard, half-fare, GA. Half-fare is selected when a run starts.
-- [ ] AC-15: Changing the travelcard after a search updates every price and the labels at once, **without a new search** (the engine fetches the train prices for both "no travelcard" and "half-fare" in the first search; GA is CHF 0.00 by rule).
+- [ ] AC-15: Changing the travelcard after a search updates every price and the labels at once, **without a new search** (the engine fetches the half-fare price; no travelcard = 2 × half-fare, GA = CHF 0.00 – PROJ-1-PRD-9 AC-12).
 - [ ] AC-16: The price of every Vertt leg is the same for all three travelcards.
 - [ ] AC-17: The chosen travelcard is shown again in the overview (PROJ-1-PRD-3) and stored in the data link (PROJ-1-PRD-5).
 

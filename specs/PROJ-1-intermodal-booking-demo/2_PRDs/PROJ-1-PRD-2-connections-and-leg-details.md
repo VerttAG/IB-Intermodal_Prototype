@@ -34,7 +34,7 @@ A trip has up to three legs: **first leg** (Vertt ride or walk) → **train** �
 - [ ] AC-9: Vertt legs show the car category. Prototype 1 has one category, "Vertt".
 - [ ] AC-10: The car of a Vertt leg is drawn from the **car pool** (PROJ-1-PRD-7) once per Vertt leg and stays the same until the run ends.
 - [ ] AC-11: Walk legs show the walking time and distance; price CHF 0.00 and CO₂ 0.0 kg.
-- [ ] AC-12: Before a Vertt leg, the assumed waiting time for the car is visible (e.g. "car arrives in 5 min").
+- [ ] AC-12: Before a Vertt leg, the waiting time for the car is visible: 5 min at the start, 2 min at the destination station (PROJ-1-PRD-9).
 - [ ] AC-13: Between two legs a transfer row shows the minutes available (at least 8 min before a train).
 - [ ] AC-14: From the details I can continue to the next step or go back to the connection list.
 - [ ] AC-15 *(Could)*: A transfer longer than 15 min is marked "long wait".
