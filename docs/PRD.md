@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Status | **Draft v0.4** – partner APIs and a live trip engine decided by Tim (2026-10-05), see section 13; to be confirmed with Vertt CTO |
+| Status | **Draft v0.4** – partner APIs and a live trip engine decided by Tim (2026-10-05), see section 12; to be confirmed with Vertt CTO |
 | Owner | Tim Diethelm (Vertt AG) |
 | Last update | 2026-10-05 |
 | Related | [user-stories.md](user-stories.md) (what each user needs) · [cto-meeting.md](cto-meeting.md) (open topics, APIs) · [PROTOTYPE_1_BRIEF.md](PROTOTYPE_1_BRIEF.md) (original technical brief) |
@@ -33,8 +33,10 @@ Roles used in the user stories: Customer, Vertt, SBB, IB partner, Demo presenter
 | Topic | Brief | PRD |
 |---|---|---|
 | Interaction | Static page showing 3 trips | Clickable booking app (phone layout), steps 0–3 + receipt |
-| Connections | One trip per route | Intermodal (bookable) + Vertt-only + public-transport-only (comparison) |
-| SBB fare | Placeholder `null` | From OJP if available, otherwise public reference prices |
+| Trips | 3 preset trips from recorded rides | **Calculated live** for any start/destination address and "depart at" time (section 12) |
+| Connections | One trip per route | Up to 3 labelled trips (Fastest / Cheapest / Greenest, bookable) + Vertt-only + public-transport-only (comparison) |
+| Vertt legs | Recorded rides | Calculated: Valhalla route × Vertt tariff, CO₂ with a car from the car pool. Recorded rides only validate the calculator |
+| SBB fare | Placeholder `null` | From OJP Fare (beta) |
 | Payment settlement | Out of scope | **Simulated** – B2B money movements generated as data |
 | Edge cases | none | Travelcards (none / half-fare / GA), promo, cancellation of the whole journey |
 | CO₂ | Car + rail factor | **Tailpipe only** → trains and electric cars = 0 kg |
@@ -45,19 +47,19 @@ Unchanged: no real payments or logins, no blockchain inside this prototype, priv
 
 ## 4. The customer flow
 
-Phone layout (on a laptop: phone-sized in the middle). One neutral design for both apps – no official logos. Nothing has to be typed. 1 adult, 2nd class.
+Phone layout (on a laptop: phone-sized in the middle). One neutral design for both apps – no official logos. Nothing has to be typed except the addresses (pre-filled with an example). 1 adult, 2nd class.
 
 | Step | What happens | Stories |
 |---|---|---|
 | **0 – Choose app** | "Vertt app" or "SBB app". Decides who sells and collects the money. Fixed for the run. | 1a, 1b |
-| **1 – Plan** *(most important)* | Start + destination (snapped to the nearest known place); time pre-filled and locked ("depart at"); travelcard (default half-fare) **or** "Log in with SwissPass" with test profile → travelcard locked. List of 3 connections with price and CO₂ per card; Vertt + SBB on top, "recommended – door to door with one booking". Details: legs, line, car category, transfers, map. | 2–11 |
+| **1 – Plan** *(most important)* | Start + destination address (swisstopo suggestions); "depart at" date and time; travelcard (default half-fare) **or** "Log in with SwissPass" with test profile → travelcard locked; "Search". Up to 3 trips labelled Fastest / Cheapest / Greenest ("door to door with one booking") + 2 comparison cards, each with price and CO₂. Details: legs (Vertt / walk / train), line, car category, waiting time, transfers, map. | 2–11, 27 |
 | **2 – Log in** | Google / Apple / SwissPass / email + password (pre-filled, not editable) – one click. Skipped after SwissPass in step 1. | 12 |
 | **3 – Overview & pay** | Map, legs, price per leg + total, CO₂, travelcard, "You pay [Vertt/SBB] for the whole journey". Promo tick 5 / 10 / 20 % on the Vertt part. Payment: card / TWINT / invoice / business (none pre-selected). No back button. | 13–15 |
 | **Receipt** | Short payment animation → receipt for everyone. Buttons "Cancel journey" and "New booking". Data link "Settlement data (for project partners)" + copy; export of all bookings. | 16–18 |
 
 ## 5. User stories
 
-21 agreed stories in 7 epics: see **[user-stories.md](user-stories.md)**.
+Stories 1–21 (agreed v1) and 22–29 (v1.1, updated by Tim 2026-10-05) in **[user-stories.md](user-stories.md)**.
 
 ## 6. Settlement rules
 
@@ -98,14 +100,14 @@ Example (made-up numbers: Vertt ride CHF 30.00, train ticket CHF 8.40):
 Each booking has one link (copy button) showing JSON:
 
 1. **Booking** – `booking_id`, `system` (vertt / sbb), `login_method`, `travelcard`, `promo_percent`, `promo_chf`, `payment_method`, `booked_at`, `status`, pseudonymous demo customer ID.
-2. **Trip** – legs with carrier, times, line / car category, car drawn from the pool (make, model, year, CO₂ factor), price, CO₂, data source of each value.
+2. **Trip** – start and destination, legs (Vertt / walk / train) with carrier, times, line / car category, car drawn from the pool (make, model, year, CO₂ factor), price, CO₂, data source and assumptions of each value; OJP Fare details (product, net price, VAT rate); the trip's labels and the candidate stations with their origin (AI model / code fallback).
 3. **Settlement events** – append-only list: `event_id, booking_id, seq, timestamp, event_type (b2c_payment | b2b_transfer | commission | refund | reversal), payer, payee, amount_chf, reason, refers_to_event`.
 
 After a cancellation the **same link** shows the updated content. **Export** of all bookings since the page was first opened in this browser (across reloads, incl. cancellations) until "clear". Field names documented in `docs/schema.md`.
 
 ## 8. Not in scope (Prototype 1)
 
-Real payments and logins, changeable time / "arrive by", more than 1 passenger, 1st class, settlement animation or operator dashboard, cancellation of a single leg, payment fees, business VAT receipt, blockchain integration, production hosting, delay / missed connection / no-show cases, official SBB or Vertt logos.
+Real payments and logins, "arrive by", "use my location", peak-time factors and regional Vertt tariffs, booking or cancelling a ride through the Vertt API, more than 1 passenger, 1st class, settlement animation or operator dashboard, cancellation of a single leg, payment fees, business VAT receipt, blockchain integration, production hosting, delay / missed connection / no-show cases, official SBB or Vertt logos.
 
 ## 9. Open topics
 
@@ -113,7 +115,9 @@ All open topics and the technical API overview for the CTO meeting: **[cto-meeti
 
 ## 10. Definition of done
 
-- A user can click through steps 0–3 and the receipt for every prepared route, both apps, all travelcards, with and without promo, all four payment methods.
+- A user can search any Swiss start and destination address with a chosen departure time and click through steps 0–3 and the receipt, in both apps, with all travelcards, with and without promo, all four payment methods.
+- The demo gets Vertt data only through the Vertt API (documented in `docs/api/vertt.md`) and trips only through the middleware (`docs/api/trip-offers.md`).
+- The calculator has been validated against the recorded rides, without anything that leads back to the passenger.
 - Cancellation works and updates the data link; export contains all bookings.
 - Every number on screen is traceable to its source.
 - Data links and export are valid JSON matching `docs/schema.md`.
@@ -128,54 +132,39 @@ All open topics and the technical API overview for the CTO meeting: **[cto-meeti
 4. OJP API spike (station lookup, trip request, check for prices and platforms).
 5. Build: data → settlement → booking interface → data link and export.
 
-## 13. Decided for v0.4: trips calculated live (trip engine)
+## 12. v0.4 – partner APIs and live trip engine
 
-Decided by Tim, 2026-10-05. Section 12 below was the proposal; where they differ, this section wins. Details: [PROJ-1-PRD-9 trip engine](../specs/PROJ-1-intermodal-booking-demo/2_PRDs/PROJ-1-PRD-9-trip-engine.md).
+Proposed by Aleksandar, decided by Tim on 2026-10-05; to be confirmed with the CTO. Details in `specs/PROJ-1-intermodal-booking-demo/2_PRDs/` – mainly [PRD-9 trip engine](../specs/PROJ-1-intermodal-booking-demo/2_PRDs/PROJ-1-PRD-9-trip-engine.md), [PRD-7 Vertt API](../specs/PROJ-1-intermodal-booking-demo/2_PRDs/PROJ-1-PRD-7-vertt-partner-api.md), [PRD-8 middleware](../specs/PROJ-1-intermodal-booking-demo/2_PRDs/PROJ-1-PRD-8-trip-offer-middleware.md).
 
-- **No preset trips.** Every trip is calculated live from the customer's start address, destination address and "depart at" time.
-- **Trip shape:** Vertt ride or walk → train station → train (OJP + OJP Fare) → train station → Vertt ride or walk. Walk if the station is close enough, at both ends.
-- **Vertt legs are calculated:** Valhalla (km, min) × Vertt tariff (Zurich values everywhere, no peak factor), CO₂ with a car drawn from the car pool. The 9 recorded rides are used only to **validate** the calculator.
-- **Candidate stations:** max. 3 per side (1 hub within ~30 km + 2 sensible nearby stations), **proposed by the AI model**, each checked against OJP, with a code fallback. First possible train per station pair only.
-- **Labels Fastest / Cheapest / Greenest are calculated**, not decided by the model. Max. 3 bookable cards + the two comparison cards ("Vertt only", "Public transport only", not clickable).
-
-## 12. Proposed for v0.4: partner data through APIs, trip offers by an AI model
-
-Proposed 2026-10-05 by Aleksandar; superseded in parts by section 13. Stories 22–29 in [user-stories.md](user-stories.md); detailed requirements in `specs/PROJ-1-intermodal-booking-demo/2_PRDs/`.
-
-Both partners deliver their part of a journey through an interface. The booking demo is a **partner app** that only combines what the two interfaces deliver.
+Both partners deliver their part of a journey through an interface. The booking demo is a **partner app** that only combines what the interfaces deliver.
 
 | Partner | Interface | Delivers | Status |
 |---|---|---|---|
-| **SBB** | OJP 2.0 | Stations, train connections, platforms, railway line for the map, public-transport-only alternative | Exists – tested 2026-10-05 ([api/ojp20.md](api/ojp20.md)) |
+| **SBB** | OJP 2.0 | Stations, train connections, walk legs, platforms, railway line, public-transport-only comparison | Exists – tested 2026-10-05 ([api/ojp20.md](api/ojp20.md)) |
 | **SBB** | OJP Fare (beta) | Train price for no travelcard / half-fare, 2nd class | Exists – tested 2026-10-05 ([api/ojpfare.md](api/ojpfare.md)). GA not supported → demo rule CHF 0 |
-| **Vertt** | **Vertt API (new)** | Places served, ride offer per route: distance, duration, price, car, CO₂ factor, street route | **To build** from the recorded rides Vertt provided. Reused in the later prototypes |
-
-On top of the partner interfaces sits a **middleware of our own**:
+| **Vertt** | **Vertt API (new)** | Ride offer for any two positions: distance, ride time, price (tariff), car from the pool, CO₂ factor, street route | **To build** – calculated with Valhalla + Vertt tariff |
 
 ```
-OJP 2.0 + OJP Fare (SBB) ─┐
-                          ├─► Middleware: builds whole trips, calculates totals ─► asks Jev 1.13 via OpenRouter:
-Vertt API (new)        ───┘                                                        fastest? cheapest? greenest?
-                                      │◄──────────── model decision, checked against the totals ─────────────┘
-                                      ▼
-                              Booking demo: up to three labelled trip offers
+Customer: start address, destination address, "depart at", travelcard
+        │
+        ▼
+Middleware (our server) ── AI model Jev 1.13 (OpenRouter): chooses candidate stations
+        │                   from a list of real stations (max. 3 per side)
+        ├── Vertt API  (Valhalla × tariff, pool car)   ← first / last leg, or a walk
+        ├── OJP 2.0    (first train ≥ 8 min after arrival at the station)
+        └── OJP Fare   (prices for no travelcard + half-fare)
+        │
+        ▼
+Totals per trip → labels Fastest / Cheapest / Greenest (calculated)
+        │
+        ▼
+Booking demo: up to 3 labelled trips + "Vertt only" + "Public transport only"
 ```
 
-- The model (Jev 1.13 by TypeSafe) only **chooses** among trips the middleware built; it cannot invent a trip.
-- Its makers state that it is not reliable at comparing numbers and times. So the middleware calculates everything and **checks each decision**; if the model is wrong, unsure or unreachable, the calculated result is shown and the difference is recorded.
-- No customer data is sent to the model. The OpenRouter key stays on the server → the demo needs a small backend (links to CTO topic T1 and hosting).
+- **No preset trips.** Every trip is calculated live; the 9 recorded rides only validate the calculator.
+- **Trip shape:** Vertt ride or walk → station → train → station → Vertt ride or walk. Walk if the station is close enough, at both ends.
+- **Vertt tariff:** Zurich values everywhere, factor 1.0 (assumption, to confirm with the CTO).
+- **AI model:** chooses stations (a judgement), never the labels (a calculation). The search works without it (code fallback). It may receive the addresses – all trips are mock trips.
+- **Server:** keys for OJP, OJP Fare, Vertt API and OpenRouter stay on the server → hosting (CTO topic T1); password gate in front of the demo (`mockup/middleware.js`).
 
-What this settles from the CTO list: **T2** (Vertt legs come from recorded rides, served through the Vertt API) and **B8** (SBB price from OJP Fare).
-
-What it changes in this PRD:
-
-| Section | Change |
-|---|---|
-| 3 – SBB fare | "From OJP Fare", no longer "otherwise public reference prices". A missing price is shown as not available. |
-| 4 – Step 1 | Places to choose from = places the Vertt API serves + stations. With the provided rides: Wettswil am Albis and the stations Zürich HB, Zürich Enge, Schlieren, Zürich Flughafen. |
-| 4 – Step 1 | Vertt → SBB and SBB → Vertt journeys are covered by the recorded rides. Vertt → SBB → Vertt and the "Vertt only" comparison can be **calculated** with the Vertt tariff (now known, see PRD-7) once a route service is chosen. |
-| 4 – Step 1 | The one bookable connection becomes up to three trip offers labelled "Fastest", "Cheapest", "Greenest". The comparison connections stay. |
-| 7 – Data link | Trip part also stores the SBB price details (product, net price, VAT rate), the Vertt offer ID with "recorded / constructed", and the labels of the booked trip with where each came from (model / calculated). |
-| 8 – Not in scope | Add: booking or cancelling a ride through the Vertt API; Vertt offers calculated live for any address. |
-| 10 – Definition of done | Add: the demo gets its Vertt data only through the Vertt API; the Vertt API is documented in `docs/api/vertt.md`; nothing in the API leads back to the passenger behind the rides. |
-
+What this settles from the CTO list: **T2** (Vertt legs calculated live), **B8** (SBB price from OJP Fare), GitHub issues #8, #9, #10, #11, #15.

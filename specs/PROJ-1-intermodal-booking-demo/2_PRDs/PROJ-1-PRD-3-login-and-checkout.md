@@ -7,7 +7,7 @@ Covers step 2 (log in), step 3 (overview and pay) and the receipt. Source: [docs
 ## User Stories
 
 ### US-1: As a customer, I want to book my whole door-to-door journey in the app I already use so that I don't switch between apps (story 1b)
-**Given** I chose a Vertt + SBB connection in either app
+**Given** I chose one of the labelled trips in either app
 **When** I go through login, overview and payment
 **Then** all legs are booked together with one payment
 
@@ -90,7 +90,7 @@ Covers step 2 (log in), step 3 (overview and pay) and the receipt. Source: [docs
 
 ## Open Questions
 - **Reload during the payment animation:** does the booking exist (it is in the export) or not? Proposed: the booking exists from the moment "Pay" is clicked. → Tim.
-- `booked_at`: the real clock time of the click, or a time before the scenario departure? With the real time, a booking can be "made" after the journey's fixed departure. → Tim.
+- ~~`booked_at` vs. a fixed scenario departure~~ → no longer an issue: the customer chooses the departure time (PROJ-1-PRD-1), so `booked_at` is the real clock time of the click. A trip whose departure has already passed cannot be booked.
 - Real-world topics that the demo ignores and the CTO should confirm: unpaid invoice (cto-meeting B4), payment fees (B5).
 
 ## Dependencies

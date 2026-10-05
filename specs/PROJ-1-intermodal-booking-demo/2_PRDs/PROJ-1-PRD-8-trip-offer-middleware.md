@@ -1,12 +1,10 @@
-# PROJ-1-PRD-8: Trip offer middleware with model decision
+# PROJ-1-PRD-8: Trip offer middleware and AI station choice
 
 ## Status: Planned
 
-> **Changed by [PROJ-1-PRD-9](PROJ-1-PRD-9-trip-engine.md) (Tim, 2026-10-05):** the model **no longer chooses the labels** – Fastest / Cheapest / Greenest are decided by calculation only (US-3 and US-4 below are replaced by PRD-9 US-4). The model gets a judgement task instead: it **proposes candidate stations** (1 hub within ~30 km + 2 stations that make sense for the route), each checked against OJP, with a code fallback (PRD-9 US-2). The middleware's role in US-2 (building trips, one private entrance, keys on the server), the trial results and the privacy rule AC-15 still apply. Where this PRD differs, PRD-9 wins.
+A service of our own on the server, between the partner interfaces and the booking app. It runs the **trip engine** ([PROJ-1-PRD-9](PROJ-1-PRD-9-trip-engine.md)): it gets the leg offers of SBB (PROJ-1-PRD-6) and Vertt (PROJ-1-PRD-7), builds whole trips, calculates totals and labels, and serves them to the app. It also asks an **AI model which stations are worth trying** for a journey. Source: [docs/user-stories.md](../../../docs/user-stories.md) stories 27, 28, 29.
 
-A service of our own that sits between the partner interfaces and the booking app. It collects the leg offers of SBB (PROJ-1-PRD-6) and Vertt (PROJ-1-PRD-7), combines them into whole trips, asks an AI model which trip is the **fastest**, the **cheapest** and the **greenest**, and serves these trip offers to the app. Source: [docs/user-stories.md](../../../docs/user-stories.md) stories 27, 28, 29 (proposed, v1.1).
-
-The model is **Jev 1.13** by TypeSafe, called through **OpenRouter** (`typesafe/jev-1.13`).
+The model is **Jev 1.13** by TypeSafe, called through **OpenRouter** (`typesafe/jev-1.13`). It **does not** decide the labels Fastest / Cheapest / Greenest – those are calculated (decided by Tim 2026-10-05).
 
 ## What we know about the model
 
@@ -14,128 +12,85 @@ Checked on 2026-10-05 against OpenRouter and the TypeSafe documentation.
 
 | Fact | Consequence |
 |---|---|
-| Jev is a **decision model**: it picks one of the options it is given, with a probability. It does not write text and cannot invent a trip. | The middleware builds the possible trips; the model only chooses among them. |
-| Its documentation says it is **not reliable with numbers, dates and times** ("not a calculator", "keep the arithmetic in code", "do not ask something code can compute exactly"). | Fastest, cheapest and greenest are number comparisons. The middleware calculates all totals itself and **checks every model decision** against them (US-4). |
-| Its answer can depend on the **order** of the options. | A decision must be the same when the trips are listed in another order (AC-17). |
-| Extra, unrelated content lowers its accuracy; limit 32,000 tokens per request. | Only the few values needed for the decision are sent. |
+| Jev is a **decision model**: it picks one of the options it is given, with a probability. It does not write text and cannot invent options. | The middleware builds a list of real stations (from OJP); the model only **chooses** among them. It cannot name a station that does not exist. |
+| Its documentation says it is **not reliable with numbers, dates and times** ("not a calculator", "keep the arithmetic in code"). | All calculations stay in code. Choosing stations that "make sense for the route" is a judgement, which suits the model better than comparing totals. |
+| Its answer can depend on the **order** of the options. | The choice must be the same when the stations are listed in another order (AC-12). |
+| Extra, unrelated content lowers its accuracy; limit 32,000 tokens per request. | Only the values needed for the choice are sent. |
 | Price: USD 0.042 per million input tokens, output free. | Cost is negligible for a demo. |
-| It is **not** called like a chat model: OpenRouter serves it on its own "decisions" endpoint (marked alpha). | Tried out successfully, see below. An alpha endpoint can change → the fallback in AC-21 matters. |
+| It is **not** called like a chat model: OpenRouter serves it on its own "decisions" endpoint (marked alpha). | An alpha endpoint can change → the code fallback (AC-14) matters. Risk accepted 2026-10-05. |
 
-## Trial on 2026-10-05
-
-Real calls to `typesafe/jev-1.13` through OpenRouter, each asking for fastest, cheapest and greenest in one request. The answers were compared with the calculated result.
-
-| What the model received | Trips per request | Correct decisions | Answer time (median) |
-|---|---|---|---|
-| **Calculated totals** per trip – realistic set (4 Vertt rides × 3 trains), 10 different orders | 12 | 30 of 30 | 0.3 s |
-| **Calculated totals** – random values, also with values close together | 3 / 6 / 12 | 180 of 180 | 0.3 s |
-| **Raw legs** – the model has to add up the legs itself | 3 / 6 / 12 | 124 of 135 (92 %) | 0.3 s |
-
-- With calculated totals the model was always right, in every order, and sure of it (lowest certainty 0.80).
-- When it had to add up legs itself it was wrong in 1 of 12 decisions. All wrong answers had a certainty of 0.76 or lower.
-- Slowest single answer: 1.6 s. Cost of all 115 requests: under USD 0.01.
-- This is a small trial with made-up values, not a guarantee. It confirms AC-14 (send totals, not legs) and that the check in US-4 costs nothing and catches the remaining risk.
+**Earlier trial (2026-10-05, labels task):** asked to pick fastest / cheapest / greenest from calculated totals, the model was right in 210 of 210 decisions (median answer time 0.3 s, slowest 1.6 s); adding up raw legs itself, it was right in 92 %. All wrong answers had a certainty of 0.76 or lower. The station task has **not been tried yet** (open question).
 
 ## User Stories
 
-### US-1: As a customer, I want to see the fastest, the cheapest and the greenest way to make my journey so that I can pick by what matters to me (story 27)
-**Given** start, destination, time and travelcard are set
-**When** the connections are shown
-**Then** I see the trip offers labelled "Fastest", "Cheapest" and "Greenest"
+### US-1: As a partner app, I want one service that returns complete trip offers so that I don't have to combine the partners' leg offers myself (story 28)
+**Given** start and destination address, departure time and travelcard
+**When** the booking app asks the middleware
+**Then** it gets up to three labelled trips and the two comparison cards
 
 **Acceptance Criteria:**
-- [ ] AC-1: The Vertt + SBB connections are shown as up to three trip offers, labelled "Fastest", "Cheapest" and "Greenest".
-- [ ] AC-2: If one trip earns several labels, it is shown once with all its labels.
-- [ ] AC-3: Each offer shows what PROJ-1-PRD-2 requires of a connection card: times, duration, transfers, modes, total price, total CO₂.
-- [ ] AC-4: Every labelled offer can be opened and booked like the bookable connection in PROJ-1-PRD-2 and PROJ-1-PRD-3.
-- [ ] AC-5: When the travelcard changes, prices and labels are updated; the "Cheapest" label may move to another trip.
-- [ ] AC-6: A label is never shown on a trip that does not deserve it: "Fastest" has the earliest arrival for the chosen departure (shortest total duration), "Cheapest" the lowest total price, "Greenest" the lowest total CO₂.
+- [ ] AC-1: The middleware runs the trip engine as specified in PROJ-1-PRD-9 and returns its result: labelled trips, comparison cards, and for each trip all legs, totals, labels and assumptions.
+- [ ] AC-2: It gets Vertt legs only from the Vertt API (PROJ-1-PRD-7) and train legs, walk legs and prices only from OJP and OJP Fare (PROJ-1-PRD-6). It holds no leg data of its own.
+- [ ] AC-3: The answer is JSON and documented in `docs/api/trip-offers.md`.
+- [ ] AC-4: The middleware is not a public service (decided 2026-10-05): one entrance for our own frontend, which only returns trip offers.
+- [ ] AC-5: Requests from other websites are refused, and the number of searches one visitor can make is limited.
+- [ ] AC-6: Everything behind the entrance – Vertt API, OJP, OJP Fare, Valhalla and the model – is called from the server only, with secrets the browser never sees.
 
-### US-2: As a partner app, I want one service that returns complete trip offers so that I don't have to combine the partners' leg offers myself (story 28)
-**Given** a start, a destination, a departure time and a travelcard
-**When** I ask the middleware for trip offers
-**Then** I get complete, bookable trips built from the partners' leg offers
-**And** each says which labels it carries
-
-**Acceptance Criteria:**
-- [ ] AC-7: The middleware gets the Vertt leg offers from the Vertt API (PROJ-1-PRD-7) and the train legs and prices from OJP and OJP Fare (PROJ-1-PRD-6). It holds no leg data of its own.
-- [ ] AC-8: It combines the leg offers into whole trips. A trip is only built if every transfer has at least 8 minutes.
-- [ ] AC-9: It calculates for every trip: total duration, total price (sum of the rounded leg prices) and total CO₂.
-- [ ] AC-10: Its answer contains every offered trip with all legs, the leg offers they came from, the totals, and the labels.
-- [ ] AC-11: The booking app gets its trip offers only from the middleware, and the middleware's answer is enough to show the list, the details and the overview.
-- [ ] AC-12: The answer is JSON and documented in `docs/api/trip-offers.md`.
-- [ ] AC-12a: The middleware is not a public service (decided 2026-10-05): it has exactly one entrance, for our own frontend, and that entrance only returns trip offers.
-- [ ] AC-12b: Requests from other websites are refused, and the number of requests one visitor can make is limited.
-- [ ] AC-12c: Everything behind the entrance – the Vertt API, OJP, OJP Fare, the route service and the model – is called from the server only, with secrets the browser never sees.
-
-### US-3: As a demo presenter, I want the labels to be decided by the AI model so that I can show a model working on real partner offers (story 29)
-**Given** the middleware has built the possible trips
-**When** it needs to label them
-**Then** it asks Jev 1.13 through OpenRouter which trip is the fastest, which the cheapest and which the greenest
-**And** it passes the model's decision on
+### US-2: As a customer, I want the AI to pick the stations worth trying so that I get a good trip even when the nearest station is not the best one (story 29)
+**Given** start and destination are known
+**When** the middleware looks for candidate stations
+**Then** it builds a list of real stations and the model chooses which ones to try
 
 **Acceptance Criteria:**
-- [ ] AC-13: For each of the three labels, the model is asked to choose one of the trips the middleware built. The model never receives a trip the customer could not book.
-- [ ] AC-14: The model receives the totals the middleware calculated (duration, price, CO₂), not raw leg data it would have to add up.
-- [ ] AC-15: Nothing about the customer is sent to the model or to OpenRouter: no customer ID, no login, no typed address, no travelcard holder – only trip values.
-- [ ] AC-16: Each decision is returned with the model's name and version and how sure the model was.
-- [ ] AC-17: Listing the same trips in a different order leads to the same labels.
-- [ ] AC-18: The same question with the same trips gives the same labels every time during a demo.
+- [ ] AC-7: Per side (start and destination), the code builds an option list from OJP: the nearest stations with train service (about 10) and the hub stations within ~30 km. Each option has name, stop ID, distance to the address and whether it is a hub.
+- [ ] AC-8: The model chooses per side **1 hub** (if one is in the list) and **2 stations that make sense for the route** – e.g. in the direction of travel or with better connections.
+- [ ] AC-9: The model receives the start and destination address (all trips are mock trips – decided by Tim 2026-10-05), the option lists and the direction of travel. Nothing about the customer's login, payment or travelcard.
+- [ ] AC-10: Only stations from the option list are accepted. Anything else in the answer is ignored.
+- [ ] AC-11: Each choice is returned with the model name, version and how sure the model was.
+- [ ] AC-12: The same addresses and options lead to the same choice, also when the options are listed in a different order. Choices are cached during a demo.
 
-### US-4: As Vertt, I want every model decision checked against the numbers so that the demo never shows a wrong "cheapest" (story 29)
-**Given** the model has made its three decisions
-**When** the middleware prepares its answer
-**Then** each decision is compared with the calculated result
-**And** a wrong or missing decision never reaches the customer
+### US-3: As a demo presenter, I want the search to work even when the model fails so that a demo never breaks because of the AI (story 29)
+**Given** the model is asked for stations
+**When** it is not sure, too slow or unreachable
+**Then** the code chooses the stations instead
 
 **Acceptance Criteria:**
-- [ ] AC-19: The middleware works out the correct trip for each label from its own totals.
-- [ ] AC-20: If the model's choice differs from the calculated one, the calculated one is shown, and the difference is recorded.
-- [ ] AC-21: If the model is not sure enough, does not answer in time or cannot be reached, the calculated result is shown instead. The customer still gets the trip offers.
-- [ ] AC-22: For each label the answer says where it came from: "model, confirmed", "model overruled" or "calculated, model not available".
-- [ ] AC-23: A booking stores, for the chosen trip, its labels and where each came from (PROJ-1-PRD-5).
-- [ ] AC-24: How often the model was confirmed, overruled or unavailable can be read out after a demo.
+- [ ] AC-13: If the model chooses fewer valid stations than needed, the code fills up: the nearest hub within ~30 km, then the nearest stations.
+- [ ] AC-14: If the model is below the certainty threshold, does not answer within the time limit, or cannot be reached, the code chooses all stations (AC-13). The customer still gets trips.
+- [ ] AC-15: For each candidate station, the data link stores where it came from: "model" or "code fallback" (PROJ-1-PRD-5).
+- [ ] AC-16: How often the model was used, unsure or unavailable can be read out after a demo.
 
 ## Edge Cases
-- Only one trip can be built: it carries all three labels and no model is asked.
-- Two trips have the same total for a label (same price, same duration or same CO₂): a fixed rule breaks the tie (proposed: the earlier arrival, then the lower price); the model's choice counts as confirmed if it picked either.
-- A trip has a leg whose CO₂ is "not available" (3 of the 9 cars in the Vertt data): it cannot be "Greenest". If no trip has a complete CO₂ value, no "Greenest" label is shown.
-- A trip has no train price (PROJ-1-PRD-6 AC-24): it is not offered and not sent to the model.
-- All trips have 0.0 kg CO₂ on the train legs (tailpipe rule): "Greenest" is decided by the Vertt legs alone.
-- GA: all train prices are CHF 0.00, so "Cheapest" is decided by the Vertt legs alone.
-- A promo code (PROJ-1-PRD-3) is applied after the trip was chosen and does not change the labels.
-- The model chooses a trip that is not in the list, or answers something unusable: treated like "no answer" (AC-21).
-- No trip can be built at all: the middleware says so clearly (PROJ-1-PRD-1 AC-8).
-- Someone calls the entrance from outside our frontend, or very often: refused or slowed down (AC-12b); the partner interfaces and the model are not reached.
-- OpenRouter's limit or credit is used up during a demo: AC-21 applies; the presenter is not shown an error page.
+- No hub within ~30 km: the model chooses 3 nearby stations.
+- Fewer than 3 stations with train service near an address (remote area): fewer candidates; the engine works with what there is.
+- The start or destination is itself a station: it is always one of the candidates.
+- The model picks the same station for both sides: that combination is skipped (no train needed).
+- The model answers something unusable: treated like "no answer" (AC-14).
+- Someone calls the entrance from outside our frontend, or very often: refused or slowed down (AC-5); the partner interfaces and the model are not reached.
+- OpenRouter's limit or credit is used up during a demo: AC-14 applies; the presenter sees no error page.
 
 ## Open Questions
-- **What should the model really decide?** Its makers say not to use it for comparing numbers, and with the check in US-4 the result on screen is always the calculated one. Two ways to give the model a real job: (a) keep the three labels as specified here and present the model as a second opinion with a visible success rate; (b) add a fourth label, **"Recommended"**, where the model weighs duration, price, CO₂ and transfer comfort – a judgement, not a calculation, and what this kind of model is built for. → Tim / CTO.
-- **When the model disagrees with the numbers:** always show the calculated result (proposed, AC-20), or show the model's choice and mark it? → Tim.
-- **Three labelled offers and the old list.** Story 6 has one bookable connection plus two comparisons; story 11 marks it "recommended". Proposed: the labelled offers replace the single bookable connection; the two comparison cards stay. → Tim.
-- **How many trips to choose from?** With the provided data there are few: e.g. 4 recorded rides Wettswil am Albis → Zürich HB with different cars and prices, times the next trains. Is that enough for a convincing demo, or should cheaper/slower train options (regional trains, saver vs normal ticket) be included on purpose?
-- **How sure is sure enough** for AC-21? The trial suggests a threshold around 0.8 (right answers were at 0.80 or above, wrong ones at 0.76 or below). To be confirmed with real partner offers.
-- ~~The OpenRouter endpoint for the model is marked alpha~~ → **Risk accepted 2026-10-05.** If it changes or is withdrawn, TypeSafe's own interface takes the same request, and AC-21 keeps the demo running meanwhile.
-- **How private can the middleware be?** Decided: not public (AC-12a to AC-12c). But the page runs in the customer's browser, so the one entrance it calls can technically be called by anyone who looks it up. **Proposed: a user name and password in front of the whole demo** (browser's built-in login box, "basic auth"). It is possible on Vercel's free plan with a few lines of our own in front of the app; Vercel's ready-made password protection is a paid add-on of the Pro plan. Consequences: presenters and partners need the password; every request of the page, including the one to the middleware, then carries it. Switch it on? → Tim / CTO.
-- Data sent to OpenRouter leaves Switzerland. It contains no personal data (AC-15) – still OK for Vertt and the partners? → CTO.
+- **Try the station task with the model** before building: does it choose sensibly (e.g. Wettswil am Albis → Bern: Zürich HB as hub)? → spike.
+- **Certainty threshold** for AC-14: the labels trial suggests ~0.8. To confirm with the station task.
+- **Time limit** for the model's answer: proposed 2 s, then the code fallback.
+- **Does the model need more context** per station (e.g. lines or number of trains per hour) to choose well? Each extra value costs OJP calls. → spike.
+- **Password gate in front of the whole demo** (built in `mockup/middleware.js`, Vercel): keep it switched on for presenters and partners? → Tim / CTO.
+- Data sent to OpenRouter (mock addresses, station names) leaves Switzerland – OK for Vertt and the partners? → CTO.
 
 ## Dependencies
-- Requires: PROJ-1-PRD-6 (train legs and prices), PROJ-1-PRD-7 (Vertt leg offers – all offers of a route, not one).
-- Feeds: PROJ-1-PRD-2 (connection list, details), PROJ-1-PRD-3 (overview), PROJ-1-PRD-5 (labels and their origin in the data link).
-- External: an OpenRouter account with credit and an access key.
-- Changes: PROJ-1-PRD-2 (one bookable connection → up to three labelled offers), PROJ-1-PRD-7 (which ride backs an offer is no longer drawn at random).
+- Requires: PROJ-1-PRD-6 (stations, trains, prices), PROJ-1-PRD-7 (Vertt offers), PROJ-1-PRD-9 (trip engine rules), an OpenRouter account with credit and an access key.
+- Feeds: PROJ-1-PRD-2 (connection list, details), PROJ-1-PRD-3 (overview), PROJ-1-PRD-5 (candidates, sources, labels and assumptions in the data link).
 
 ## Technical Requirements
-- The OpenRouter key never appears in the page, the repo, a data link or an export. The middleware therefore runs on a server, not in the browser.
-- The connection list appears within about 2 seconds of a change, including the model decision; a travelcard change feels immediate (PROJ-1-PRD-1 AC-15). If the model takes longer, AC-21 applies.
-- The model version is fixed (Jev 1.13), not "latest", so that results do not change unnoticed between demos.
-- A demo can be repeated without internet access to the model, using the stored decisions (AC-18).
-- All money and time calculations are done by the middleware, never by the model.
+- The OpenRouter key never appears in the page, the repo, a data link or an export. The middleware runs on a server, not in the browser.
+- The model version is fixed (Jev 1.13), not "latest", so results do not change unnoticed between demos.
+- All money, time and CO₂ calculations are done by the middleware, never by the model.
+- A search shows its result within about 5 s, with a loading state (PROJ-1-PRD-9).
 
 ## UI Implementation Notes
 - Project mode: new prototype, built in this repo (full chain).
-- Reuse: the connection card of the lite mockup, [mockup/index.html](../../../mockup/index.html); its "Recommended" tag becomes the place for the labels.
-- New component candidates: label tags "Fastest", "Cheapest", "Greenest" (several on one card); a small mark showing that a label was decided by the model. Neither is in the mockup.
+- Reuse: the connection card of the lite mockup, [mockup/index.html](../../../mockup/index.html).
+- New component candidates: none of its own; optionally a small note on a trip "stations chosen by AI".
 - Design tokens: none defined yet.
-- Interaction contract: labels update when the travelcard changes; every labelled card opens its details.
-- Implementation tolerance: wording and look of the labels may change; the rule that a label is never wrong (AC-6) may not.
+- Interaction contract: none of its own.
+- Implementation tolerance: how the option list is built may change; the rule that the model only chooses among real stations (AC-10) may not.

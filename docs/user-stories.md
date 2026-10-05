@@ -47,17 +47,17 @@ Context: [PRD.md](PRD.md). Technical questions and open topics: [cto-meeting.md]
 ### 2 · Choose start and destination *(Customer · Must)*
 > As a customer, I want to set where my journey starts and where it ends, so that I get a door-to-door connection and not just station to station.
 
-- Start and destination can be set, including places that are not stations.
-- If the input is not one of the known places, the demo uses the **nearest known place** and says so clearly ("We use X, 2.1 km from your address").
-- If the nearest known place is too far away, a clear message says the area is not covered.
-- If there is no connection for a combination, a clear message says so.
-- No swap button.
+- Start and destination are **address fields** with suggestions from the official Swiss address search (swisstopo); both are pre-filled with a working example, so the demo stays clickable.
+- Trips are calculated live for exactly these addresses (trip engine, PROJ-1-PRD-9).
+- Addresses that cannot be found or lie outside Switzerland: a clear message.
+- If no trip can be built, a clear message says so.
+- A "Search" button starts the calculation. No swap button, no "use my location".
 
 ### 3 · Choose when to travel *(Customer · Must)*
 > As a customer, I want to choose when I want to travel, so that I get connections that fit my plans.
 
-- Date and time are shown as **"depart at"**, like in a normal journey planner.
-- In Prototype 1 the time is **pre-filled** with the scenario time and **locked** (lock icon, hint "fixed in demo").
+- The customer chooses date and time as **"depart at"**, like in a normal journey planner. Default: today, next full quarter hour.
+- Only dates in the current timetable period. No "arrive by" in Prototype 1.
 
 ### 4 · State my travelcard *(Customer · Must)*
 > As a customer, I want to state which travelcard I have, so that I see the price I actually have to pay.
@@ -80,21 +80,22 @@ Context: [PRD.md](PRD.md). Technical questions and open topics: [cto-meeting.md]
 ### 6 · See a list of connections *(Customer · Must)*
 > As a customer, I want to see several ways to make my journey side by side, so that I can choose the one that suits me best.
 
-- Three connections: **Vertt + SBB (+ Vertt)** on top, **Vertt only**, **public transport only**.
+- On top: up to **three bookable trips** labelled **Fastest / Cheapest / Greenest** (story 27). Below: **Vertt only** and **public transport only**.
 - Each card shows departure, arrival, duration, number of transfers, transport mode icons, **total price and total CO₂**.
-- Only the Vertt + SBB connection is bookable; the others are marked "for comparison" and have no book button.
-- Tapping a card opens the details (story 7).
-- If a connection type doesn't exist for a route, it is not shown, or a note explains why.
+- The two comparison cards are marked "for comparison", **not bookable and not clickable**.
+- Tapping a bookable card opens the details (story 7).
+- If a comparison cannot be calculated, its card is left out with a short note.
 
 ### 7 · See the details of each leg *(Customer · Must)*
 > As a customer, I want to see every leg of my journey in detail, so that I know exactly what happens and where I need to be.
 
-- Each leg: carrier, mode icon, from → to, departure, arrival, duration.
+- Each leg: carrier (Vertt / SBB / walk), mode icon, from → to, departure, arrival, duration.
 - Train legs: line (e.g. S11, IC 8).
-- Vertt legs: car **category** (Prototype 1: only "Vertt"; later e.g. "Premium").
-- The Vertt car is drawn at random from a pool **once per run**, stays the same until the end of the run, and is stored in the data link (it determines CO₂).
-- Between legs: a transfer row with the minutes available.
-- *(Could)* Warning if a transfer is outside the 8–15 min window ("tight" / "long wait").
+- Vertt legs: car **category** (Prototype 1: only "Vertt"; later e.g. "Premium") and the assumed waiting time for the car.
+- The Vertt car is drawn at random from the **car pool once per Vertt leg**, stays the same until the end of the run, and is stored in the data link (it determines CO₂).
+- Walk legs: walking time and distance, CHF 0.00, 0.0 kg CO₂.
+- Between legs: a transfer row with the minutes available (at least 8 min before a train).
+- *(Could)* Mark a transfer longer than 15 min as "long wait".
 - *(Could)* Platform for train legs, if available.
 
 ### 8 · See price per leg and in total *(Customer · Must)*
@@ -110,23 +111,23 @@ Context: [PRD.md](PRD.md). Technical questions and open topics: [cto-meeting.md]
 
 - CO₂ in **kg with 1 decimal**, per person, per leg and total.
 - Method: **tailpipe only** (tank-to-wheel) → electric trains and electric cars = 0.0 kg.
-- The Vertt leg's CO₂ depends on the car drawn for the run.
+- The Vertt leg's CO₂ = distance × CO₂ factor of the pool car drawn for that leg.
 - Missing values show "not available", never 0.
 - No comparison hint ("saves X kg").
 
 ### 10 · See the journey on a map *(Customer · Must)*
 > As a customer, I want to see my whole journey on a map, so that I understand where the car takes me, where I change and where the train goes.
 
-- Map only for the bookable connection; shown in the connection details and in the overview (step 3).
-- Each leg coloured by carrier, with legend.
-- Vertt legs follow the streets, train legs follow the railway line (straight lines only if no geometry is available, then marked).
-- Markers for start, transfer point(s) and destination – showing the **known place**, not the typed address.
+- Map only for bookable trips; shown in the connection details and in the overview (step 3).
+- Each leg coloured by carrier (Vertt, SBB, walk), with legend.
+- Vertt legs follow the streets, train legs follow the railway line, walk legs the footpath (straight lines only if no geometry is available, then marked).
+- Markers for start address, station(s) and destination address.
 - Map zooms to show the whole journey. No highlighting of legs.
 
-### 11 · See why a connection is recommended *(Customer · Should)*
-> As a customer, I want to see what makes the recommended connection special, so that I understand the benefit of booking Vertt and SBB together.
+### 11 · See what makes the offered trips special *(Customer · Should)*
+> As a customer, I want to see what makes the offered trips special, so that I understand the benefit of booking Vertt and SBB together.
 
-- The Vertt + SBB connection is labelled "recommended" with the fixed reason **"Door to door with one booking"**.
+- Bookable trips carry their labels (Fastest / Cheapest / Greenest, story 27) and the fixed text **"Door to door with one booking"**. No separate "recommended" tag.
 
 ---
 
@@ -228,8 +229,8 @@ General: B2B amounts are calculated **exactly to the centime**, settled **per bo
 > As Vertt, I want the demo, the code and the data links to contain no personal customer data, so that we comply with data protection (nDSG) and can share everything freely with the partners – the repo is public.
 
 - No names, emails, home addresses or real passenger IDs in the repo, on the page, in data links or in the export.
-- Known places are localities or stations only.
-- Addresses typed by the customer are not stored or passed on.
+- Addresses typed by the customer go only to swisstopo, our server and the AI model (all trips are mock trips – decided by Tim 2026-10-05). Whether the data link may contain them is open (PROJ-1-PRD-1).
+- The recorded Vertt rides (real passenger) are used only locally to validate the calculator; nothing from them reaches the repo, the page or an API answer.
 - Customer ID = pseudonymous demo ID.
 - The car pool contains make, model, year and CO₂ only – no number plates.
 
@@ -237,13 +238,10 @@ General: B2B amounts are calculated **exactly to the centime**, settled **per bo
 
 ---
 
-# v1.1 – proposed additions (not yet agreed)
+# v1.1 – partner data and trip offers
 
-> **Decision by Tim, 2026-10-05 – trip engine ([PROJ-1-PRD-9](../specs/PROJ-1-intermodal-booking-demo/2_PRDs/PROJ-1-PRD-9-trip-engine.md)):** stories 22, 23, 25, 26, 27 and 28 are accepted with these changes: trips are **calculated live** for any address and a chosen "depart at" time (no preset trips); the Vertt API (24) **calculates** offers with Valhalla + tariff + a car from the car pool, and the recorded rides serve only to validate the calculator. Story 29 changes: the AI model **proposes candidate stations** (max. 3 per side, checked against OJP); the labels Fastest / Cheapest / Greenest are **calculated**, not chosen by the model. The change table at the end of this section is updated by PRD-9 ("Changes to other specs").
-
-Added 2026-10-05. Reason: the data of both partners comes through an interface – **SBB through OJP 2.0 and OJP Fare**, **Vertt through its own API** built from the recorded rides Vertt provided. The Vertt API is reused in the later prototypes. Stories 1–21 above are unchanged; the table at the end lists what the new stories change in them.
-On top of the two interfaces sits a **middleware of our own** that builds whole trips from the partners' leg offers and lets an **AI model** (Jev 1.13 via OpenRouter) label the fastest, cheapest and greenest one (stories 27–29).
-Detailed requirements: `specs/PROJ-1-intermodal-booking-demo/2_PRDs/` (PRD-6 for SBB, PRD-7 for Vertt, PRD-8 for the middleware).
+Proposed by Aleksandar, **decided by Tim 2026-10-05**. The data of both partners comes through an interface – **SBB through OJP 2.0 and OJP Fare**, **Vertt through its own API**. Every trip is **calculated live** by a middleware of our own (the trip engine) for the customer's addresses and departure time. Stories 1–21 above have been updated accordingly.
+Detailed requirements: `specs/PROJ-1-intermodal-booking-demo/2_PRDs/` (PRD-6 SBB, PRD-7 Vertt API, PRD-8 middleware and AI, PRD-9 trip engine).
 
 New role: **Partner app** – any app that plans and sells a journey with another operator's legs (in Prototype 1: the booking demo itself).
 
@@ -252,29 +250,29 @@ New role: **Partner app** – any app that plans and sells a journey with anothe
 ### 22 · Train connections from the official journey planner *(SBB · Must)*
 > As SBB, I want the train legs of the demo to come from the official journey planner, so that the times, lines and platforms the customer sees are real.
 
-- Stations, train legs, transfer times and the railway line on the map come from **OJP 2.0**.
+- Stations, train legs, walk legs, transfer times and the railway line on the map come from **OJP 2.0**.
 - The public-transport-only comparison (story 6) is also an OJP connection.
 - Times are shown in Swiss local time.
-- After a Vertt leg, the train is the first one leaving at least 8 minutes after the Vertt arrival.
-- If OJP gives no answer, nothing is made up: the connection is not offered, or a stored earlier answer is used and marked.
+- The train is the first one leaving at least 8 minutes after the arrival at the station.
+- If OJP gives no answer, nothing is made up: the trip is not offered, or a cached earlier answer is used.
 
 ### 23 · Train prices from the official price interface *(SBB · Must)*
 > As SBB, I want the train price in the demo to come from the official price interface, so that the customer and the partners see a real price.
 
-- Price for 1 adult, 2nd class from **OJP Fare (beta)**, for "no travelcard" and "half-fare".
+- Price for 1 adult, 2nd class from **OJP Fare (beta)**, for "no travelcard" and "half-fare" – both fetched in the same search.
 - GA = CHF 0.00 by the demo's own rule (OJP Fare does not know GA).
-- The price is marked "OJP Fare (beta)"; product name, price without VAT and VAT rate are stored in the data link.
-- The price shown in the overview is the price paid; a booking keeps its price even if OJP Fare changes it later (saver prices).
-- A missing price shows "not available", never CHF 0.00, and the connection cannot be booked.
+- Product name, price without VAT and VAT rate are stored in the data link.
+- A booking keeps its price even if OJP Fare changes it later (saver prices).
+- A missing price shows "not available", never CHF 0.00, and the trip is not offered.
 
 ### 24 · Vertt rides through a Vertt API *(Vertt · Must)*
 > As Vertt, I want to offer my rides through an interface of my own, like SBB does, so that a partner app can plan and price a Vertt leg without knowing how Vertt works inside.
 
-- The API answers two questions: **which places** does Vertt serve, and **what does a ride** from A to B look like (distance, duration, price, car, CO₂ factor, route for the map).
-- It is built from the recorded rides Vertt provided: every offer is backed by a real ride on that route.
-- Price = the full ride price, without tip and without a discount given in the past. Promo codes stay in the booking app (story 14).
-- An offer has no clock time; the booking app places the ride before or after the train.
-- For a route without a recorded ride the answer is "not served". Estimated offers are only allowed if clearly marked.
+- For any two positions in Switzerland and a pickup time, the API returns a **calculated** offer: distance, ride time and street route from **Valhalla**, price with the **Vertt tariff** (Zurich values, factor 1.0), car drawn from the **car pool** with its CO₂ factor.
+- Every offer names its assumptions (calculated, tariff region, factor, pool car).
+- Promo codes stay in the booking app (story 14).
+- An offer has no clock time; the trip engine places the ride before or after the train and adds the waiting time for the car.
+- Positions that cannot be routed or lie outside Switzerland: "not served", no guessed price.
 - The booking demo gets its Vertt data only through this API.
 
 ### 25 · A documented, stable Vertt API *(IB partner · Must)*
@@ -285,61 +283,37 @@ New role: **Partner app** – any app that plans and sells a journey with anothe
 - Read-only in Prototype 1: no booking or cancelling of rides through the API.
 - Access (decided 2026-10-05): in Prototype 1 only our own app can call the API; partners get the description, and access with a key of their own later.
 
-### 26 · No trace of the passenger in the Vertt API *(Vertt · Must)*
-> As Vertt, I want the API to give away nothing about the passenger behind the recorded rides, so that we can run it openly and share it with partners.
+### 26 · A calculator Vertt can trust *(Vertt · Must)*
+> As Vertt, I want the calculated offers checked against real rides, so that I can trust the prices the demo shows.
 
-- All provided rides belong to **one** passenger and start or end at a home address.
-- No passenger ID, vehicle ID, address, street or postcode in any answer.
-- The route on the map does not start or end at the house: the part near the home is cut off or moved to the locality.
-- No original date, clock time or ride ID of a recorded ride.
-- The Excel export is never committed, hosted or reachable; the API works from cleaned data only.
+- The calculator (Valhalla + tariff) is run once on the 9 recorded rides; deviations in distance, time and price are documented in %.
+- The recorded rides belong to one real passenger: the Excel export is never committed, hosted or used by the running API, and the documented result contains no address, date or ride ID.
 
 ## E8 – Trip offers
 
 ### 27 · Fastest, cheapest, greenest *(Customer · Must)*
 > As a customer, I want to see the fastest, the cheapest and the greenest way to make my journey, so that I can pick by what matters to me.
 
-- The Vertt + SBB connections are shown as up to three trip offers with the labels **"Fastest"**, **"Cheapest"**, **"Greenest"**.
-- A trip that earns several labels is shown once with all of them.
-- Every labelled offer can be opened and booked.
-- Changing the travelcard updates prices and labels.
-- A label is never wrong: fastest = shortest duration, cheapest = lowest total price, greenest = lowest total CO₂.
-- A trip with a CO₂ value "not available" cannot be the greenest.
+- Up to three bookable trips with the labels **"Fastest"**, **"Cheapest"**, **"Greenest"**; a trip that earns several labels is shown once with all of them.
+- Labels are **calculated**: fastest = earliest arrival, cheapest = lowest total price, greenest = lowest total CO₂.
+- Every labelled trip can be opened and booked.
+- Changing the travelcard updates prices and labels without a new search.
 
 ### 28 · One service for complete trip offers *(Partner app · Must)*
 > As a partner app, I want one service that returns complete trip offers, so that I don't have to combine the partners' leg offers myself.
 
-- Our **middleware** gets the leg offers from the Vertt API and from OJP / OJP Fare and combines them into whole trips.
-- A trip is only built if every transfer has at least 8 minutes.
-- It calculates total duration, total price and total CO₂ of every trip.
-- The booking demo gets its trip offers only from the middleware.
-- The middleware is not a public service (decided 2026-10-05): one entrance for our own frontend; the partner interfaces and the model are called from the server only.
+- Our **middleware** runs the trip engine: candidate stations → first leg (Vertt or walk) → train → last leg (Vertt or walk) → totals → labels.
+- Max. 3 candidate stations per side; first possible train per station pair; walk instead of Vertt if the station is close.
+- It calculates total duration, price and CO₂ of every trip.
+- Not a public service (decided 2026-10-05): one entrance for our own frontend; partner interfaces and the model are called from the server only.
 - The answer is JSON and documented in `docs/api/trip-offers.md`.
 
-### 29 · The model decides, the numbers stay right *(Demo presenter · Must)*
-> As a demo presenter, I want an AI model to decide which trip is the fastest, the cheapest and the greenest, so that I can show a model working on real partner offers – without ever showing a wrong result.
+### 29 · The AI chooses the stations worth trying *(Demo presenter · Must)*
+> As a demo presenter, I want an AI model to choose which stations are worth trying for a journey, so that I can show a model making a real judgement on partner data.
 
-- The middleware asks **Jev 1.13** (TypeSafe) through **OpenRouter** to choose, for each label, one of the trips it built.
-- The model gets the calculated totals, and nothing about the customer.
-- Every decision is **checked against the numbers**. If the model is wrong, unsure, slow or unreachable, the calculated result is shown.
-- Each label says where it came from: model confirmed / model overruled / calculated. This is stored in the data link.
-- The same trips always give the same labels during a demo, also when listed in a different order.
-- Background: the model's makers state that it is not reliable at comparing numbers and times – hence the check. See the open question in PRD-8 about a "Recommended" label as a better task for the model.
-
-## What the new stories change in stories 1–21
-
-| Story | Change |
-|---|---|
-| 2 · Start and destination | **The customer types an address** (suggestions from the official Swiss address search, swisstopo); it is turned into coordinates, which go to the Vertt API. The API uses the nearest place it serves. The demo rule "nothing has to be typed" gets this one exception; pre-filled places keep the demo clickable. Findings: `docs/api/geocoding.md`. |
-| 2 · Start and destination | The known places are no longer a list in the demo: they are the places the Vertt API serves plus official stations. The provided rides cover **Wettswil am Albis** and the stations **Zürich HB, Zürich Enge, Schlieren, Zürich Flughafen**. |
-| 6 · List of connections | "Vertt only" is shown only if the Vertt API has an offer for the whole route – with the provided rides it has none for long routes. A Vertt → SBB → Vertt journey needs a Vertt offer at the destination, which the provided rides do not contain. |
-| 6 · List of connections | The single bookable connection becomes up to three trip offers labelled fastest / cheapest / greenest (story 27). The two comparison cards stay. |
-| 7 · Leg details | The car comes with the Vertt ride offer instead of a separate pool: each trip offer is built from one recorded ride and brings its car. Nothing is drawn at random. Line and platform come from OJP. |
-| 11 · Why recommended | The "Recommended" tag is replaced by the three labels; "Door to door with one booking" stays. |
-| 8 · Price | Vertt price from the Vertt API, train price from OJP Fare. |
-| 9 · CO₂ | The car's CO₂ factor comes with the Vertt offer; it is missing for 3 of 9 cars → "not available" will really occur. OJP delivers a train value that is not 0 – conflicts with "tailpipe only" (CTO topic B7). |
-| 10 · Map | Train geometry from OJP, street geometry from the Vertt API, cut near the home (story 26). |
-| 17 · Booking data | The data link also stores the SBB price details (product, net price, VAT rate), the Vertt offer ID with "recorded / constructed", and the labels of the booked trip with where each came from. |
-
-**To decide (with Tim / CTO):** the route service that gives distance and ride time for calculated Vertt offers (decided: Valhalla – see `docs/api/routing.md`); saver price as "the" SBB price; train CO₂ on screen; whether the whole demo gets an access code; what the model should really decide (labels as a checked second opinion, or an own "Recommended" label); whether trip values may be sent to OpenRouter (outside Switzerland, no personal data).
-
+- The middleware builds a list of real stations from OJP (nearest stations with train service + hubs within ~30 km); **Jev 1.13** (TypeSafe, via OpenRouter) chooses 1 hub + 2 stations that make sense for the route, per side.
+- The model can only choose from the list – it cannot name a station that does not exist.
+- The model receives the addresses (mock trips) and the station options – nothing about login, payment or travelcard.
+- If the model is unsure, slow or unreachable, the code chooses the stations; a search never fails because of the model.
+- The data link stores for each candidate station whether it came from the model or the code.
+- The model **never** decides the labels Fastest / Cheapest / Greenest (its makers say it is not reliable at comparing numbers).

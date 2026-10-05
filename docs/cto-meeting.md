@@ -36,20 +36,20 @@ Two agreed requirements together force a decision:
 
 Recommendation: **B**, validated against the 9 recorded rides ("engine within ±X % of reality").
 
-> **Update 2026-10-05 (proposed, PRD section 12):** start with the recorded rides (A), but serve them through a **Vertt API** that the demo and the later prototypes use. Options B and C can later replace what is behind the API without changing the demo. New question: may the API offer **marked, constructed** rides for places without recorded data (needs the tariff formula, question 1)?
+> **Decided by Tim 2026-10-05 – option C (live), through a Vertt API:** every Vertt leg is calculated live for the customer's addresses – distance and time from **Valhalla**, price with the **Vertt tariff** (Zurich values everywhere, factor 1.0), CO₂ with a car from a **car pool**. The 9 recorded rides only validate the calculator. A middleware of our own builds whole trips (Vertt/walk → train → Vertt/walk) for max. 3 candidate stations per side. Details: PRD section 12, specs PRD-7 and PRD-9. **For the CTO to confirm:** Zurich tariff outside Zurich and no peak factor; whether Vertt's own route/price component should later replace Valhalla (question 2).
 
 **Questions for the CTO:**
 1. What is the **Vertt tariff formula** (base, per km, per minute, minimum, surcharges)? The values in the export (1.80/km, 0.30/min) do not reproduce the ride prices.
    > **Answered 2026-10-05** from Vertt's tariff engine specification: initial price 3.00 + 1.80/km + 0.30/min, minimum 10.00, times a peak-time factor. It reproduces the export's "Base fare" column for 7 of 9 rides within CHF 0.05; the charged price differs because it is calculated before the ride from estimated distance and time. Details: PRD-7 in `specs/`. Publishing these values in this public repo: **approved 2026-10-05**. Still open: route service for distance and time (T3 row 6 – swisstopo has none; open services tried in `docs/api/routing.md`), tariff outside Zurich.
 2. Does Vertt have an **internal price/ETA (quote) API** we could use – or which routing provider does Vertt use (the export polylines are in Google format)?
-3. Which **known places** should the demo cover? Maximum snap distance (e.g. 5 km)?
-4. Is a changeable **time / "arrive by"** wanted later (affects engine choice)?
+3. ~~Which known places should the demo cover?~~ → **Decided:** any Swiss address (swisstopo), no snapping.
+4. ~~Changeable time?~~ → **Decided:** customer chooses "depart at"; "arrive by" later.
 
 ### T3 · API overview – which API does what
 
 | # | Function (story) | Needed for | API options | Key / cost | Called when |
 |---|---|---|---|---|---|
-| 1 | **Address → coordinates** (2) | Snap a typed address to the nearest known place | **geo.admin.ch search (swisstopo)** – free, official Swiss addresses, no key · OJP LocationInformationRequest (verify address support) · OpenRouteService geocoding | swisstopo: none | Live (in browser) |
+| 1 | **Address → coordinates** (2) | Turn the typed start and destination address into coordinates (with suggestions while typing) | **geo.admin.ch search (swisstopo)** – free, official Swiss addresses, no key · OJP LocationInformationRequest (verify address support) · OpenRouteService geocoding | swisstopo: none | Live (in browser) |
 | 2 | **Station lookup** (2, 6) | Turn stations into stop IDs (SLOID) for train search | **OJP 2.0 LocationInformationRequest** | OJP key (have one; 20,000 calls/day, 50/min) | In advance |
 | 3 | **Train connections** (6, 7) | Times, line, transfers, **platform** (Could), track geometry for the map | **OJP 2.0 TripRequest** | OJP key | In advance (B) / live (C) |
 | 4 | **Public-transport-only alternative** (6) | Door-to-door by bus + train | **OJP 2.0 TripRequest** with coordinates as start/end | OJP key | In advance |
@@ -66,17 +66,17 @@ Rule of thumb: everything **"in advance"** runs once on a laptop with keys in `.
 
 **To decide:** which routing provider (6), whether to request OJP Fare access (5), map tiles (9), hosting (11).
 
-### T4 · AI model for the trip offers *(proposed 2026-10-05, PRD section 12)*
+### T4 · AI model for choosing stations *(decided by Tim 2026-10-05, PRD section 12)*
 
-A middleware of our own builds whole trips from the partners' leg offers and asks **Jev 1.13** (TypeSafe, via **OpenRouter**) to pick the fastest, cheapest and greenest one.
+The middleware builds a list of real stations from OJP for start and destination (nearest stations with train service + hubs within ~30 km). **Jev 1.13** (TypeSafe, via **OpenRouter**) chooses per side **1 hub + 2 stations that make sense for the route** – e.g. it is worth driving to Zürich HB instead of the small nearest station. The labels Fastest / Cheapest / Greenest are **calculated**, not chosen by the model.
 
-- The model's own documentation says it is **not reliable at comparing numbers and times**. Our design therefore calculates everything and checks each decision; a wrong decision is replaced by the calculated one.
+- Jev is a decision model: it picks from given options and cannot invent a station. Its documentation says it is not reliable with numbers – so all calculations stay in code.
+- If the model is unsure, slow or unreachable, the code chooses the stations; a search never fails because of it.
+- It receives the addresses (all trips are mock trips) and station options – no login, payment or travelcard data.
 - Needs a backend (the OpenRouter key must not be in the browser) → same decision as **T1** and hosting.
-- Cost is negligible (USD 0.042 per million input tokens).
+- Cost is negligible (USD 0.042 per million input tokens). The risk of OpenRouter's alpha endpoint is accepted (2026-10-05).
 
-**Decided 2026-10-05:** the risk of OpenRouter's alpha endpoint is accepted. The Vertt API is reachable only by our own app; the middleware is not a public service.
-
-**To decide:** Is a checked "second opinion" the right showcase, or should the model get a task that is a real judgement (a "Recommended" label weighing time, price, CO₂ and comfort)? May trip values (no personal data) be sent to OpenRouter, outside Switzerland?
+**For the CTO:** OK that mock addresses and station names are sent to OpenRouter (outside Switzerland)? Is "AI chooses stations" a convincing showcase?
 
 ---
 
@@ -99,14 +99,14 @@ A middleware of our own builds whole trips from the partners' leg offers and ask
 
 | Issue | Topic | Status after user-story discussion |
 |---|---|---|
-| #8 | Trip 1 buffer (+8 min shift) | Depends on T2 – irrelevant with engine option B |
-| #9 | Trip 2 anchor | Depends on T2 |
-| #10 | Trip 3 constructed leg (Ostermundigen) | Depends on T2 |
-| #11 | Vertt tariff formula | → T2 question 1 |
-| #12 | SBB fare source | → B8 |
+| #8 | Trip 1 buffer (+8 min shift) | **Obsolete:** no preset trips (T2 decided) |
+| #9 | Trip 2 anchor | **Obsolete:** no preset trips; last Vertt pickup follows the train arrival |
+| #10 | Trip 3 constructed leg (Ostermundigen) | **Obsolete:** every Vertt leg is calculated |
+| #11 | Vertt tariff formula | **Answered:** 3.00 + 1.80/km + 0.30/min, min. 10.00 (PRD-7) |
+| #12 | SBB fare source | **Decided:** OJP Fare (beta), see B8 |
 | #13 | Rail CO₂ factor | **Resolved:** tailpipe only → 0 (see B7) |
 | #14 | CO₂ unit in "Car to CO2" | Still to verify |
-| #15 | Timezone of Vertt timestamps | Only relevant for engine option A |
+| #15 | Timezone of Vertt timestamps | **Obsolete:** only the validation uses recorded timestamps |
 | #16 | Hosting | → T1 / T3 row 11 |
 
 ---

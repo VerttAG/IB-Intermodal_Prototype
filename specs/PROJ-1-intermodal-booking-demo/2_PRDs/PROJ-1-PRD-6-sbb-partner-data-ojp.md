@@ -27,7 +27,7 @@ This PRD says **what** the demo gets from SBB. Whether the answers are fetched w
 **Acceptance Criteria:**
 - [ ] AC-4: Each train leg has from, to, departure, arrival, duration and line (e.g. IC 8, S11), taken from the OJP 2.0 answer.
 - [ ] AC-5: Times are shown in Swiss local time (OJP answers in UTC).
-- [ ] AC-6: After a Vertt leg, only trains departing at least 8 minutes after the Vertt arrival are considered. The next few such trains are delivered, not only the first, so that the trip offer middleware (PROJ-1-PRD-8) has trips to choose from.
+- [ ] AC-6: After the first leg (Vertt ride or walk), only trains departing at least 8 minutes after the arrival at the station are considered, and only the **first** such train is used per station pair (decided 2026-10-05, PROJ-1-PRD-9). Variety comes from the candidate stations.
 - [ ] AC-7: A train part with a change of trains is kept as several train legs with the transfer time between them.
 - [ ] AC-8: The route of each train leg on the map follows the railway line, using the geometry from OJP.
 - [ ] AC-9: The distance of each train leg comes from OJP.
@@ -92,8 +92,9 @@ This PRD says **what** the demo gets from SBB. Whether the answers are fetched w
 ## Open Questions
 - **Saver or normal ticket?** For "no travelcard", OJP Fare returned only a saver ticket (Sparbillett, bound to one train, price changes) in 2nd class: CHF 38.80 for Zürich HB → Bern. Proposed rule for AC-18: cheapest 2nd-class product. Is a saver price acceptable as "the" SBB price, also for the settlement? → Tim / CTO (cto-meeting B8).
 - **Train CO₂:** OJP delivers a factor (0.007 kg per person-km → 0.8 kg for Zürich–Bern), while the agreed rule is "tailpipe only → trains 0.0 kg". Keep 0.0 on screen and store the OJP value in the data link only? → CTO (B7).
-- **Live or prepared in advance?** Decides whether the customer can pick any station and time, and whether the demo needs internet access to SBB during the presentation → architecture step.
-- SBB → Vertt journeys: is searching by arrival time needed, or does the Vertt pickup simply follow the train arrival?
+- ~~Live or prepared in advance?~~ → **Decided 2026-10-05: live** for every search (PROJ-1-PRD-9). The demo needs internet access to SBB during the presentation; answers are cached.
+- ~~SBB → Vertt journeys: search by arrival time?~~ → **Decided:** no "arrive by"; the last Vertt pickup follows the train arrival + waiting time (PROJ-1-PRD-9 AC-10).
+- Both prices ("no travelcard" and "half-fare") are fetched in every search (PROJ-1-PRD-9 AC-12) – twice the OJP Fare calls. OK within the limit of 50 calls/min? → spike.
 
 ## Dependencies
 - Feeds: PROJ-1-PRD-8 (train legs and prices as leg offers), PROJ-1-PRD-2 (train legs, prices, map), PROJ-1-PRD-4 (train part of the settlement), PROJ-1-PRD-5 (data sources and price details in the data link).
