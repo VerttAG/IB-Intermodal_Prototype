@@ -36,6 +36,8 @@ Two agreed requirements together force a decision:
 
 Recommendation: **B**, validated against the 9 recorded rides ("engine within ±X % of reality").
 
+> **Update 2026-10-05 (proposed, PRD section 12):** start with the recorded rides (A), but serve them through a **Vertt API** that the demo and the later prototypes use. Options B and C can later replace what is behind the API without changing the demo. New question: may the API offer **marked, constructed** rides for places without recorded data (needs the tariff formula, question 1)?
+
 **Questions for the CTO:**
 1. What is the **Vertt tariff formula** (base, per km, per minute, minimum, surcharges)? The values in the export (1.80/km, 0.30/min) do not reproduce the ride prices.
 2. Does Vertt have an **internal price/ETA (quote) API** we could use – or which routing provider does Vertt use (the export polylines are in Google format)?
@@ -63,6 +65,16 @@ Rule of thumb: everything **"in advance"** runs once on a laptop with keys in `.
 
 **To decide:** which routing provider (6), whether to request OJP Fare access (5), map tiles (9), hosting (11).
 
+### T4 · AI model for the trip offers *(proposed 2026-10-05, PRD section 12)*
+
+A middleware of our own builds whole trips from the partners' leg offers and asks **Jev 1.13** (TypeSafe, via **OpenRouter**) to pick the fastest, cheapest and greenest one.
+
+- The model's own documentation says it is **not reliable at comparing numbers and times**. Our design therefore calculates everything and checks each decision; a wrong decision is replaced by the calculated one.
+- Needs a backend (the OpenRouter key must not be in the browser) → same decision as **T1** and hosting.
+- Cost is negligible (USD 0.042 per million input tokens).
+
+**To decide:** Is a checked "second opinion" the right showcase, or should the model get a task that is a real judgement (a "Recommended" label weighing time, price, CO₂ and comfort)? May trip values (no personal data) be sent to OpenRouter, outside Switzerland?
+
 ---
 
 ## Part 2 – Business and content topics
@@ -76,7 +88,7 @@ Rule of thumb: everything **"in advance"** runs once on a laptop with keys in `.
 | B5 | **Payment fees** (card / TWINT, ~1–2 %) | Ignored | Who carries them – seller only or shared? |
 | B6 | **Real cancellation rules** | Full refund, no fee | SBB refund rules; Vertt fee once the driver is on the way? |
 | B7 | **CO₂ method** | Tailpipe only → trains 0.0 kg | Keep, or include energy production (well-to-wheel) so car and train are compared fairly? |
-| B8 | **SBB price source** | OJP if available, else reference prices | Is OJP Fare beta acceptable? Talk to SBB? |
+| B8 | **SBB price source** | **Proposed 2026-10-05: OJP Fare (beta)**, no reference prices | Is a saver price (Sparbillett) acceptable as the SBB price? Talk to SBB? |
 | B9 | **Settlement data format** | Draft in PRD section 7 | Align with partners' transaction layer before building? |
 | B10 | **Demo date / audience** | not decided | When and to whom do we show it first? |
 
