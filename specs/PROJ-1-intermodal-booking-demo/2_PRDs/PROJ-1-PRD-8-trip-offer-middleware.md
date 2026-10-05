@@ -56,7 +56,7 @@ Checked on 2026-10-05 against OpenRouter and the TypeSafe documentation.
 
 **Acceptance Criteria:**
 - [ ] AC-13: If the model chooses fewer valid stations than needed, the code fills up: the nearest hub within ~30 km, then the nearest stations.
-- [ ] AC-14: If the model is below the certainty threshold, does not answer within the time limit, or cannot be reached, the code chooses all stations (AC-13). The customer still gets trips.
+- [ ] AC-14: If the model is below the certainty threshold (**0.8**), does not answer within the time limit (**2 s**), or cannot be reached, the code chooses all stations (AC-13). The customer still gets trips. Both values are configurable.
 - [ ] AC-15: For each candidate station, the server log records where it came from: "model" or "code fallback". It is not part of the data link (PROJ-1-PRD-5 contains only transactional data).
 - [ ] AC-16: How often the model was used, unsure or unavailable can be read out after a demo.
 
@@ -70,12 +70,10 @@ Checked on 2026-10-05 against OpenRouter and the TypeSafe documentation.
 - OpenRouter's limit or credit is used up during a demo: AC-14 applies; the presenter sees no error page.
 
 ## Open Questions
-- **Try the station task with the model** before building: does it choose sensibly (e.g. Wettswil am Albis → Bern: Zürich HB as hub)? → spike.
-- **Certainty threshold** for AC-14: the labels trial suggests ~0.8. To confirm with the station task.
-- **Time limit** for the model's answer: proposed 2 s, then the code fallback.
-- **Does the model need more context** per station (e.g. lines or number of trains per hour) to choose well? Each extra value costs OJP calls. → spike.
-- **Password gate in front of the whole demo** (built in `mockup/middleware.js`, Vercel): keep it switched on for presenters and partners? → Tim / CTO.
+- **Spike first (decided by Tim 2026-10-05):** before building, try the station task on 5–10 example journeys (e.g. Wettswil am Albis → Bern, Winterthur → Luzern, a Basel suburb → Zürich Flughafen). The code builds the option lists with detour values, Jev chooses, Tim judges the choices. Uses Aleksandar's OpenRouter key (`OPENROUTER_API_KEY` in `.env`, never committed).
+- Confirm in the spike: certainty threshold 0.8 and time limit 2 s for the station task; whether the model needs more context per station (e.g. lines, trains per hour – costs OJP calls).
 - Data sent to OpenRouter (mock addresses, station names) leaves Switzerland – OK for Vertt and the partners? → CTO.
+- Answered 2026-10-05 (Tim): time limit 2 s · certainty threshold 0.8 · **password gate stays on** (`mockup/middleware.js`, password in Vercel as `DEMO_PASSWORD`, known to Tim and Aleksandar).
 
 ## Dependencies
 - Requires: PROJ-1-PRD-6 (stations, trains, prices), PROJ-1-PRD-7 (Vertt offers), PROJ-1-PRD-9 (trip engine rules), an OpenRouter account with credit and an access key.
