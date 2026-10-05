@@ -61,7 +61,7 @@ A trip has up to three legs: **first leg** (Vertt ride or walk) → **train** �
 - [ ] AC-21: CO₂ is shown in kg with one decimal, per person, per leg and as a total.
 - [ ] AC-22: CO₂ of a Vertt leg = distance (Valhalla) × CO₂ factor of the pool car. Electric cars show 0.0 kg.
 - [ ] AC-23: CO₂ of a train leg follows CTO topic B7: 0.0 kg (tailpipe rule) or the OJP value. The OJP value is always stored in the data link.
-- [ ] AC-24: A value that cannot be calculated shows "not available", never 0.
+- [ ] AC-24: A value that cannot be calculated shows "not available", never 0. If one leg is "not available", the **total** is "not available" too, and the trip cannot be "Greenest" (decided by Tim 2026-10-05).
 - [ ] AC-25: No comparison text is shown (no "saves X kg").
 
 ### US-5: As a customer, I want to see my whole journey on a map so that I understand where the car takes me, where I change and where the train goes (story 10)
@@ -95,7 +95,7 @@ A trip has up to three legs: **first leg** (Vertt ride or walk) → **train** �
 - A transfer has 0 or negative minutes: a calculation error; the trip must not be offered.
 
 ## Open Questions
-- **Total CO₂ when one leg is "not available":** show "not available" for the total (proposed), or the sum of the known legs with a note? With every pool car having a CO₂ factor this should only happen if OJP or Valhalla fail. → Tim.
+- ~~Total CO₂ when one leg is "not available"~~ → **Decided:** the total is "not available" (AC-24).
 - Should estimated or placeholder values be marked on screen (cto-meeting B1)?
 - CO₂ method for trains: 0.0 kg (tailpipe) or the OJP value (cto-meeting B7)?
 

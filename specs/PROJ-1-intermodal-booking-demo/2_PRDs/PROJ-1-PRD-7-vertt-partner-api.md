@@ -114,7 +114,7 @@ A list of cars maintained by Tim in `config/car_pool.yaml`: make, model, year, C
 
 ## Open Questions
 - **Tariff outside Zurich** and **factor 1.0** everywhere: decided for Prototype 1, to confirm with CTO.
-- **Rounding.** Vertt's specification keeps prices exact to CHF 0.01 and rounds to CHF 0.05 only for cash; the demo rounds every customer price to CHF 0.05 (story 8). Keep the demo rule? → Tim.
+- ~~Rounding~~ → **Decided (Tim 2026-10-05):** the API returns prices exact to CHF 0.01 (like Vertt's specification); the booking app rounds every customer price to CHF 0.05 (story 8). The settlement starts from the rounded customer amounts (PROJ-1-PRD-4).
 - **VAT.** Whether the tariff values include VAT, and the rate, are open in Vertt's own specification too (8.1 % assumed there). → Vertt finance.
 - **CO₂ unit** of the recorded car values (g/km vs g/100km) and the duplicate car model (GitHub issue #14) – matters for the car pool. → Tim / Vertt.
 - ~~Minimum distance for a Vertt ride (AC-8)~~ → **Decided:** 1 km straight line, the walk threshold of PROJ-1-PRD-9.

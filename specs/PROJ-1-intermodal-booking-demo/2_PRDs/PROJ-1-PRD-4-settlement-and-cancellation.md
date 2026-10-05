@@ -41,6 +41,7 @@ Terms used below: **train part** = price of all SBB legs after travelcard. **Ver
 
 **Acceptance Criteria:**
 - [ ] AC-11: B2B amounts (transfer, commission) are exact to the centime. Customer amounts are rounded to CHF 0.05.
+- [ ] AC-11a: The settlement starts from the **rounded** leg amounts the customer paid (e.g. the Vertt part CHF 33.05, not the API's exact CHF 33.04), so that customer payment and B2B transfers add up.
 - [ ] AC-12: Settlement is per booking: every event belongs to exactly one booking.
 - [ ] AC-13: Vertt is one party. No event names a driver.
 - [ ] AC-14: For a paid booking, what Vertt ends with plus what SBB ends with equals the customer payment.
