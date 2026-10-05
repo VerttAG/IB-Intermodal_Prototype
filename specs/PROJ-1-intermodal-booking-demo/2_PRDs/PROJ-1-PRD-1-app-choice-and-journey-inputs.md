@@ -2,7 +2,7 @@
 
 ## Status: Planned
 
-Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/PRD.md) sections 4 and 12, [docs/user-stories.md](../../../docs/user-stories.md) stories 1a, 2, 3, 4, 5. Story numbers are given in brackets. The trips for these inputs are calculated live by the trip engine ([PROJ-1-PRD-9](PROJ-1-PRD-9-trip-engine.md)).
+Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/PRD.md) sections 4 and 5: stories 1a, 2, 3, 4, 5. Story numbers are given in brackets. The trips for these inputs are calculated live by the trip engine ([PROJ-1-PRD-8](PROJ-1-PRD-8-trip-engine.md)).
 
 ## User Stories
 
@@ -26,11 +26,11 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 **Acceptance Criteria:**
 - [ ] AC-5: Start and destination are address fields. While typing, matching official Swiss addresses are suggested by the swisstopo address search; choosing one sets the address. Nothing is taken over without the customer choosing it.
 - [ ] AC-6: In the first version both fields start **empty**; typing is the one exception to the rule "nothing has to be typed". A pre-filled example pair is added later, once the engine has been tried (decided by Tim 2026-10-05).
-- [ ] AC-7: The chosen address is turned into coordinates by swisstopo. Address and coordinates are passed to the trip engine (PROJ-1-PRD-9), which may also send them to the AI model (PROJ-1-PRD-8) – all trips in the demo are mock trips.
+- [ ] AC-7: The chosen address is turned into coordinates by swisstopo. Address and coordinates are passed to the trip engine (PROJ-1-PRD-8), which may also send them to the AI model (PROJ-1-PRD-8) – all trips in the demo are mock trips.
 - [ ] AC-8: An address that swisstopo cannot find, or that lies outside Switzerland, cannot be chosen; a message says so.
 - [ ] AC-9: If no trip can be built for the addresses and time, a message says so and no connections are shown.
 - [ ] AC-10: There is no swap button and no "use my location" button.
-- [ ] AC-11: The search starts **only** with the **"Search"** button, which is enabled once start, destination and time are set (each search costs live API calls, PROJ-1-PRD-9). While it runs, a loading state is shown. A travelcard change after a search needs no new search (AC-15).
+- [ ] AC-11: The search starts **only** with the **"Search"** button, which is enabled once start, destination and time are set (each search costs live API calls, PROJ-1-PRD-8). While it runs, a loading state is shown. A travelcard change after a search needs no new search (AC-15).
 - [ ] AC-11a: Addresses and coordinates are used only for the search; they are not stored and do not appear in the data link or the export (PROJ-1-PRD-5).
 
 ### US-3: As a customer, I want to choose when I travel so that the trips fit my plans (story 3)
@@ -50,7 +50,7 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 
 **Acceptance Criteria:**
 - [ ] AC-14: Three options are offered: no travelcard, half-fare, GA. Half-fare is selected when a run starts.
-- [ ] AC-15: Changing the travelcard after a search updates every price and the labels at once, **without a new search** (the engine fetches the half-fare price; no travelcard = 2 × half-fare, GA = CHF 0.00 – PROJ-1-PRD-9 AC-12).
+- [ ] AC-15: Changing the travelcard after a search updates every price and the labels at once, **without a new search** (the engine fetches the half-fare price; no travelcard = 2 × half-fare, GA = CHF 0.00 – PROJ-1-PRD-8).
 - [ ] AC-16: The price of every Vertt leg is the same for all three travelcards.
 - [ ] AC-17: The chosen travelcard is shown again in the overview (PROJ-1-PRD-3) and stored in the data link (PROJ-1-PRD-5).
 
@@ -69,7 +69,7 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 - [ ] AC-23: The booking stores `login_method = swisspass` and the travelcard of the profile.
 
 ## Edge Cases
-- Start and destination are the same address, or very close to each other: see PROJ-1-PRD-9 (open question "very short trips").
+- Start and destination are the same address, or less than 10 km apart: no search, message "Trip not suitable for intermodal journey" (PROJ-1-PRD-8).
 - The typed text matches no address: the suggestion list says so; the previous address stays.
 - The customer types but picks nothing from the list: the address is not changed and "Search" stays disabled until both are chosen.
 - The address search does not answer: a message says so; no search is possible.
@@ -84,7 +84,7 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 - **Later:** which example pair to pre-fill (e.g. Wettswil am Albis → Ostermundigen), once the engine has been tried.
 
 ## Dependencies
-- Requires: swisstopo address search ([docs/api/geocoding.md](../../../docs/api/geocoding.md)), PROJ-1-PRD-9 (trip engine).
+- Requires: swisstopo address search ([docs/api/geocoding.md](../../../docs/api/geocoding.md)), PROJ-1-PRD-8 (trip engine).
 - Feeds: PROJ-1-PRD-2 (connection list), PROJ-1-PRD-3 (login skip, travelcard in overview), PROJ-1-PRD-5 (`system`, `login_method`, `travelcard` in the data link).
 
 ## Technical Requirements

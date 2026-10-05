@@ -2,7 +2,7 @@
 
 ## Status: Planned
 
-Covers the money movements each booking produces and what a cancellation adds. No screen shows the settlement; it exists as data (PROJ-1-PRD-5). Source: [docs/PRD.md](../../../docs/PRD.md) section 6, [docs/user-stories.md](../../../docs/user-stories.md) stories 18, 19, 20. Story numbers are given in brackets.
+Covers the money movements each booking produces and what a cancellation adds. No screen shows the settlement; it exists as data (PROJ-1-PRD-5). Source: [docs/PRD.md](../../../docs/PRD.md) section 6, [docs/PRD.md](../../../docs/PRD.md) section 5 stories 18, 19, 20. Story numbers are given in brackets.
 
 Terms used below: **train part** = price of all SBB legs after travelcard. **Vertt part** = price of all Vertt legs after promo. **Total** = train part + Vertt part. The train part is the price stored in the booking (from OJP Fare, PROJ-1-PRD-6); the Vertt part is based on the Vertt ride offers (PROJ-1-PRD-7).
 
@@ -82,9 +82,9 @@ Terms used below: **train part** = price of all SBB legs after travelcard. **Ver
 ## Open Questions
 - ~~Rounding of the commission~~ → **Decided (Tim 2026-10-05):** half up to the centime.
 - ~~Cancel after leaving the receipt~~ → **Decided (Tim 2026-10-05):** not possible. Once the receipt is left ("New booking" or reload), the booking stays "paid" in the export.
-- Should the refund event refer to the original customer payment (like reversals refer to their event)? The lite mockup leaves it empty. → align with partners (cto-meeting B9).
-- Is the commission asymmetry OK to present to partners (cto-meeting B2)?
-- Real cancellation rules (B6) and settlement timing per booking vs. monthly (B3) are out of scope but should be confirmed.
+- Should the refund event refer to the original customer payment (like reversals refer to their event)? The lite mockup leaves it empty. → align with partners ([open topics](../../../docs/open-topics.md) #10).
+- Is the commission asymmetry OK to present to partners? ([open topics](../../../docs/open-topics.md) #1)
+- Real cancellation rules and settlement timing per booking vs. monthly ([open topics](../../../docs/open-topics.md) #7, #4) are out of scope but should be confirmed.
 
 ## Dependencies
 - Requires: PROJ-1-PRD-3 (payment creates the booking; "Cancel journey" sits on the receipt), PROJ-1-PRD-2 (leg prices), PROJ-1-PRD-6 and PROJ-1-PRD-7 (where the prices come from).

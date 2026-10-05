@@ -2,11 +2,11 @@
 
 ## Status: Planned
 
-Vertt gets its own interface, the counterpart to OJP on the SBB side: a partner asks it what a Vertt ride from position A to position B at a given time looks like and costs. Every offer is **calculated**: distance, ride time and route from the route service **Valhalla**, price with the **Vertt tariff**, CO₂ with a car drawn from the **car pool**. It is a building block for the later prototypes; Vertt's real price engine can later replace what is behind it without changing the interface. Source: [docs/user-stories.md](../../../docs/user-stories.md) stories 24, 25, 26; trip engine [PROJ-1-PRD-9](PROJ-1-PRD-9-trip-engine.md).
+Vertt gets its own interface, the counterpart to OJP on the SBB side: a partner asks it what a Vertt ride from position A to position B at a given time looks like and costs. Every offer is **calculated**: distance, ride time and route from the route service **Valhalla**, price with the **Vertt tariff**, CO₂ with a car drawn from the **car pool**. It is a building block for the later prototypes; Vertt's real price engine can later replace what is behind it without changing the interface. Source: [docs/PRD.md](../../../docs/PRD.md) section 5 stories 24, 25, 26; trip engine [PROJ-1-PRD-8](PROJ-1-PRD-8-trip-engine.md).
 
 ## The Vertt tariff
 
-Source: Vertt's tariff engine specification (PROJ-11 in Vertt's discovery repository, verified against Vertt's price documentation, Zurich rates). Reviewed 2026-10-05. This answers the question "what is the Vertt tariff formula" (cto-meeting T2, question 1; GitHub issue #11). Publishing these values in this public repo: approved 2026-10-05.
+Source: Vertt's tariff engine specification (PROJ-11 in Vertt's discovery repository, verified against Vertt's price documentation, Zurich rates). Reviewed 2026-10-05. This answers the question "what is the Vertt tariff formula" (GitHub issue #11). Publishing these values in this public repo: approved 2026-10-05.
 
 **Price = (initial price + distance × price per km + ride time × price per minute), at least the minimum price, × time-and-place factor**
 
@@ -25,11 +25,11 @@ More rules from the same specification that matter here:
 - Promotions are not part of the tariff; a discount is applied afterwards.
 - Cancellation and no-show: CHF 0.00 in the new platform's first phase (the old system charged CHF 6.00 for a late cancellation). This supports the demo rule "full refund, no fee" on the Vertt side.
 
-**Prototype 1 assumption (decided by Tim 2026-10-05, to confirm with CTO):** the Zurich values apply to every Vertt leg in Switzerland.
+**Decided by Tim 2026-10-05:** the Vertt tariff is the **same everywhere** in Switzerland.
 
 ## Validation with the recorded rides
 
-The Excel export in `data/raw/` (not in Git, contains personal data) holds 9 finished rides, 2021–2023, all of one passenger, each connecting Wettswil am Albis with a station. They are **not offers** any more – they are used once to check the calculator (PROJ-1-PRD-9 US-5).
+The Excel export in `data/raw/` (not in Git, contains personal data) holds 9 finished rides, 2021–2023, all of one passenger, each connecting Wettswil am Albis with a station. They are **not offers** any more – they are used once to check the calculator (US-5 below).
 
 What is known already: the tariff, applied to the **recorded** distance and ride time, gives the export's "Base fare" within CHF 0.05 for 7 of the 9 rides (the two rides from 2021 differ by about CHF 0.55). The **charged** "Ride Price" differs from it by −12 % to +7 %, because it was calculated before the ride from estimated distance and time.
 
@@ -52,10 +52,10 @@ A list of cars maintained by Tim in `config/car_pool.yaml`: make, model, year, C
 - [ ] AC-2: The offer contains: offer ID, start, destination, distance (km), ride time (min), price in CHF, factor used, car category ("Vertt"), car (make, model, year), CO₂ factor (g/km), route line.
 - [ ] AC-3: Distance, ride time and route line come from **Valhalla** (car profile) for exactly the two positions.
 - [ ] AC-4: The car is drawn from the car pool. Asking twice with the same offer ID returns the same offer, car included.
-- [ ] AC-5: Every offer says it is **calculated** and names its assumptions: tariff region (Zurich values), factor 1.0, car drawn from the pool.
-- [ ] AC-6: The offer has no fixed timetable: it gives a ride time; the trip engine places it before or after the train and adds the waiting time for the car (PROJ-1-PRD-9).
+- [ ] AC-5: Every offer says it is **calculated** and names its assumptions: factor 1.0, car drawn from the pool.
+- [ ] AC-6: The offer has no fixed timetable: it gives a ride time; the trip engine places it before or after the train and adds the waiting time for the car (PROJ-1-PRD-8).
 - [ ] AC-7: Positions outside Switzerland, or positions Valhalla cannot route between: a clear "not served" answer. No price is guessed.
-- [ ] AC-8: Start and destination are the same, or closer than a minimum distance: "not served" (a walk is the right answer, PROJ-1-PRD-9).
+- [ ] AC-8: Start and destination are the same, or closer than a minimum distance: "not served" (a walk is the right answer, PROJ-1-PRD-8).
 
 ### US-2: As Vertt, I want the price in an offer to follow one clear rule so that partners and the settlement work with the right amount (story 24)
 **Given** an offer's distance and ride time
@@ -94,7 +94,7 @@ A list of cars maintained by Tim in `config/car_pool.yaml`: make, model, year, C
 - [ ] AC-23: The secret never appears in the page, the repo, a data link or an export.
 - [ ] AC-24: Partners get the description of the API (US-3), but no access of their own in Prototype 1.
 
-### US-5: As the CTO, I want the calculator checked against the recorded rides so that I can trust the Vertt prices (story 26, PROJ-1-PRD-9 US-5)
+### US-5: As the CTO, I want the calculator checked against the recorded rides so that I can trust the Vertt prices (story 26)
 **Given** the 9 recorded rides (local Excel, never committed)
 **When** the calculator runs on their start and end points
 **Then** calculated and recorded distance, time and price are compared
@@ -113,16 +113,16 @@ A list of cars maintained by Tim in `config/car_pool.yaml`: make, model, year, C
 - A call arrives with a wrong or missing secret, or straight from a browser: refused (AC-22).
 
 ## Open Questions
-- **Tariff outside Zurich** and **factor 1.0** everywhere: decided for Prototype 1, to confirm with CTO.
+- ~~Tariff outside Zurich~~ → **Decided (Tim 2026-10-05):** same tariff everywhere, factor 1.0.
 - ~~Rounding~~ → **Decided (Tim 2026-10-05):** the API returns prices exact to CHF 0.01 (like Vertt's specification); the booking app rounds every customer price to CHF 0.05 (story 8). The settlement starts from the rounded customer amounts (PROJ-1-PRD-4).
 - **VAT.** Whether the tariff values include VAT, and the rate, are open in Vertt's own specification too (8.1 % assumed there). → Vertt finance.
-- **CO₂ unit** of the recorded car values (g/km vs g/100km) and the duplicate car model (GitHub issue #14) – matters for the car pool. → Tim / Vertt.
-- ~~Minimum distance for a Vertt ride (AC-8)~~ → **Decided:** 1 km straight line, the walk threshold of PROJ-1-PRD-9.
+- ~~CO₂ unit~~ → **Decided (Tim 2026-10-05):** g/km (GitHub issue #14). The car pool uses g/km.
+- ~~Minimum distance for a Vertt ride (AC-8)~~ → **Decided:** 1 km straight line, the walk threshold of PROJ-1-PRD-8.
 - Is "book a ride" / "cancel a ride" through the API wanted later (Prototype 2)? Not part of this PRD.
 
 ## Dependencies
 - Requires: Valhalla ([docs/api/routing.md](../../../docs/api/routing.md)), car pool (`config/car_pool.yaml`).
-- Feeds: PROJ-1-PRD-9 (Vertt legs of every trip and the "Vertt only" comparison), PROJ-1-PRD-2 (Vertt legs, car, CO₂, map), PROJ-1-PRD-4 (Vertt part of the settlement), PROJ-1-PRD-5 (offer ID and assumptions in the data link).
+- Feeds: PROJ-1-PRD-8 (Vertt legs of every trip and the "Vertt only" comparison), PROJ-1-PRD-2 (Vertt legs, car, CO₂, map), PROJ-1-PRD-4 (Vertt part of the settlement), PROJ-1-PRD-5 (offer ID and assumptions in the data link).
 - Supersedes: GitHub issues #8, #9, #10, #15 (no preset trips, no recorded legs); #11 (tariff formula) is answered by the tariff.
 
 ## Technical Requirements

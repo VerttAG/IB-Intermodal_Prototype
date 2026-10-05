@@ -1,7 +1,7 @@
 # Geocoding – address ↔ coordinates (swisstopo GeoAdmin API)
 
 Status: derived from **real responses** on 2026-10-05 (trial). Field names below appear exactly like this in the responses.
-Related: [ojp20.md](ojp20.md) · [ojpfare.md](ojpfare.md) · [PRD](../PRD.md) · [CTO meeting](../cto-meeting.md) (T3 row 1)
+Related: [ojp20.md](ojp20.md) · [ojpfare.md](ojpfare.md) · [PRD](../PRD.md) · [open topics](../open-topics.md)
 
 ## 1. Overview
 
@@ -101,15 +101,14 @@ Tried on 2026-10-05 with the same address (Bundesplatz 3, Bern), both directions
 | **Nominatim** (OpenStreetMap, public server) | none | ✅ found the building, as a point of interest ("Bundeshaus") | ✅ real reverse request; also answered inside Zürich HB, where swisstopo found nothing | 0.8 – 1.3 s | Worldwide. Public server: at most 1 request per second and **no suggestions while typing** (usage policy – to re-read before use) |
 | **Photon** (OpenStreetMap, public server by Komoot) | none | ✅ made for suggestions while typing | ⚠️ returned a monument, not the address | 6.5 – 9.8 s in the trial | Too slow on the day of the trial; public server without guarantee |
 | Hosted services with a key: OpenRouteService, Geoapify, LocationIQ, MapTiler, Mapbox, Google | yes | not tried | not tried | – | A key must not be in the browser → needs our backend. Google restricts storing results. Vertt's own route data is in Google format |
-| OJP 2.0 `LocationInformationRequest` | yes (have one) | not tried – address support to verify (CTO meeting T3) | not tried | – | Already used for stations; needs our backend to hide the key |
+| OJP 2.0 `LocationInformationRequest` | yes (have one) | not tried – address support not verified | not tried | – | Already used for stations; needs our backend to hide the key |
 | Run it ourselves: Nominatim or Photon with the Swiss map extract, or the official list of Swiss building addresses with a local search | none | not tried | not tried | – | No outside service and no limits, but something to install, host and update |
 
 All three public services tried can be called from the browser directly.
 
-**Decided 2026-10-05:** swisstopo for the address the customer types (fast, official, no key). Only if "use my location" is wanted: Nominatim for that single coordinates → address request, because it also answers where no building is near.
+**Decided 2026-10-05:** swisstopo for the address the customer types (fast, official, no key). No "use my location" in Prototype 1, so no reverse geocoding is needed.
 
 ## 6. Open points
 
 - **Terms of use / fair-use limits** of the GeoAdmin API were not checked in the trial. To verify before the demo is shared with partners.
-- **Privacy:** a typed address and its exact coordinates are personal data. The address stays in the browser (direct call to swisstopo). Before coordinates go to the Vertt API they can be rounded to 3 decimals (about 100 m) – enough to find the nearest place Vertt serves. Nothing of it is stored (stories 2, 21).
-- Is reverse geocoding needed at all in Prototype 1? Only with "use my location" or picking a point on the map – see PRD-1.
+- **Privacy:** all trips are mock trips (decided 2026-10-05). The address and its coordinates go to our server, the Vertt API and the AI model for the search, but are not stored and never appear in the data link (stories 2, 21).

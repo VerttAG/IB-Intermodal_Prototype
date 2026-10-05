@@ -1,8 +1,8 @@
 # PROJ-1-PRD-5: Booking data link and export
 
-## Status: Planned – blocked by decision T1 (cto-meeting)
+## Status: Planned
 
-Covers the output for the Innovation Booster partners: one data link per booking, an export of all bookings, and the rule that none of it contains personal data. Source: [docs/PRD.md](../../../docs/PRD.md) section 7, [docs/user-stories.md](../../../docs/user-stories.md) stories 17, 21. Story numbers are given in brackets.
+Covers the output for the Innovation Booster partners: one data link per booking, an export of all bookings, and the rule that none of it contains personal data. Source: [docs/PRD.md](../../../docs/PRD.md) section 7, [docs/PRD.md](../../../docs/PRD.md) section 5 stories 17, 21. Story numbers are given in brackets.
 
 ## User Stories
 
@@ -20,7 +20,7 @@ Covers the output for the Innovation Booster partners: one data link per booking
 - [ ] AC-5a: The data link contains **no** addresses, coordinates, route lines, stations, times of the legs, car, labels, AI candidates or OJP Fare details.
 - [ ] AC-6: Each settlement event contains `event_id`, `booking_id`, `seq`, `timestamp`, `event_type` (b2c_payment, b2b_transfer, commission, refund, reversal), `payer`, `payee`, `amount_chf`, `reason`, `refers_to_event`.
 - [ ] AC-7: The values in the link equal what the customer saw on the receipt (legs, prices, discount, total, travelcard, payment method).
-- [ ] AC-8 *(pending T1)*: A partner can open the link on their own computer, not only in the browser where the booking was made.
+- [ ] AC-8: A partner can open the link on their own computer, not only in the browser where the booking was made.
 
 ### US-2: As an IB partner, I want the same link to show the booking after a cancellation so that I can follow one booking through its whole life (stories 17, 18)
 **Given** I have the data link of a booking
@@ -28,7 +28,7 @@ Covers the output for the Innovation Booster partners: one data link per booking
 **Then** the same link shows status "cancelled" and the added events
 
 **Acceptance Criteria:**
-- [ ] AC-9 *(pending T1)*: After a cancellation, the link that was copied before the cancellation shows the updated content.
+- [ ] AC-9: After a cancellation, the link that was copied before the cancellation shows the updated content.
 - [ ] AC-10: The updated content has `status = cancelled` and the cancellation events appended after the original events (PROJ-1-PRD-4).
 
 ### US-3: As an IB partner, I want to export all bookings as one file so that I can load a whole demo session at once (story 17)
@@ -76,22 +76,17 @@ Covers the output for the Innovation Booster partners: one data link per booking
 - A value has no real source (placeholder or estimate): its data source says so; it is never presented as measured.
 
 ## Open Questions
-- **T1 – where does the data behind the link live?** This decides AC-8 and AC-9:
-  - A (small online storage): both hold as written.
-  - B (data inside the link, second link after cancellation): AC-8 holds, AC-9 changes to "a new link shows the cancelled booking".
-  - C (export file only): AC-8 and AC-9 are dropped; the link works only in the presenter's browser.
-  → CTO. The lite mockup shows the JSON in a pop-up and has no export yet.
+- ~~Where does the data behind the link live?~~ → **Decided (Tim 2026-10-05): online storage on Vercel**, next to the trip engine. AC-8 and AC-9 hold as written.
 - ~~Does "Clear" invalidate links already sent?~~ → **Decided (Tim 2026-10-05):** no. "Clear" only empties the local list in the browser; data links already sent keep working.
-- Align the event format with the partners' transaction layer before building (cto-meeting B9)?
-- Mark estimated values in the data link only, or also on screen (B1)?
+- Align the event format with the partners' transaction layer before building? ([open topics](../../../docs/open-topics.md) #10)
 
 ## Dependencies
-- Requires: PROJ-1-PRD-3 (booking), PROJ-1-PRD-4 (settlement events, cancellation), PROJ-1-PRD-2 (legs, car, data sources), PROJ-1-PRD-6 (SBB price details), PROJ-1-PRD-7 (Vertt offer ID, data basis), PROJ-1-PRD-8 (labels and their origin).
-- Blocked by: cto-meeting T1 (storage of the data behind the link) and hosting (T3 row 11, GitHub issue #16).
+- Requires: PROJ-1-PRD-3 (booking), PROJ-1-PRD-4 (settlement events, cancellation), PROJ-1-PRD-2 (legs, car, data sources), PROJ-1-PRD-6 (SBB price details), PROJ-1-PRD-7 (Vertt amounts), PROJ-1-PRD-8 (amounts and CO₂ per operator and leg).
+- Hosting: Vercel (decided 2026-10-05) – the data behind the links is stored in an online store on Vercel.
 
 ## Technical Requirements
 - The output is valid JSON with stable field names; amounts are numbers in CHF, timestamps carry a time zone.
-- No personal data in any output (US-5). This also applies to logs and to anything stored online if T1 = A.
+- No personal data in any output (US-5). This also applies to logs and to the data stored online on Vercel.
 - API keys are never part of the page, a data link or an export.
 - The copy button and the export work with a pointer and with the keyboard.
 

@@ -1,11 +1,11 @@
 # Routing – distance and ride time between two positions
 
 Status: derived from **real responses** on 2026-10-05 (trial). **Decided 2026-10-05: Valhalla.**
-Related: [geocoding.md](geocoding.md) · [CTO meeting](../cto-meeting.md) (T3 row 6) · PRD-7 in `specs/` (Vertt partner API)
+Related: [geocoding.md](geocoding.md) · [open topics](../open-topics.md) · PRD-7 in `specs/` (Vertt partner API)
 
 ## 1. Why it is needed
 
-The Vertt tariff needs two numbers per ride: **distance (km)** and **ride time (minutes)**. For a route with a recorded ride we have them. For any other start and destination – a typed address, a second Vertt leg, the "Vertt only" comparison – they must come from a route service. The same answer also gives the street route for the map.
+The Vertt tariff needs two numbers per ride: **distance (km)** and **ride time (minutes)**. Every Vertt leg of the demo – first leg, last leg and the "Vertt only" comparison – is calculated, so these numbers come from a route service. The same answer also gives the street route for the map. The recorded rides are used only to check the result (PRD-7).
 
 ## 2. Can swisstopo do it?
 

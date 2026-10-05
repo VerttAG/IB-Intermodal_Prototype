@@ -1,7 +1,7 @@
 # OJP Fare – Data model (ticket prices)
 
 Status: derived from **real responses** on 2026-10-05 (spike). Field names below appear exactly like this in the responses.
-Related: [ojp20.md](ojp20.md) (journey planner, provides the input trip) · [PRD](../PRD.md) · [CTO meeting](../cto-meeting.md)
+Related: [ojp20.md](ojp20.md) (journey planner, provides the input trip) · [PRD](../PRD.md) · [open topics](../open-topics.md)
 
 ## 1. Overview
 
@@ -137,7 +137,7 @@ OJP
 | # | Finding | Consequence |
 |---|---|---|
 | 1 | Several products per trip, both classes, regardless of `FareClass` | Our logic must pick: 2nd class, then cheapest (or a fixed product type) |
-| 2 | Without travelcard, 2nd class only came as **Sparbillett** (saver, train-bound); the normal ticket only for 1st class | Unclear if a normal 2nd-class price is available – to clarify (CTO topic B8) |
+| 2 | Without travelcard, 2nd class only came as **Sparbillett** (saver, train-bound); the normal ticket only for 1st class | **Decided 2026-10-05:** the demo fetches only the half-fare price and doubles it for "no travelcard" (PRD-6). Whether a normal half-fare ticket is offered is checked in a spike |
 | 3 | "No travelcard" needs an **empty** `<EntitlementProducts/>`; otherwise HTTP 500 without error message | Always send the element |
 | 4 | GA code unknown (`GA` not recognised) | Prototype 1 uses its own rule: GA → CHF 0 |
 | 5 | Response namespaces differ from the request: OJP as prefix `ns2:`, a default namespace `https://www.siri.org.uk/siri` (with https) | Parse by namespace URI `http://www.vdv.de/ojp`, not by prefix |

@@ -2,7 +2,7 @@
 
 ## Status: Planned
 
-Covers everything the demo needs from the SBB side: stations, train connections and train prices. They come from the two official interfaces, OJP 2.0 (journey planner) and OJP Fare (prices). Source: [docs/user-stories.md](../../../docs/user-stories.md) stories 22, 23 (proposed, v1.1); findings in [docs/api/ojp20.md](../../../docs/api/ojp20.md) and [docs/api/ojpfare.md](../../../docs/api/ojpfare.md).
+Covers everything the demo needs from the SBB side: stations, train connections and train prices. They come from the two official interfaces, OJP 2.0 (journey planner) and OJP Fare (prices). Source: [docs/PRD.md](../../../docs/PRD.md) section 5 stories 22, 23 ; findings in [docs/api/ojp20.md](../../../docs/api/ojp20.md) and [docs/api/ojpfare.md](../../../docs/api/ojpfare.md).
 
 This PRD says **what** the demo gets from SBB. Whether the answers are fetched while the user clicks or prepared in advance is decided in the architecture step.
 
@@ -27,7 +27,7 @@ This PRD says **what** the demo gets from SBB. Whether the answers are fetched w
 **Acceptance Criteria:**
 - [ ] AC-4: Each train leg has from, to, departure, arrival, duration and line (e.g. IC 8, S11), taken from the OJP 2.0 answer.
 - [ ] AC-5: Times are shown in Swiss local time (OJP answers in UTC).
-- [ ] AC-6: After the first leg (Vertt ride or walk), only trains departing at least 8 minutes after the arrival at the station are considered, and only the **first** such train is used per station pair (decided 2026-10-05, PROJ-1-PRD-9). Variety comes from the candidate stations.
+- [ ] AC-6: After the first leg (Vertt ride or walk), only trains departing at least 8 minutes after the arrival at the station are considered, and only the **first** such train is used per station pair (decided 2026-10-05, PROJ-1-PRD-8). Variety comes from the candidate stations.
 - [ ] AC-7: A train part with a change of trains is kept as several train legs with the transfer time between them.
 - [ ] AC-8: The route of each train leg on the map follows the railway line, using the geometry from OJP.
 - [ ] AC-9: The distance of each train leg comes from OJP.
@@ -49,14 +49,13 @@ This PRD says **what** the demo gets from SBB. Whether the answers are fetched w
 **Then** the price comes from OJP Fare for 1 adult, 2nd class
 
 **Acceptance Criteria:**
-- [ ] AC-14: For "no travelcard" and "half-fare", the train price is the price OJP Fare returns for exactly this connection.
+- [ ] AC-14: Only the **half-fare** price is fetched from OJP Fare, for exactly this connection. No travelcard = 2 × half-fare price (decided by Tim 2026-10-05).
 - [ ] AC-15: Only 2nd-class prices are used, although OJP Fare also returns 1st class.
 - [ ] AC-16: A half-fare price is only accepted if the answer confirms the half-fare card was applied; otherwise the price counts as not available.
 - [ ] AC-17: For GA the train price is CHF 0.00 by the demo's own rule, because OJP Fare does not recognise GA.
-- [ ] AC-18: If OJP Fare offers several 2nd-class products, one fixed rule picks the product, and the product name is kept with the price.
+- [ ] AC-18: If OJP Fare offers several half-fare 2nd-class products, the **normal ticket** (Streckenbillett) is used; if it offers none, the cheapest half-fare product it returns (in the test only a saver ticket came back – check in the spike).
 - [ ] AC-19: A price covers the train legs OJP Fare names; a price for several legs is not counted twice.
-- [ ] AC-20: With every price, the product name, product ID, price without VAT and VAT rate are kept for the data link (PROJ-1-PRD-5).
-- [ ] AC-21: The price is marked with its source, "OJP Fare (beta)".
+- [ ] AC-20: Prices are shown as normal prices, without a source mark; the data link holds only the amount (PROJ-1-PRD-5).
 
 ### US-5: As a customer, I want the price I saw to be the price I pay so that a changing saver price does not surprise me (story 23)
 **Given** I see a train price in the overview
@@ -83,18 +82,18 @@ This PRD says **what** the demo gets from SBB. Whether the answers are fetched w
 - The train part runs over midnight or over a daylight-saving change: local times and durations stay correct.
 - No train within a sensible wait after the Vertt arrival (late evening): the journey is not offered, or the long wait is marked (PROJ-1-PRD-2 AC-12).
 - OJP Fare returns no product for a connection: "not available" (AC-24), not bookable (AC-25).
-- OJP Fare returns only a saver ticket in 2nd class when no travelcard is set (seen in the test): see open question.
+- OJP Fare returns only a saver ticket for a connection: its half-fare price is used (AC-18).
 - The same connection gets a different price later the same day (saver prices follow demand): bookings already made keep their price (AC-23).
 - Values come back with stray spaces or without a time zone (seen in the test): they are read correctly or not used.
 - The daily or per-minute limit of the interfaces is reached during a demo: behaviour as in US-6.
 - The demo date is after the end of the current timetable period: the route is not offered.
 
 ## Open Questions
-- **Saver or normal ticket?** For "no travelcard", OJP Fare returned only a saver ticket (Sparbillett, bound to one train, price changes) in 2nd class: CHF 38.80 for Zürich HB → Bern. Proposed rule for AC-18: cheapest 2nd-class product. Is a saver price acceptable as "the" SBB price, also for the settlement? → Tim / CTO (cto-meeting B8).
-- **Train CO₂:** OJP delivers a factor (0.007 kg per person-km → 0.8 kg for Zürich–Bern), while the agreed rule is "tailpipe only → trains 0.0 kg". Keep 0.0 on screen and store the OJP value in the data link only? → CTO (B7).
-- ~~Live or prepared in advance?~~ → **Decided 2026-10-05: live** for every search (PROJ-1-PRD-9). The demo needs internet access to SBB during the presentation; answers are cached.
-- ~~SBB → Vertt journeys: search by arrival time?~~ → **Decided:** no "arrive by"; the last Vertt pickup follows the train arrival + waiting time (PROJ-1-PRD-9 AC-10).
-- ~~Both prices per search?~~ → **Decided 2026-10-05:** only the half-fare price is fetched; no travelcard = 2 × half-fare, GA = CHF 0.00, shown as normal prices (PROJ-1-PRD-9 AC-12). Halves the OJP Fare calls.
+- ~~Saver or normal ticket?~~ → **Decided (Tim 2026-10-05):** always the half-fare price (normal ticket where offered), × 2 for no travelcard, 0 for GA.
+- ~~Train CO₂~~ → **Decided (Tim 2026-10-05):** the OJP value (0.007 kg per person-km × distance → 0.8 kg for Zürich–Bern) is shown and used.
+- ~~Live or prepared in advance?~~ → **Decided 2026-10-05: live** for every search (PROJ-1-PRD-8). The demo needs internet access to SBB during the presentation; answers are cached.
+- ~~SBB → Vertt journeys: search by arrival time?~~ → **Decided:** no "arrive by"; the last Vertt pickup follows the train arrival + waiting time (PROJ-1-PRD-8).
+- ~~Both prices per search?~~ → **Decided 2026-10-05:** only the half-fare price is fetched; no travelcard = 2 × half-fare, GA = CHF 0.00, shown as normal prices (PROJ-1-PRD-8). Halves the OJP Fare calls.
 
 ## Dependencies
 - Feeds: PROJ-1-PRD-8 (train legs and prices as leg offers), PROJ-1-PRD-2 (train legs, prices, map), PROJ-1-PRD-4 (train part of the settlement), PROJ-1-PRD-5 (data sources and price details in the data link).
