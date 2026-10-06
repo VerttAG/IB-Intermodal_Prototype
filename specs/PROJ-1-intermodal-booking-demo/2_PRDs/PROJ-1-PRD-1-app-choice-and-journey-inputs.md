@@ -26,7 +26,7 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 **Acceptance Criteria:**
 - [ ] AC-5: Start and destination are address fields. While typing, matching official Swiss addresses are suggested by the swisstopo address search; choosing one sets the address. Nothing is taken over without the customer choosing it.
 - [ ] AC-6: In the first version both fields start **empty**; typing is the one exception to the rule "nothing has to be typed". A pre-filled example pair is added later, once the engine has been tried (decided by Tim 2026-10-05).
-- [ ] AC-7: The chosen address is turned into coordinates by swisstopo. Address and coordinates are passed to the trip engine (PROJ-1-PRD-8), which may also send them to the AI model (PROJ-1-PRD-8) – all trips in the demo are mock trips.
+- [ ] AC-7: The chosen address is turned into coordinates by swisstopo. Address and coordinates are passed to the trip engine (PROJ-1-PRD-8) – all trips in the demo are mock trips.
 - [ ] AC-8: An address that swisstopo cannot find, or that lies outside Switzerland, cannot be chosen; a message says so.
 - [ ] AC-9: If no trip can be built for the addresses and time, a message says so and no connections are shown.
 - [ ] AC-10: There is no swap button and no "use my location" button.

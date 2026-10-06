@@ -12,6 +12,7 @@ A clickable booking demo for the Innovation Booster project "Seamless Data Excha
 | [specs/PROJ-1-intermodal-booking-demo/2_PRDs/](specs/PROJ-1-intermodal-booking-demo/2_PRDs/) | Feature specs with user stories and acceptance criteria: PRD-1 inputs · PRD-2 connections · PRD-3 login and checkout · PRD-4 settlement and cancellation · PRD-5 data link and export · PRD-6 SBB data · PRD-7 Vertt API · PRD-8 trip engine and AI |
 | [docs/open-topics.md](docs/open-topics.md) | What is still open (CTO, Vertt finance, partners, spikes) |
 | [docs/api/](docs/api/) | Reference for the external APIs, from real test calls |
+| [config/](config/) | `hubs.yaml` – 70 main stations with tier, stop ID and position · `car_pool.yaml` – cars for the Vertt legs |
 | [mockup/](mockup/) | Lite clickable mockup (`index.html`) and the password gate for Vercel (`middleware.js`) |
 
 ## Which API does what
@@ -23,7 +24,7 @@ A clickable booking demo for the Innovation Booster project "Seamless Data Excha
 | Train price (half-fare) | OJP Fare (beta) | `OJP_FARE_API_KEY` | [ojpfare.md](docs/api/ojpfare.md) |
 | Vertt leg: distance, ride time, street route | Valhalla (public server) | none | [routing.md](docs/api/routing.md) |
 | Vertt leg: price, car, CO₂ | Vertt API (ours, to build) – Vertt tariff + car pool | server secret | PRD-7 |
-| Candidate stations | Jev 1.13 via OpenRouter | `OPENROUTER_API_KEY` | PRD-8 |
+| Candidate stations | Fixed list of 70 main stations with tiers (`config/hubs.yaml`) | none | PRD-8 |
 | Map | Leaflet + OpenStreetMap tiles | none | – |
 | Hosting, data behind the links | Vercel (password gate `DEMO_PASSWORD`) | Vercel account | PRD-5, PRD-8 |
 

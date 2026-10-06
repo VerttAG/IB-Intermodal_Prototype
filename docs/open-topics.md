@@ -9,7 +9,7 @@ Last update: 2026-10-05.
 | # | Topic | Current default in Prototype 1 | Question |
 |---|---|---|---|
 | 1 | **Commission asymmetry** | Vertt earns 5 % on the train ticket, SBB earns nothing (deliberate demo decision) | OK to present like this to the partners? |
-| 2 | **AI as showcase** | Jev chooses candidate stations (PRD-8) | Is this a convincing use of AI for the partners? |
+| 2 | **AI as showcase** | No AI in Prototype 1 (Jev dropped 2026-10-06) | Is an AI part wanted later, e.g. a "Recommended" label weighing time, price, CO₂ and transfers? |
 | 3 | **Vertt's own route / price component** | Valhalla × Vertt tariff | Should Vertt's real component (or Google) replace Valhalla later, for prices closer to reality? |
 | 4 | **Settlement timing** | Per booking | Real world: per booking or monthly batch? |
 | 5 | **Unpaid invoice** | Invoice counts as paid immediately | What happens to the B2B share if the customer never pays? |
@@ -33,7 +33,6 @@ Last update: 2026-10-05.
 
 | # | Topic | Where |
 |---|---|---|
-| 11 | Does Jev choose sensible stations? Are threshold 0.8 and time limit 2 s right? | PRD-8 |
 | 12 | Does OJP Fare offer a normal half-fare ticket (Streckenbillett), or only saver tickets? | PRD-6 |
 | 13 | How close do Valhalla + tariff come to the 9 recorded rides? | PRD-7 |
 | 14 | Which example address pair to pre-fill in the address fields? | PRD-1, PRD-8 |

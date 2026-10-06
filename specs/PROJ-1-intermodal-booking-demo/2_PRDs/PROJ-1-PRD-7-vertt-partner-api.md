@@ -37,7 +37,7 @@ Still to check (US-5): how close **Valhalla's** distance and time come to the re
 
 ## The car pool
 
-A list of cars maintained by Tim in `config/car_pool.yaml`: make, model, year, CO₂ factor (g/km). It includes the cars of the recorded rides and may include more. **Every car has a CO₂ factor** (no gaps). No number plates, no vehicle IDs.
+`config/car_pool.yaml`: make, model, year, CO₂ factor (g/km). For now the **5 cars of the recorded rides** that have a CO₂ value (Renault Megane 2015 = 90 g/km, decided 2026-10-06); more cars and fuel types later (GitHub issue #20). **Every car has a CO₂ factor** (no gaps). No number plates, no vehicle IDs.
 
 ## User Stories
 
