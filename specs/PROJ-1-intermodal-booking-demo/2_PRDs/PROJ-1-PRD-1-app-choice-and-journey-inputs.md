@@ -62,7 +62,7 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 
 **Acceptance Criteria:**
 - [ ] AC-18: The planning screen has a "Log in with SwissPass" button in both apps.
-- [ ] AC-19: After the click, three test profiles are offered: no travelcard, half-fare, GA.
+- [ ] AC-19: The click opens a **SwissPass mock login screen** (pre-filled, nothing to type) where the customer picks one of three test profiles – no travelcard, half-fare, GA – and logs in with one click. "Cancel" returns to the planning screen without change.
 - [ ] AC-20: Picking a profile sets the travelcard, updates all prices, and locks the travelcard with the hint "from SwissPass".
 - [ ] AC-21: After the SwissPass login the button is gone and there is no log-out within the run.
 - [ ] AC-22: After the SwissPass login, "Continue" from the connection details leads straight to the overview; step 2 is not shown.
@@ -75,7 +75,7 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 - The address search does not answer: a message says so; no search is possible.
 - The chosen time is in the past, or so late that no train runs anymore: the engine finds no trip → message (AC-9).
 - Start, destination or time is changed after a search: the old results are cleared; the customer searches again.
-- The profile box is opened and closed without picking a profile: nothing changes, travelcard stays editable.
+- The SwissPass mock login is opened and cancelled: nothing changes, travelcard stays editable.
 - A SwissPass profile differs from the travelcard chosen before: the profile wins, prices update (AC-15).
 - The page is reloaded in the middle of a run: the run starts again at step 0, nothing is booked or stored.
 
@@ -98,5 +98,5 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 - Reuse: screens "app" and "plan" of the lite mockup, [mockup/index.html](../../../mockup/index.html), live at https://ib-intermodal-prototype.vercel.app.
 - New component candidates: address input with suggestion list, date/time picker ("Depart at"), "Search" button with loading state. None are in the mockup.
 - Design tokens: none defined yet; the mockup's carrier colours are the only fixed values.
-- Interaction contract: fixed app choice, address suggestions, search button, travelcard switch updating prices without a new search, SwissPass profile box, locked travelcard.
+- Interaction contract: fixed app choice, address suggestions, search button, travelcard switch updating prices without a new search, SwissPass mock login screen with test profile, locked travelcard.
 - Implementation tolerance: layout and wording may change; the behaviours in the acceptance criteria may not.

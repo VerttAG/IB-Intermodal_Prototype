@@ -24,7 +24,7 @@ Covers step 2 (log in), step 3 (overview and pay) and the receipt. Source: [docs
 - [ ] AC-3: Four options are offered: Google, Apple, SwissPass, email + password. Each logs in with one click.
 - [ ] AC-4: The email and password fields are pre-filled with demo values and cannot be edited.
 - [ ] AC-5: Step 2 is not shown if SwissPass was used in step 1.
-- [ ] AC-6: Choosing SwissPass in step 2 does not change the travelcard chosen in step 1, and does not lock it afterwards.
+- [ ] AC-6: Choosing SwissPass in step 2 opens the same SwissPass mock login screen, without a test profile choice; it does not change the travelcard chosen in step 1, does not lock it, and leads straight to the overview.
 - [ ] AC-7: The booking stores the `login_method` (google, apple, swisspass, email) and a pseudonymous demo customer ID.
 
 ### US-3: As a customer, I want to see everything I'm about to book on one screen before I pay so that I can check it (story 13)
