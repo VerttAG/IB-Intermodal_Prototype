@@ -1,7 +1,7 @@
 # Design brief – Intermodal booking demo (Vertt × SBB)
 
 Product brief for UX/UI design. Owner: Tim Diethelm. Date: 2026-10-06.
-Reference mockup (flow only, not the look): https://ib-intermodal-prototype.vercel.app – password from Tim – or `mockup/index.html` in this repo.
+Reference: the attached mockup file (`index.html`, open it in a browser) shows the flow with made-up data.
 
 ## 1. What it is
 
@@ -50,26 +50,3 @@ The demo runs in two modes, chosen at the start: **"Vertt app"** or **"SBB app"*
 - Travelcard affects only the train price: half-fare price, ×2 without travelcard, CHF 0.00 with GA ("covered by GA").
 - The labels are calculated: Fastest = earliest arrival, Cheapest = lowest price, Greenest = lowest CO₂. One trip can carry several labels.
 - Times are Swiss local time.
-
-## 6. Design guidance
-
-- **Phone layout**; on a laptop the phone screen sits in the middle.
-- **One neutral design for both modes.** No official SBB or Vertt logos, fonts or brand colours (the demo is shown publicly to partners). A neutral accent colour; the Vertt app's patterns can be reused where they fit.
-- Functional and calm: light background, white cards, thin dividers, small corner radius, clear hierarchy (times and prices bold, details smaller) – no decorative elements, no emojis.
-- Vertt, train and walk must be distinguishable **not only by colour** (label or pattern as well).
-- Accessible contrast and touch targets; everything also works with the keyboard.
-
-## 7. Fixed vs. free
-
-| Fixed | Free |
-|---|---|
-| Order of the steps and what each screen contains (section 3) | Layout, visual design, components, icons |
-| Content rules (section 5), the messages' meaning (section 4) | Exact wording and microcopy |
-| SwissPass mock login skips step 2 | How the map, the leg bar and the labels look |
-| Comparison cards are not bookable | Animation of loading and payment |
-
-## 8. Open / later
-
-- A pre-filled example address pair may be added later (fields start empty for now).
-- Smaller stations and more cars come later; the design should not depend on a fixed number of cars or stations.
-- Deliverables and timing: to agree with Tim (e.g. screens 0–4 plus the states in section 4).
