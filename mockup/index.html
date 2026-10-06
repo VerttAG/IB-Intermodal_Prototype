@@ -87,17 +87,17 @@ const RAIL = [[47.3912, 8.4889], [47.3880, 8.1800], [47.3520, 7.9070], [47.2100,
 // half-fare train price (from OJP Fare), CO2 from OJP; Vertt legs: tariff from km + min
 const TRIPS = [
   { id: "A", legs: [
-    { kind: "vertt", from: "start", to: "Zürich HB", pick: "11:31", arr: "11:52", km: 13.2, min: 21, car: "VW Passat 2013", g: 134, geo: [P.home, [47.36, 8.50], P.zhb] },
+    { kind: "vertt", from: "start", to: "Zürich HB", pick: "11:31", arr: "11:52", km: 13.2, min: 21, car: "VW Passat", year: 2013, g: 123, geo: [P.home, [47.36, 8.50], P.zhb] },
     { kind: "train", from: "Zürich HB", to: "Bern", dep: "12:02", arr: "12:58", line: "IC 8", pl: "Platform 31", half: 28.00, co2: 0.83, geo: [P.zhb, ...RAIL, P.bern] },
-    { kind: "vertt", from: "Bern", to: "dest", pick: "13:00", arr: "13:13", km: 4.1, min: 13, car: "BMW 3er 2020", g: 120, geo: [P.bern, [46.953, 7.462], P.dest] } ] },
+    { kind: "vertt", from: "Bern", to: "dest", pick: "13:00", arr: "13:13", km: 4.1, min: 13, car: "BMW 3 Series", year: 2020, g: 134, geo: [P.bern, [46.953, 7.462], P.dest] } ] },
   { id: "B", legs: [
-    { kind: "vertt", from: "start", to: "Thalwil", pick: "11:31", arr: "11:47", km: 9.5, min: 16, car: "Renault Megane 2015", g: 110, geo: [P.home, [47.32, 8.52], P.thalwil] },
+    { kind: "vertt", from: "start", to: "Thalwil", pick: "11:31", arr: "11:47", km: 9.5, min: 16, car: "Renault Talisman", year: 2018, g: 120, geo: [P.home, [47.32, 8.52], P.thalwil] },
     { kind: "train", from: "Thalwil", to: "Bern Wankdorf", dep: "12:00", arr: "13:20", line: "IR 70", pl: "Platform 3", half: 22.40, co2: 0.84, geo: [P.thalwil, [47.17, 8.48], [47.05, 8.30], [46.98, 7.75], P.wank] },
     { kind: "walk", from: "Bern Wankdorf", to: "dest", dep: "13:20", arr: "13:32", km: 0.9, min: 12, geo: [P.wank, P.dest] } ] },
   { id: "C", legs: [
-    { kind: "vertt", from: "start", to: "Bonstetten-Wettswil", pick: "11:31", arr: "11:39", km: 4.0, min: 8, car: "Tesla Model 3 2022", g: 0, geo: [P.home, P.bonst] },
+    { kind: "vertt", from: "start", to: "Bonstetten-Wettswil", pick: "11:31", arr: "11:39", km: 4.0, min: 8, car: "Renault Megane", year: 2015, g: 90, geo: [P.home, P.bonst] },
     { kind: "train", from: "Bonstetten-Wettswil", to: "Bern", dep: "11:52", arr: "13:24", line: "S5 / IR 15", pl: "Platform 1", half: 27.00, co2: 0.86, geo: [P.bonst, [47.25, 8.30], [47.10, 7.95], P.bern] },
-    { kind: "vertt", from: "Bern", to: "dest", pick: "13:26", arr: "13:34", km: 3.5, min: 8, car: "Toyota Prius 2019", g: 92, geo: [P.bern, [46.952, 7.47], P.dest] } ] },
+    { kind: "vertt", from: "Bern", to: "dest", pick: "13:26", arr: "13:34", km: 3.5, min: 8, car: "Renault Megane", year: 2017, g: 95, geo: [P.bern, [46.952, 7.47], P.dest] } ] },
 ];
 const CMP = { verttOnly: { dep: "11:31", arr: "13:06", km: 128, min: 95, g: 120 },
               ptOnly: { dep: "11:34", arr: "13:36", transfers: 3, half: 30.50, co2: 1.1 } };
@@ -118,7 +118,7 @@ const store = list => { try { localStorage.setItem("bookings", JSON.stringify(li
 // ---------- State ----------
 let S, maps = [];
 function reset() {
-  S = { app: null, from: "", to: "", typing: null, date: "2026-10-06", time: "11:30", card: "half", swisspass: false, spOpen: false,
+  S = { app: null, from: "", to: "", typing: null, date: "2026-10-06", time: "11:30", card: "half", swisspass: false, spFrom: null, spCard: null,
         searched: false, tooShort: false, sel: null, login: null, promo: 0, pay: null, screen: "app", booking: null };
   render();
 }
@@ -175,7 +175,7 @@ function linkData(b) {
 }
 
 // ---------- Rendering ----------
-const STEP = { app: "Step 0", plan: "Step 1", detail: "Step 1", login: "Step 2", overview: "Step 3", paying: "", receipt: "Receipt" };
+const STEP = { app: "Step 0", swisspass: "SwissPass", plan: "Step 1", detail: "Step 1", login: "Step 2", overview: "Step 3", paying: "", receipt: "Receipt" };
 function render() {
   maps.forEach(m => m.remove()); maps = [];
   document.getElementById("app").textContent = S.app ? (S.app === "vertt" ? "Vertt app" : "SBB app") : "Intermodal demo";
@@ -196,7 +196,7 @@ function legsHtml(L) {
     const wait = l.kind === "vertt" ? `<div class="gap">Car arrives ${i === 0 ? "5" : "2"} min after ${i === 0 ? "your departure time" : "the train"}</div>` : "";
     const gap = next ? `<div class="gap">Transfer ${toMin(next.kind === "vertt" ? next.pick : next.dep) - toMin(l.arr)} min</div>` : "";
     const detail = l.kind === "train" ? `${l.line} · ${l.pl}${S.card !== "none" ? " · " + (S.card === "ga" ? "covered by GA" : "half-fare price") : ""}`
-                 : l.kind === "vertt" ? `Category Vertt · ${l.km} km${S.promo ? ` · <span class="strike">${chf(l.base)}</span> −${S.promo} %` : ""}`
+                 : l.kind === "vertt" ? `Category Vertt · ${l.car} ${l.year} · ${l.g} g/km · ${l.km} km${S.promo ? ` · <span class="strike">${chf(l.base)}</span> −${S.promo} %` : ""}`
                  : `${l.km} km on foot`;
     return `${wait}<div class="leg ${l.kind}" style="border-color:${COL[l.kind]}">
       <div class="row"><span class="mode" style="color:${COL[l.kind]}">${MODE[l.kind]}</span><span>${chf(l.price)}</span></div>
@@ -235,6 +235,7 @@ function cardHtml(x) {
     <div>${x.labels.map(l => `<span class="tag">${l}</span>`).join("")}<span class="muted">Door to door with one booking</span></div>
     <div class="row" style="margin-top:6px"><span class="times">${x.dep} – ${x.arr}</span><span class="muted">${Math.floor(x.dur / 60)} h ${x.dur % 60} min · ${x.transfers} transfers</span></div>
     ${bars(x.L)}
+    <div class="muted">${x.L.filter(l => l.kind === "vertt").map(l => `Car: ${l.car} · ${l.g} g/km`).join(" &nbsp;|&nbsp; ")}</div>
     <div class="row"><b>${chf(x.price)}</b><span class="muted">CO₂ ${kg(x.co2)}</span></div></div>`;
 }
 
@@ -262,9 +263,7 @@ const VIEWS = {
         <div class="field"><label>Time</label><input type="time" value="${S.time}" onchange="S.time=this.value;S.searched=false;render()"></div></div>
       <h2>Travelcard${S.swisspass ? " – from SwissPass" : ""}</h2>
       <div class="seg">${Object.keys(NAMES).map(c => `<button class="${S.card === c ? "on" : ""}" ${S.swisspass ? "disabled" : ""} onclick="S.card='${c}';render()">${NAMES[c]}</button>`).join("")}</div>
-      ${S.swisspass ? "" : `<button class="btn secondary" onclick="S.spOpen=!S.spOpen;render()">Log in with SwissPass</button>`}
-      ${S.spOpen && !S.swisspass ? `<div class="note">Choose test profile<div class="seg" style="margin-top:6px">${Object.keys(NAMES).map(c =>
-        `<button onclick="S.card='${c}';S.swisspass=true;S.login='swisspass';render()">${NAMES[c]}</button>`).join("")}</div></div>` : ""}
+      ${S.swisspass ? "" : `<button class="btn secondary" onclick="S.spFrom='plan';go('swisspass')">Log in with SwissPass</button>`}
       <button class="btn" ${ready ? "" : "disabled"} onclick="search()">Search</button>${results}`;
   },
 
@@ -277,7 +276,8 @@ const VIEWS = {
   },
 
   login: () => `<h1>Log in</h1><p class="muted">One click – nothing to type in the demo.</p>
-    ${["Google", "Apple", "SwissPass"].map(p => `<button class="btn secondary" onclick="S.login='${p.toLowerCase()}';go('overview')">Continue with ${p}</button>`).join("")}
+    ${["Google", "Apple"].map(p => `<button class="btn secondary" onclick="S.login='${p.toLowerCase()}';go('overview')">Continue with ${p}</button>`).join("")}
+    <button class="btn secondary" onclick="S.spFrom='login';go('swisspass')">Continue with SwissPass</button>
     <h2>Or with email</h2><div class="field"><label>Email</label><input value="demo@example.com" readonly></div>
     <div class="field"><label>Password</label><input type="password" value="demopassword" readonly></div>
     <button class="btn" onclick="S.login='email';go('overview')">Log in</button>`,
@@ -293,6 +293,14 @@ const VIEWS = {
         ${S.pay === m.toLowerCase() ? "checked" : ""} onchange="S.pay='${m.toLowerCase()}';render()"> ${m}</label>`).join("")}</div>
       <button class="btn" ${S.pay ? "" : "disabled"} onclick="pay()">Pay ${chf(x.price)}</button>`;
   },
+
+  swisspass: () => `<h1>SwissPass</h1><p class="muted">Demo login – nothing to type.</p>
+    <div class="field"><label>Email</label><input value="demo@swisspass.example" readonly></div>
+    <div class="field"><label>Password</label><input type="password" value="demopassword" readonly></div>
+    ${S.spFrom === "plan" ? `<h2>Test profile</h2><div class="list">${Object.keys(NAMES).map(c => `<label class="opt"><input type="radio" name="sp"
+      ${S.spCard === c ? "checked" : ""} onchange="S.spCard='${c}';render()"> ${NAMES[c]}</label>`).join("")}</div>` : ""}
+    <button class="btn" ${S.spFrom === "plan" && !S.spCard ? "disabled" : ""} onclick="swissPassLogin()">Log in</button>
+    <button class="btn secondary" onclick="go(S.spFrom)">Cancel</button>`,
 
   paying: () => `<div class="center"><div class="spinner"></div><b>Paying ${seller()} …</b></div>`,
 
@@ -316,6 +324,10 @@ const VIEWS = {
 };
 
 // ---------- Actions ----------
+function swissPassLogin() {
+  S.swisspass = true; S.login = "swisspass";
+  if (S.spFrom === "plan") { S.card = S.spCard; go("plan"); } else go("overview");   // step 2 is done
+}
 function search() {
   S.tooShort = town(S.from) === town(S.to);
   S.searched = false; document.getElementById("screen").innerHTML = `<div class="center"><div class="spinner"></div><b>Searching connections …</b></div>`;
