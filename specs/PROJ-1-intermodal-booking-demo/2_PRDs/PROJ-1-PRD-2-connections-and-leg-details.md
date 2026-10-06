@@ -18,6 +18,7 @@ A trip has up to three legs: **first leg** (Vertt ride or walk) → **train** �
 - [ ] AC-1: The list shows, in this order: up to three **bookable trips** labelled "Fastest", "Cheapest" and "Greenest" (calculated, PROJ-1-PRD-8), then **"Vertt only"**, then **"Public transport only"**.
 - [ ] AC-2: A trip that wins several labels is shown once with all of them. Other calculated candidate trips are not shown.
 - [ ] AC-3: Each card shows departure, arrival, duration (door to door), number of transfers, transport mode icons (car / walk / train / bus), total price and total CO₂.
+- [ ] AC-3a: Each bookable card also names the car of each Vertt leg in short form – make and model with its CO₂ value, e.g. "Toyota Prius · 92 g/km" – so the customer sees **when choosing** why the CO₂ differs between trips (Tim, 2026-10-06).
 - [ ] AC-4: The two comparison cards are marked "for comparison", are **not bookable and not clickable**.
 - [ ] AC-5: Tapping a bookable card opens its details (US-2).
 - [ ] AC-6: If a comparison cannot be calculated (e.g. OJP finds no public-transport connection), its card is left out with a short note.
@@ -31,7 +32,7 @@ A trip has up to three legs: **first leg** (Vertt ride or walk) → **train** �
 **Acceptance Criteria:**
 - [ ] AC-7: Each leg shows carrier (Vertt / SBB / walk), mode icon, from → to, departure, arrival and duration.
 - [ ] AC-8: Train legs show the line (e.g. S11, IC 8) as delivered by OJP (PROJ-1-PRD-6).
-- [ ] AC-9: Vertt legs show the car category. Prototype 1 has one category, "Vertt".
+- [ ] AC-9: Vertt legs show the car category (Prototype 1: "Vertt") **and the car**: make, model, year and its CO₂ value in g/km, plus the fuel type (e.g. "Toyota Prius 2019 · hybrid · 92 g/km"). An electric car shows "electric · 0 g/km".
 - [ ] AC-10: The car of a Vertt leg is drawn from the **car pool** (PROJ-1-PRD-7) once per Vertt leg and stays the same until the run ends.
 - [ ] AC-11: Walk legs show the walking time and distance; price CHF 0.00 and CO₂ 0.0 kg.
 - [ ] AC-12: Before a Vertt leg, the waiting time for the car is visible: 5 min at the start, 2 min at the destination station (PROJ-1-PRD-8).
@@ -107,7 +108,7 @@ A trip has up to three legs: **first leg** (Vertt ride or walk) → **train** �
 - Every number on screen can be traced to its source (PRD definition of done).
 - Carriers are never told apart by colour alone: leg rows name the carrier and the map has a legend.
 - The list and the details are usable without the map.
-- The car pool holds make, model, year and CO₂ factor only – no number plates.
+- The car pool holds make, model, year, fuel type and CO₂ factor only – no number plates. The car is shown on screen but is not part of the data link (PROJ-1-PRD-5).
 
 ## UI Implementation Notes
 - Project mode: new prototype, built in this repo (full chain).

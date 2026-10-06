@@ -1,0 +1,73 @@
+# Main stations (hubs) for the trip engine – PRD-8. Tier 1 = national, 2 = regional, 3 = local.
+# stop_ref, lat, lon resolved once via OJP (2026-10-06).
+hubs:
+  - {name: "Zürich HB", tier: 1, stop_ref: "ch:1:sloid:3000", lat: 47.37818, lon: 8.54021}
+  - {name: "Bern", tier: 1, stop_ref: "ch:1:sloid:7000", lat: 46.94883, lon: 7.43913}
+  - {name: "Basel SBB", tier: 1, stop_ref: "ch:1:sloid:10", lat: 47.54741, lon: 7.58956}
+  - {name: "Olten", tier: 1, stop_ref: "ch:1:sloid:218", lat: 47.35193, lon: 7.90770}
+  - {name: "Winterthur", tier: 1, stop_ref: "ch:1:sloid:6000", lat: 47.50033, lon: 8.72382}
+  - {name: "Lausanne", tier: 1, stop_ref: "ch:1:sloid:1120", lat: 46.51679, lon: 6.62909}
+  - {name: "St. Gallen", tier: 1, stop_ref: "ch:1:sloid:6302", lat: 47.42318, lon: 9.36990}
+  - {name: "Biel/Bienne", tier: 1, stop_ref: "ch:1:sloid:4300", lat: 47.13290, lon: 7.24291}
+  - {name: "Genève", tier: 1, stop_ref: "ch:1:sloid:1008", lat: 46.21021, lon: 6.14246}
+  - {name: "Luzern", tier: 1, stop_ref: "ch:1:sloid:5000", lat: 47.05018, lon: 8.31018}
+  - {name: "Zug", tier: 1, stop_ref: "ch:1:sloid:2204", lat: 47.17371, lon: 8.51505}
+  - {name: "Aarau", tier: 1, stop_ref: "ch:1:sloid:2113", lat: 47.39136, lon: 8.05128}
+  - {name: "Fribourg/Freiburg", tier: 1, stop_ref: "ch:1:sloid:4100", lat: 46.80315, lon: 7.15105}
+  - {name: "Lugano", tier: 1, stop_ref: "ch:1:sloid:5300", lat: 46.00550, lon: 8.94700}
+  - {name: "Zürich Flughafen", tier: 2, stop_ref: "ch:1:sloid:3016", lat: 47.45039, lon: 8.56240}
+  - {name: "Neuchâtel", tier: 2, stop_ref: "ch:1:sloid:4221", lat: 46.99673, lon: 6.93570}
+  - {name: "Schaffhausen", tier: 2, stop_ref: "ch:1:sloid:3424", lat: 47.69828, lon: 8.63276}
+  - {name: "Thun", tier: 2, stop_ref: "ch:1:sloid:7100", lat: 46.75485, lon: 7.62961}
+  - {name: "Baden", tier: 2, stop_ref: "ch:1:sloid:3504", lat: 47.47642, lon: 8.30771}
+  - {name: "Sargans", tier: 2, stop_ref: "ch:1:sloid:9411", lat: 47.04482, lon: 9.44626}
+  - {name: "Weinfelden", tier: 2, stop_ref: "ch:1:sloid:6105", lat: 47.56622, lon: 9.10637}
+  - {name: "Yverdon-les-Bains", tier: 2, stop_ref: "ch:1:sloid:4200", lat: 46.78154, lon: 6.64095}
+  - {name: "Wil SG", tier: 2, stop_ref: "ch:1:sloid:6206", lat: 47.46241, lon: 9.04100}
+  - {name: "Brig", tier: 2, stop_ref: "ch:1:sloid:1609", lat: 46.31943, lon: 7.98810}
+  - {name: "Arth-Goldau", tier: 2, stop_ref: "ch:1:sloid:5004", lat: 47.04904, lon: 8.54945}
+  - {name: "Bellinzona", tier: 2, stop_ref: "ch:1:sloid:5213", lat: 46.19543, lon: 9.02951}
+  - {name: "Solothurn", tier: 2, stop_ref: "ch:1:sloid:207", lat: 47.20419, lon: 7.54269}
+  - {name: "Morges", tier: 2, stop_ref: "ch:1:sloid:1037", lat: 46.51110, lon: 6.49397}
+  - {name: "Romanshorn", tier: 2, stop_ref: "ch:1:sloid:6121", lat: 47.56552, lon: 9.37937}
+  - {name: "Mendrisio", tier: 2, stop_ref: "ch:1:sloid:5305", lat: 45.86911, lon: 8.97861}
+  - {name: "Liestal", tier: 2, stop_ref: "ch:1:sloid:23", lat: 47.48446, lon: 7.73137}
+  - {name: "Landquart", tier: 2, stop_ref: "ch:1:sloid:9002", lat: 46.96744, lon: 9.55404}
+  - {name: "Pfäffikon SZ", tier: 2, stop_ref: "ch:1:sloid:3209", lat: 47.20300, lon: 8.77813}
+  - {name: "Chur", tier: 2, stop_ref: "ch:1:sloid:9000", lat: 46.85309, lon: 9.52893}
+  - {name: "St. Margrethen SG", tier: 2, stop_ref: "ch:1:sloid:6314", lat: 47.45322, lon: 9.63826}
+  - {name: "Montreux", tier: 2, stop_ref: "ch:1:sloid:1300", lat: 46.43588, lon: 6.91044}
+  - {name: "Aigle", tier: 2, stop_ref: "ch:1:sloid:1400", lat: 46.31686, lon: 6.96369}
+  - {name: "Sursee", tier: 2, stop_ref: "ch:1:sloid:2007", lat: 47.17080, lon: 8.09789}
+  - {name: "Martigny", tier: 2, stop_ref: "ch:1:sloid:1500", lat: 46.10583, lon: 7.07912}
+  - {name: "Nyon", tier: 2, stop_ref: "ch:1:sloid:1030", lat: 46.38442, lon: 6.23597}
+  - {name: "Romont FR", tier: 2, stop_ref: "ch:1:sloid:4023", lat: 46.69351, lon: 6.91181}
+  - {name: "Frauenfeld", tier: 2, stop_ref: "ch:1:sloid:6100", lat: 47.55816, lon: 8.89656}
+  - {name: "Locarno", tier: 2, stop_ref: "ch:1:sloid:5400", lat: 46.17242, lon: 8.80136}
+  - {name: "Sion", tier: 2, stop_ref: "ch:1:sloid:1506", lat: 46.22755, lon: 7.35920}
+  - {name: "Interlaken Ost", tier: 2, stop_ref: "ch:1:sloid:7492", lat: 46.69050, lon: 7.86900}
+  - {name: "Burgdorf", tier: 3, stop_ref: "ch:1:sloid:8005", lat: 47.06070, lon: 7.62169}
+  - {name: "Ziegelbrücke", tier: 3, stop_ref: "ch:1:sloid:3225", lat: 47.13616, lon: 9.06005}
+  - {name: "Langenthal", tier: 3, stop_ref: "ch:1:sloid:8100", lat: 47.21730, lon: 7.78472}
+  - {name: "Wattwil", tier: 3, stop_ref: "ch:1:sloid:6200", lat: 47.29948, lon: 9.08649}
+  - {name: "Delémont", tier: 3, stop_ref: "ch:1:sloid:109", lat: 47.36201, lon: 7.35006}
+  - {name: "Wetzikon ZH", tier: 3, stop_ref: "ch:1:sloid:3123", lat: 47.31803, lon: 8.79229}
+  - {name: "Konolfingen", tier: 3, stop_ref: "ch:1:sloid:8202", lat: 46.88070, lon: 7.62137}
+  - {name: "Koblenz", tier: 3, stop_ref: "ch:1:sloid:329", lat: 47.60034, lon: 8.22705}
+  - {name: "Kerzers", tier: 3, stop_ref: "ch:1:sloid:4400", lat: 46.97508, lon: 7.19281}
+  - {name: "Stein-Säckingen", tier: 3, stop_ref: "ch:1:sloid:320", lat: 47.54161, lon: 7.94884}
+  - {name: "Porrentruy", tier: 3, stop_ref: "ch:1:sloid:126", lat: 47.42092, lon: 7.08008}
+  - {name: "Hedingen", tier: 3, stop_ref: "ch:1:sloid:2223", lat: 47.29878, lon: 8.44597}
+  - {name: "La Chaux-de-Fonds", tier: 3, stop_ref: "ch:1:sloid:4314", lat: 47.09837, lon: 6.82598}
+  - {name: "Biasca", tier: 3, stop_ref: "ch:1:sloid:5209", lat: 46.35198, lon: 8.97418}
+  - {name: "Altdorf UR", tier: 3, stop_ref: "ch:1:sloid:5113", lat: 46.87574, lon: 8.63158}
+  - {name: "Wolhusen", tier: 3, stop_ref: "ch:1:sloid:8215", lat: 47.05549, lon: 8.07975}
+  - {name: "Payerne", tier: 3, stop_ref: "ch:1:sloid:4134", lat: 46.81965, lon: 6.93988}
+  - {name: "Eglisau", tier: 3, stop_ref: "ch:1:sloid:3402", lat: 47.57238, lon: 8.51656}
+  - {name: "Walenstadt", tier: 3, stop_ref: "ch:1:sloid:9414", lat: 47.11988, lon: 9.31298}
+  - {name: "Le Day", tier: 3, stop_ref: "ch:1:sloid:1104", lat: 46.72003, lon: 6.39902}
+  - {name: "Zweisimmen", tier: 3, stop_ref: "ch:1:sloid:7290", lat: 46.55348, lon: 7.37486}
+  - {name: "Göschenen", tier: 3, stop_ref: "ch:1:sloid:5119", lat: 46.66581, lon: 8.58881}
+  - {name: "Frutigen", tier: 3, stop_ref: "ch:1:sloid:7478", lat: 46.58891, lon: 7.65142}
+  - {name: "Schwanden GL", tier: 3, stop_ref: "ch:1:sloid:3233", lat: 46.99685, lon: 9.07747}
+  - {name: "Buttes", tier: 3, stop_ref: "ch:1:sloid:4288", lat: 46.88834, lon: 6.55319}

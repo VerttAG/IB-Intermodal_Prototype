@@ -1,0 +1,9 @@
+# Car pool for calculated Vertt legs (PRD-7). One car is drawn at random per Vertt leg.
+# Source: cars of the recorded rides (Excel export), CO2 in g/km. No number plates, no vehicle IDs.
+# Optional per car later: fuel (petrol | diesel | hybrid | electric), weight. More cars: GitHub issue #20.
+cars:
+  - {make: "VW", model: "Passat", year: 2013, co2_g_per_km: 123}
+  - {make: "Renault", model: "Megane", year: 2015, co2_g_per_km: 90}
+  - {make: "Renault", model: "Megane", year: 2017, co2_g_per_km: 95}
+  - {make: "Renault", model: "Talisman", year: 2018, co2_g_per_km: 120}
+  - {make: "BMW", model: "3 Series", year: 2020, co2_g_per_km: 134}

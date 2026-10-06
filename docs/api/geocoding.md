@@ -111,4 +111,4 @@ All three public services tried can be called from the browser directly.
 ## 6. Open points
 
 - **Terms of use / fair-use limits** of the GeoAdmin API were not checked in the trial. To verify before the demo is shared with partners.
-- **Privacy:** all trips are mock trips (decided 2026-10-05). The address and its coordinates go to our server, the Vertt API and the AI model for the search, but are not stored and never appear in the data link (stories 2, 21).
+- **Privacy:** all trips are mock trips (decided 2026-10-05). The address and its coordinates go to our server and the Vertt API for the search, but are not stored and never appear in the data link (stories 2, 21).

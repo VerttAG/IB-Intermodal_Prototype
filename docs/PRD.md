@@ -34,7 +34,7 @@ Customer: start address, destination address, "depart at", travelcard → "Searc
         ▼
 Trip engine (our server on Vercel) – PRD-8
         ├── swisstopo        addresses → coordinates (under 10 km apart → "Trip not suitable for intermodal journey")
-        ├── AI (Jev 1.13)    chooses max. 3 candidate stations per side from real OJP stations
+        ├── Main stations    max. 3 per side from 70 hubs by tier (config/hubs.yaml)
         ├── Vertt API        first / last leg: Valhalla route × Vertt tariff, car from the car pool – PRD-7
         │                    (walk instead, if the station is within 1 km)
         ├── OJP 2.0          first train ≥ 8 min after arrival at the station, train CO₂ – PRD-6
@@ -49,8 +49,8 @@ Booking app: up to 3 labelled trips + "Vertt only" + "Public transport only" (co
 
 - **No preset trips:** every trip is calculated live. The 9 recorded Vertt rides only **validate** the calculator.
 - **Vertt tariff:** CHF 3.00 + 1.80/km + 0.30/min, minimum CHF 10.00, the same everywhere, factor 1.0.
-- **AI:** chooses stations (a judgement), never the labels (a calculation). The search works without it.
-- **Server:** keys for OJP, OJP Fare, Vertt API and OpenRouter stay on the server; a password gate protects the demo.
+- **Stations:** main stations only (70 hubs, Tier 1–3). Tier 1 is always tried; a Tier 2 or 3 hub only if it is closer. No AI in Prototype 1.
+- **Server:** Python on Vercel; keys for OJP, OJP Fare and the Vertt API stay on the server; a password gate protects the demo.
 
 ## 4. The customer flow
 
@@ -77,7 +77,7 @@ The full stories with acceptance criteria are in the specs. Story numbers are us
 | 4 | State my travelcard | Customer | Must | PRD-1 |
 | 5 | Log in with SwissPass while planning | Customer | Must | PRD-1 |
 | 6 | See the labelled trips and comparisons | Customer | Must | PRD-2 |
-| 7 | See the details of each leg | Customer | Must | PRD-2 |
+| 7 | See the details of each leg, incl. which car drives (model, CO₂ g/km) | Customer | Must | PRD-2 |
 | 8 | See price per leg and total | Customer | Must | PRD-2 |
 | 9 | See CO₂ per leg and total | Customer | Must | PRD-2 |
 | 10 | See the journey on a map | Customer | Must | PRD-2 |
@@ -99,7 +99,7 @@ The full stories with acceptance criteria are in the specs. Story numbers are us
 | 26 | A calculator Vertt can trust (validation) | Vertt | Must | PRD-7 |
 | 27 | Fastest, cheapest, greenest | Customer | Must | PRD-8 |
 | 28 | One service for complete trip offers | Partner app | Must | PRD-8 |
-| 29 | The AI chooses the stations worth trying | Demo presenter | Must | PRD-8 |
+| 29 | The right main stations are tried (tier rule) | Customer | Must | PRD-8 |
 
 ## 6. Settlement rules
 
@@ -160,7 +160,7 @@ Real payments and logins, "arrive by", "use my location", peak-time factors, boo
 ## 10. Next steps
 
 1. CTO meeting: go through [open-topics.md](open-topics.md), confirm this PRD.
-2. Spike: AI station choice on 5–10 example journeys (PRD-8).
-3. Car pool (`config/car_pool.yaml`) and validation of the calculator against the recorded rides (PRD-7).
-4. Create the build tasks as GitHub issues from the specs.
-5. Build: Vertt API → trip engine → booking app → settlement, data link and export.
+2. Validation of the calculator against the recorded rides (PRD-7).
+3. Create the build tasks as GitHub issues from the specs.
+4. Build (Python, Vercel): Vertt API → OJP client → trip engine → booking app → settlement, data link and export.
+5. Later: more stations (issue #19), more cars (issue #20).
