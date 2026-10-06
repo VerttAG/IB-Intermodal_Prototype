@@ -77,7 +77,7 @@ The full stories with acceptance criteria are in the specs. Story numbers are us
 | 4 | State my travelcard | Customer | Must | PRD-1 |
 | 5 | Log in with SwissPass while planning | Customer | Must | PRD-1 |
 | 6 | See the labelled trips and comparisons | Customer | Must | PRD-2 |
-| 7 | See the details of each leg | Customer | Must | PRD-2 |
+| 7 | See the details of each leg, incl. which car drives (model, CO₂ g/km) | Customer | Must | PRD-2 |
 | 8 | See price per leg and total | Customer | Must | PRD-2 |
 | 9 | See CO₂ per leg and total | Customer | Must | PRD-2 |
 | 10 | See the journey on a map | Customer | Must | PRD-2 |
