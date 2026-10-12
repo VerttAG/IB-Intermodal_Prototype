@@ -1,6 +1,6 @@
 # PROJ-1-PRD-6: SBB partner data from OJP and OJP Fare
 
-## Status: Planned
+## Status: Built 2026-10-12 – `src/ojp.py`, tests in `tests/test_ojp.py` (saved real answers in `tests/fixtures/ojp/`)
 
 Covers everything the demo needs from the SBB side: stations, train connections and train prices. They come from the two official interfaces, OJP 2.0 (journey planner) and OJP Fare (prices). Source: [docs/PRD.md](../../../docs/PRD.md) section 5 stories 22, 23 ; findings in [docs/api/ojp20.md](../../../docs/api/ojp20.md) and [docs/api/ojpfare.md](../../../docs/api/ojpfare.md).
 

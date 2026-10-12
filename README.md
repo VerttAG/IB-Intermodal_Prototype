@@ -2,7 +2,7 @@
 
 A clickable booking demo for the Innovation Booster project "Seamless Data Exchange and Payment Settlement Layer among Transport Providers". For any two Swiss addresses it builds a door-to-door trip live – a **Vertt** ride to a station, an **SBB** train, a Vertt ride to the destination – shows price and CO₂ per carrier, and produces the **B2B settlement data** (who owes whom) for the partners' transaction layer.
 
-> Status: specification done (PRD v0.5). Built so far: the Vertt API (`src/vertt.py`, `api/vertt/offer.py`). Build tasks: GitHub issues. A mockup with made-up data is in `mockup/`.
+> Status: specification done (PRD v0.5). Built so far: the Vertt API (`src/vertt.py`, `api/vertt/offer.py`) and the OJP client (`src/ojp.py`). Build tasks: GitHub issues. A mockup with made-up data is in `mockup/`.
 
 ## Where to find what
 
@@ -52,10 +52,11 @@ Run the automatic tests (no internet needed):
 .venv\Scripts\python.exe -m pytest
 ```
 
-Try the Vertt API logic with a real route (Wettswil am Albis → Zürich HB):
+Try the Vertt API and the OJP client with real data:
 
 ```bash
 .venv\Scripts\python.exe -m src.vertt
+.venv\Scripts\python.exe -m src.ojp
 ```
 
 The booking app and the trip engine follow.

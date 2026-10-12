@@ -2,3 +2,4 @@ httpx
 lxml
 polyline
 pyyaml
+tzdata
