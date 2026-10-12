@@ -2,7 +2,7 @@
 
 A clickable booking demo for the Innovation Booster project "Seamless Data Exchange and Payment Settlement Layer among Transport Providers". For any two Swiss addresses it builds a door-to-door trip live – a **Vertt** ride to a station, an **SBB** train, a Vertt ride to the destination – shows price and CO₂ per carrier, and produces the **B2B settlement data** (who owes whom) for the partners' transaction layer.
 
-> Status: specification done (PRD v0.5). Built so far: the Vertt API (`src/vertt.py`, `api/vertt/offer.py`) and the OJP client (`src/ojp.py`). Build tasks: GitHub issues. A mockup with made-up data is in `mockup/`.
+> Status: specification done (PRD v0.5). Built so far: Vertt API (`src/vertt.py`), OJP client (`src/ojp.py`) and trip engine (`src/engine.py`, web entrance `api/trips.py`). Build tasks: GitHub issues. A mockup with made-up data is in `mockup/`.
 
 ## Where to find what
 
@@ -15,7 +15,6 @@ A clickable booking demo for the Innovation Booster project "Seamless Data Excha
 | [docs/api/](docs/api/) | Reference for the external APIs, from real test calls |
 | [src/](src/), [api/](api/), [tests/](tests/) | Code: logic in `src/`, Vercel functions (web entrances) in `api/`, automatic tests in `tests/` |
 | [config/](config/) | `hubs.yaml` – 70 main stations with tier, stop ID and position · `car_pool.yaml` – cars for the Vertt legs |
-| [spikes/](spikes/) | `e2e_search.py` – one real trip search through all partner APIs, without the app (first working version of the trip engine) |
 | [mockup/](mockup/) | Lite clickable mockup (`index.html`) and the password gate for Vercel (`middleware.js`) |
 
 ## Which API does what
@@ -27,6 +26,7 @@ A clickable booking demo for the Innovation Booster project "Seamless Data Excha
 | Train price (half-fare) | OJP Fare (beta) | `OJP_FARE_API_KEY` | [ojpfare.md](docs/api/ojpfare.md) |
 | Vertt leg: distance, ride time, street route | Valhalla (public server) | none | [routing.md](docs/api/routing.md) |
 | Vertt leg: price, car, CO₂ | Vertt API (ours) – Vertt tariff + car pool, `POST /api/vertt/offer` | `VERTT_API_SECRET` | [vertt.md](docs/api/vertt.md) |
+| Trips for the booking app | Trip engine (ours) – combines all of the above, `POST /api/trips` | – (password gate) | [trip-offers.md](docs/api/trip-offers.md) |
 | Candidate stations | Fixed list of 70 main stations with tiers (`config/hubs.yaml`) | none | PRD-8 |
 | Map | Leaflet + OpenStreetMap tiles | none | – |
 | Hosting, data behind the links | Vercel (password gate `DEMO_PASSWORD`) | Vercel account | PRD-5, PRD-8 |
@@ -52,11 +52,12 @@ Run the automatic tests (no internet needed):
 .venv\Scripts\python.exe -m pytest
 ```
 
-Try the Vertt API and the OJP client with real data:
+Try the Vertt API, the OJP client and the trip engine with real data:
 
 ```bash
 .venv\Scripts\python.exe -m src.vertt
 .venv\Scripts\python.exe -m src.ojp
+.venv\Scripts\python.exe -m src.engine
 ```
 
 The booking app and the trip engine follow.
