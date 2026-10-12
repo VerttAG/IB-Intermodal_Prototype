@@ -1,0 +1,6 @@
+# Everything for local work: server packages + Excel, .env and tests
+-r requirements.txt
+pandas
+openpyxl
+python-dotenv
+pytest

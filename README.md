@@ -25,7 +25,7 @@ A clickable booking demo for the Innovation Booster project "Seamless Data Excha
 | Stations, train connections, walk legs, train CO₂ | OJP 2.0 (opentransportdata.swiss) | `OJP_API_KEY` | [ojp20.md](docs/api/ojp20.md) |
 | Train price (half-fare) | OJP Fare (beta) | `OJP_FARE_API_KEY` | [ojpfare.md](docs/api/ojpfare.md) |
 | Vertt leg: distance, ride time, street route | Valhalla (public server) | none | [routing.md](docs/api/routing.md) |
-| Vertt leg: price, car, CO₂ | Vertt API (ours, to build) – Vertt tariff + car pool | server secret | PRD-7 |
+| Vertt leg: price, car, CO₂ | Vertt API (ours) – Vertt tariff + car pool, `POST /api/vertt/offer` | `VERTT_API_SECRET` | [vertt.md](docs/api/vertt.md) |
 | Candidate stations | Fixed list of 70 main stations with tiers (`config/hubs.yaml`) | none | PRD-8 |
 | Map | Leaflet + OpenStreetMap tiles | none | – |
 | Hosting, data behind the links | Vercel (password gate `DEMO_PASSWORD`) | Vercel account | PRD-5, PRD-8 |
@@ -37,7 +37,7 @@ Keys live in `.env` locally and in the Vercel project settings online – never 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate          # Windows
-pip install -r requirements.txt
+pip install -r requirements-dev.txt   # requirements.txt alone = what the server on Vercel needs
 copy .env.example .env          # then put your keys into .env
 ```
 
@@ -45,4 +45,16 @@ The recorded Vertt rides (`station_rides_mock_trips.xlsx`) are only used locally
 
 ## Run
 
-_To be added once the build starts._
+Run the automatic tests (no internet needed):
+
+```bash
+.venv\Scripts\python.exe -m pytest
+```
+
+Try the Vertt API logic with a real route (Wettswil am Albis → Zürich HB):
+
+```bash
+.venv\Scripts\python.exe -m src.vertt
+```
+
+The booking app and the trip engine follow.
