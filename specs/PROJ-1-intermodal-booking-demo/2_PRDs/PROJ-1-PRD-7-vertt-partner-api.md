@@ -66,7 +66,7 @@ Still to check (US-5): how close **Valhalla's** distance and time come to the re
 - [ ] AC-9: Price = CHF 3.00 + CHF 1.80 per km + CHF 0.30 per minute of ride time.
 - [ ] AC-10: A price below CHF 10.00 is raised to CHF 10.00.
 - [ ] AC-11: The result is multiplied by the factor – 1.0 in Prototype 1. The offer names the factor.
-- [ ] AC-12: Reference cases: 10 km and 5 min → CHF 25.50. 2 km and 3 min → CHF 7.50, raised to CHF 10.00. 13.172 km and 21.2 min → CHF 33.05.
+- [ ] AC-12: Reference cases: 10 km and 5 min → CHF 22.50 (corrected 2026-10-12, was 25.50). 2 km and 3 min → CHF 7.50, raised to CHF 10.00. 13.172 km and 21.2 min → CHF 33.05.
 - [ ] AC-13: The price does not depend on the car.
 - [ ] AC-14: The offer contains no tip, no waiting charge and no discount. Promo codes are applied by the booking app (PROJ-1-PRD-3).
 - [ ] AC-15: The offer contains no internal split of the price (driver earnings, service fee). Vertt is one party.
