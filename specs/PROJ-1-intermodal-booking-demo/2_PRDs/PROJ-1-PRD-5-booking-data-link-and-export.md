@@ -1,6 +1,6 @@
 # PROJ-1-PRD-5: Booking data link and export
 
-## Status: Planned
+## Status: Local version built 2026-10-12 – `api/bookings.py` (book, cancel, data link), `src/store.py` (one JSON file per booking in `data/local/bookings/`), used by the local app. Still open: online storage on Vercel (#22, #23), `docs/schema.md`
 
 Covers the output for the Innovation Booster partners: one data link per booking, an export of all bookings, and the rule that none of it contains personal data. Source: [docs/PRD.md](../../../docs/PRD.md) section 7, [docs/PRD.md](../../../docs/PRD.md) section 5 stories 17, 21. Story numbers are given in brackets.
 

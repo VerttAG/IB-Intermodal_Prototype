@@ -96,8 +96,10 @@ def _safe(fn, *args):
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 429:
             raise SearchError("too_many_searches", "Too many searches, please wait a moment") from e
+        print(f"[engine] {getattr(fn, '__name__', fn)} failed: HTTP {e.response.status_code}")   # server log only
         return None
-    except (httpx.HTTPError, KeyError, ValueError):
+    except (httpx.HTTPError, KeyError, ValueError) as e:
+        print(f"[engine] {getattr(fn, '__name__', fn)} failed: {type(e).__name__}: {str(e)[:120]}")
         return None
 
 

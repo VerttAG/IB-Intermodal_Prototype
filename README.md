@@ -2,7 +2,7 @@
 
 A clickable booking demo for the Innovation Booster project "Seamless Data Exchange and Payment Settlement Layer among Transport Providers". For any two Swiss addresses it builds a door-to-door trip live – a **Vertt** ride to a station, an **SBB** train, a Vertt ride to the destination – shows price and CO₂ per carrier, and produces the **B2B settlement data** (who owes whom) for the partners' transaction layer.
 
-> Status: specification done (PRD v0.5). Built so far: Vertt API (`src/vertt.py`), OJP client (`src/ojp.py`), trip engine (`src/engine.py`, web entrance `api/trips.py`) and settlement (`src/settlement.py`). Build tasks: GitHub issues. A mockup with made-up data is in `mockup/`.
+> Status: specification done (PRD v0.5). Built so far: Vertt API (`src/vertt.py`), OJP client (`src/ojp.py`), trip engine (`src/engine.py`, web entrance `api/trips.py`), settlement (`src/settlement.py`) and a usable local app (`app/`, `dev_server.py`). Build tasks: GitHub issues. A mockup with made-up data is in `mockup/`.
 
 ## Where to find what
 
@@ -15,6 +15,7 @@ A clickable booking demo for the Innovation Booster project "Seamless Data Excha
 | [docs/api/](docs/api/) | Reference for the external APIs, from real test calls |
 | [src/](src/), [api/](api/), [tests/](tests/) | Code: logic in `src/`, Vercel functions (web entrances) in `api/`, automatic tests in `tests/` |
 | [config/](config/) | `hubs.yaml` – 70 main stations with tier, stop ID and position · `car_pool.yaml` – cars for the Vertt legs |
+| [app/](app/), `dev_server.py` | The usable app with real data – runs locally, see "Run" |
 | [mockup/](mockup/) | Lite clickable mockup (`index.html`) and the password gate for Vercel (`middleware.js`) |
 
 ## Which API does what
@@ -45,6 +46,15 @@ copy .env.example .env          # then put your keys into .env
 The recorded Vertt rides (`station_rides_mock_trips.xlsx`) are only used locally to validate the price calculator. Put the file into `data/raw/` – it is gitignored and must never be committed (personal data).
 
 ## Run
+
+The app with real data, locally (keys from `.env`, bookings in `data/local/bookings/`):
+
+```bash
+.venv\Scripts\python.exe dev_server.py
+```
+
+Then open http://localhost:8000 in the browser. Stop with Ctrl+C.
+
 
 Run the automatic tests (no internet needed):
 
