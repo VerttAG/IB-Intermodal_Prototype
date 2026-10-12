@@ -53,7 +53,7 @@ The app with real data, locally (keys from `.env`, bookings in `data/local/booki
 .venv\Scripts\python.exe dev_server.py
 ```
 
-Then open http://localhost:8000 in the browser. Stop with Ctrl+C.
+Then open http://localhost:8000 in the browser – not `app/index.html` by double-click, the app needs the running server. Keep the terminal window open while you use the app; stop with Ctrl+C.
 
 
 Run the automatic tests (no internet needed):

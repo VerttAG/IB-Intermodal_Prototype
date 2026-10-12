@@ -92,10 +92,16 @@ const ids = () => { try { return JSON.parse(localStorage.getItem("bookings") || 
 const saveIds = list => { try { localStorage.setItem("bookings", JSON.stringify(list)); } catch {} };
 const pad = n => String(n).padStart(2, "0");
 
+const NO_SERVER = "Server not reachable – start dev_server.py and open http://localhost:8000";
 async function api(path, body) {
-  const r = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
-  const data = await r.json().catch(() => ({ status: "error", message: "The server gave no answer" }));
-  return { ok: r.ok, data };
+  const ctrl = new AbortController(), timeout = setTimeout(() => ctrl.abort(), 30000);
+  try {
+    const r = await fetch(path, { signal: ctrl.signal, ...(body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {}) });
+    const data = await r.json().catch(() => ({ status: "error", message: "The server gave no answer" }));
+    return { ok: r.ok, data };
+  } catch (e) {          // no server, opened as a file, or no answer within 30 s
+    return { ok: false, data: { status: "error", message: e.name === "AbortError" ? "The search took too long, please try again" : NO_SERVER } };
+  } finally { clearTimeout(timeout); }
 }
 
 // ---------- state ----------
@@ -209,7 +215,8 @@ function results() {
 }
 
 const VIEWS = {
-  app: () => `<h1>Where do you book?</h1><p class="muted">The choice is fixed until you pay or reload.</p>
+  app: () => `${!location.protocol.startsWith("http") ? `<div class="note error">${NO_SERVER}</div>` : ""}
+    <h1>Where do you book?</h1><p class="muted">The choice is fixed until you pay or reload.</p>
     <button class="btn" onclick="S.app='vertt';go('plan')">Vertt app</button>
     <button class="btn secondary" onclick="S.app='sbb';go('plan')">SBB app</button>`,
 
