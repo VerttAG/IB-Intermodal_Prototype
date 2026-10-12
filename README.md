@@ -14,6 +14,7 @@ A clickable booking demo for the Innovation Booster project "Seamless Data Excha
 | [docs/open-topics.md](docs/open-topics.md) | What is still open (CTO, Vertt finance, partners, spikes) |
 | [docs/api/](docs/api/) | Reference for the external APIs, from real test calls |
 | [config/](config/) | `hubs.yaml` – 70 main stations with tier, stop ID and position · `car_pool.yaml` – cars for the Vertt legs |
+| [spikes/](spikes/) | `e2e_search.py` – one real trip search through all partner APIs, without the app (first working version of the trip engine) |
 | [mockup/](mockup/) | Lite clickable mockup (`index.html`) and the password gate for Vercel (`middleware.js`) |
 
 ## Which API does what

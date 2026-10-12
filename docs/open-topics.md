@@ -33,7 +33,6 @@ Last update: 2026-10-05.
 
 | # | Topic | Where |
 |---|---|---|
-| 12 | Does OJP Fare offer a normal half-fare ticket (Streckenbillett), or only saver tickets? | PRD-6 |
 | 13 | How close do Valhalla + tariff come to the 9 recorded rides? | PRD-7 |
 | 14 | Which example address pair to pre-fill in the address fields? | PRD-1, PRD-8 |
 | 15 | Which online store on Vercel holds the data behind the links? | PRD-5 |
