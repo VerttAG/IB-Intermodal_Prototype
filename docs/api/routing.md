@@ -59,3 +59,16 @@ POST https://valhalla1.openstreetmap.de/route
 
 - Use **POST** with a JSON body. The GET variant (`?json=…`) answered "Failed to parse json request".
 - The route line is an encoded polyline with **precision 6** (not the usual 5): decoded with precision 6 it starts 0.00 km from the start and ends 30 m from Zürich HB; with precision 5 the points land about 5,800 km away. Drawn on the map it follows the real streets (A4, Uetliberg tunnel, Wollishofen, Enge).
+
+## 6. Check against the recorded rides (2026-10-12, rough)
+
+Valhalla + Vertt tariff on the start and end points of the 9 recorded rides, compared with what was driven and charged (charged price without the historic surge factor):
+
+| | Distance | Ride time | Price |
+|---|---|---|---|
+| Average deviation | +7 % | +7 % | **+9 %** |
+| Mean absolute deviation | 7 % | 13 % | **10 %** |
+
+- 6 of 9 rides within ±12 % on price, 4 of them within ±4 %.
+- One outlier at +44 %: Valhalla's route was a third longer than the one driven.
+- Conclusion: calculated Vertt prices are realistic for the demo, on average about 10 % too high. Closer prices would need Vertt's own route component (open topics #3).
