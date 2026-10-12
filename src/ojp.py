@@ -4,7 +4,7 @@ Four questions, answered from OJP 2.0 (timetable) and OJP Fare (prices):
   walk(a, b, when)                       walking time between an address and a station
   train(from_ref, to_ref, ready)         the train between two stations (trains only, PRD-8 rule)
   half_fare_price(trip)                  half-fare price, 2nd class, normal ticket preferred
-  public_transport_only(a, b, when)      door to door by public transport (comparison card)
+  public_transport_only(a, b, when)      door to door by public transport (not required, PRD-8 – local app only)
 
 Places are either a stop reference ("ch:1:sloid:3000") or a position (lat, lon).
 Times are datetimes with time zone; answers are in Swiss local time.

@@ -203,7 +203,7 @@ TransferLeg
 ```
 `EmissionCO2/KilogramPerPersonKm` = `0` for transfer legs.
 
-`ContinuousLeg` (walking to/from an address, own transport) was not part of this test – expected when start/end are coordinates instead of stops (e.g. public-transport-only alternative, story 6).
+`ContinuousLeg` (walking to/from an address, own transport) was not part of this test – expected when start/end are coordinates instead of stops (e.g. the public-transport-only connection, which the local app shows for comparison).
 
 ### Fields we use
 

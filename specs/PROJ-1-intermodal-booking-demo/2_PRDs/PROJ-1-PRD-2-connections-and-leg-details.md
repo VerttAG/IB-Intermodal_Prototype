@@ -12,16 +12,16 @@ A trip has up to three legs: **first leg** (Vertt ride or walk) → **train** �
 **Given** start, destination, time and travelcard are set and I pressed "Search"
 **When** I look at the connection list
 **Then** I see up to three bookable trips labelled Fastest / Cheapest / Greenest
-**And** below them two comparison cards
+**And** below them the "Vertt only" comparison card
 
 **Acceptance Criteria:**
-- [ ] AC-1: The list shows, in this order: up to three **bookable trips** labelled "Fastest", "Cheapest" and "Greenest" (calculated, PROJ-1-PRD-8), then **"Vertt only"**, then **"Public transport only"**.
+- [ ] AC-1: The list shows, in this order: up to three **bookable trips** labelled "Fastest", "Cheapest" and "Greenest" (calculated, PROJ-1-PRD-8), then **"Vertt only"**. ("Public transport only" is not required since 2026-10-12, see PROJ-1-PRD-8 "Decisions".)
 - [ ] AC-2: A trip that wins several labels is shown once with all of them. Other calculated candidate trips are not shown.
 - [ ] AC-3: Each card shows departure, arrival, duration (door to door), number of transfers, transport mode icons (car / walk / train / bus), total price and total CO₂.
 - [ ] AC-3a: Each bookable card also names the car of each Vertt leg in short form – make and model with its CO₂ value, e.g. "Toyota Prius · 92 g/km" – so the customer sees **when choosing** why the CO₂ differs between trips (Tim, 2026-10-06).
-- [ ] AC-4: The two comparison cards are marked "for comparison", are **not bookable and not clickable**.
+- [ ] AC-4: The comparison card is marked "for comparison", are **not bookable and not clickable**.
 - [ ] AC-5: Tapping a bookable card opens its details (US-2).
-- [ ] AC-6: If a comparison cannot be calculated (e.g. OJP finds no public-transport connection), its card is left out with a short note.
+- [ ] AC-6: If a comparison cannot be calculated (e.g. Valhalla finds no route for the whole journey), its card is left out with a short note.
 
 ### US-2: As a customer, I want to see every leg in detail so that I know what happens and where I need to be (story 7)
 **Given** I opened the details of a trip
@@ -51,7 +51,7 @@ A trip has up to three legs: **first leg** (Vertt ride or walk) → **train** �
 - [ ] AC-17: Each leg shows its price in CHF with two decimals, rounded to CHF 0.05. Vertt prices come from the Vertt API (calculated with the tariff, PROJ-1-PRD-7), train prices from OJP Fare (PROJ-1-PRD-6).
 - [ ] AC-18: The total equals the sum of the rounded leg prices. There are no other amounts.
 - [ ] AC-19: With half-fare the train leg carries the hint "half-fare price". With GA it shows CHF 0.00 and "covered by GA".
-- [ ] AC-20: The two comparison cards also show a total price; "Public transport only" follows the travelcard.
+- [ ] AC-20: The comparison card also shows a total price.
 
 ### US-4: As a customer, I want to see how much CO₂ each leg and the whole journey cause so that I can choose a climate-friendly trip (story 9)
 **Given** a trip is shown
@@ -100,7 +100,7 @@ A trip has up to three legs: **first leg** (Vertt ride or walk) → **train** �
 - ~~Mark estimated values on screen?~~ → **Decided (Tim 2026-10-05):** no – all values are shown as normal values (mock data).
 
 ## Dependencies
-- Requires: PROJ-1-PRD-8 (trips and labels – the only source of the list), PROJ-1-PRD-1 (inputs), PROJ-1-PRD-6 (train legs, prices, walk legs, public-transport comparison), PROJ-1-PRD-7 (Vertt legs, prices, car, street geometry).
+- Requires: PROJ-1-PRD-8 (trips and labels – the only source of the list), PROJ-1-PRD-1 (inputs), PROJ-1-PRD-6 (train legs, prices, walk legs), PROJ-1-PRD-7 (Vertt legs, prices, car, street geometry).
 - Feeds: PROJ-1-PRD-3 (legs, prices, CO₂ and map reused in the overview), PROJ-1-PRD-5 (legs, car, sources and assumptions in the data link).
 - Car CO₂ factors are in g/km (GitHub issue #14, decided 2026-10-05).
 
@@ -115,5 +115,5 @@ A trip has up to three legs: **first leg** (Vertt ride or walk) → **train** �
 - Reuse: connection cards on screen "plan" and screen "detail" of the lite mockup, [mockup/index.html](../../../mockup/index.html), live at https://ib-intermodal-prototype.vercel.app.
 - New component candidates: label tags (several per card), walk leg row, waiting-time hint, "not available" value, marker for straight-line legs, loading state of the list.
 - Design tokens: none defined yet; the mockup uses one colour each for Vertt, SBB and bus – walk needs one more.
-- Interaction contract: bookable card opens details, comparison cards inert, back to list, continue, map fitted to the journey.
+- Interaction contract: bookable card opens details, comparison card inert, back to list, continue, map fitted to the journey.
 - Implementation tolerance: layout and wording may change; order of the cards, the "for comparison" marking and the rounding rules may not.

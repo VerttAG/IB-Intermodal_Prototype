@@ -1,7 +1,8 @@
 """Trip engine – door-to-door trips calculated live (PRD-8).
 
 search(start, destination, departure) -> answer for the booking app:
-up to 3 trips labelled Fastest / Cheapest / Greenest (for each travelcard) and the two comparison cards.
+up to 3 trips labelled Fastest / Cheapest / Greenest (for each travelcard) and the "Vertt only" comparison card.
+Also "public_transport_only" – not required by the spec (PRD-8 "Decisions"), kept so the local app can show why.
 
 Try it locally:  .venv\\Scripts\\python.exe -m src.engine
 """

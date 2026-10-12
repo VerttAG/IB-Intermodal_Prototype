@@ -209,6 +209,7 @@ function results() {
     ${vo ? `<div class="card cmp"><div><span class="tag grey">For comparison</span>Vertt only</div>
       <div class="row" style="margin-top:6px"><span class="times">${hm(vo.departure)} – ${hm(vo.arrival)}</span><span>${vo.distance_km.toFixed(0)} km by car</span></div>
       <div class="row"><b>${chf(vo.price_chf)}</b><span>CO₂ ${kg(vo.co2_kg)}</span></div></div>` : ""}
+    ${/* not required by the spec (PRD-8 "Decisions") – shown to explain why it was dropped */ ""}
     ${pt ? `<div class="card cmp"><div><span class="tag grey">For comparison</span>Public transport only</div>
       <div class="row" style="margin-top:6px"><span class="times">${hm(pt.departure)} – ${hm(pt.arrival)}</span><span>${pt.transfers} transfers</span></div>
       <div class="row"><b>${chf(pt.price_chf[S.card])}</b><span>CO₂ ${kg(pt.co2_kg)}</span></div></div>` : ""}`;

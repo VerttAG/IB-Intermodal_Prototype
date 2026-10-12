@@ -22,7 +22,7 @@ A service of our own on the server (**Vercel**, Python), between the partner int
      Vertt leg: pickup = chosen time + 5 min (start) / train arrival + 2 min (destination station)
 5. Totals per trip: arrival time, duration, price, CO₂
 6. Labels by calculation: Fastest / Cheapest / Greenest → max. 3 bookable cards
-7. Comparison cards: "Vertt only" (Vertt API, whole route), "Public transport only" (OJP door to door)
+7. Comparison card: "Vertt only" (Vertt API, whole route)
 ```
 
 `detour = (start → station) + (station → destination) − (start → destination)`, straight-line distances, calculated in code (no API call). "Closer" = straight-line distance from the address to the station. Distance + detour (not detour alone) is used so that a near station on the way wins over a far station that happens to lie on the route.
@@ -48,7 +48,8 @@ A service of our own on the server (**Vercel**, Python), between the partner int
 | Train price | Only the **half-fare** price from OJP Fare (normal ticket); no travelcard = 2 × half-fare, GA = CHF 0.00. If OJP Fare cannot price a connection, the price is estimated per km. Shown as normal prices. |
 | Train CO₂ | The **OJP value** (EmissionCO₂ per person-km × distance). |
 | Response time | Results within ~5 s, with a loading state. Partner calls run in parallel. Measured 2026-10-12: 4–5 s for a new search, 9–12 partner calls; repeated searches come from the cache. |
-| Offers shown | Only the labelled trips (max. 3) + the two comparison cards (not bookable, not clickable). |
+| Offers shown | Only the labelled trips (max. 3) + the "Vertt only" comparison card (not bookable, not clickable). |
+| No "Public transport only" card | **Not required** (decided by Tim 2026-10-12). In the local app it was faster, cheaper and greener than Vertt + train for almost every search. Reason: the engine deliberately uses only main stations and one train per station pair, while the SBB journey planner uses every stop, bus and connection. Showing Vertt's real advantage would need smaller stations, better station choice and more train options (GitHub issue #19) – too much for Prototype 1. The local app (`app/`) and the mockup still show the card, to explain this decision. |
 | Hosting | **Vercel** (Python functions), behind the password gate (`mockup/middleware.js`, `DEMO_PASSWORD`). Keys are stored in Vercel. |
 
 All values (thresholds, waiting times, radius) are configurable.
@@ -58,10 +59,10 @@ All values (thresholds, waiting times, radius) are configurable.
 ### US-1: As a partner app, I want one service that returns complete trip offers so that I don't have to combine the partners' leg offers myself (story 28)
 **Given** start and destination address, departure time and travelcard
 **When** the booking app presses "Search"
-**Then** it gets up to three labelled trips and the two comparison cards in one answer
+**Then** it gets up to three labelled trips and the "Vertt only" comparison card in one answer
 
 **Acceptance Criteria:**
-- [ ] AC-1: The browser sends one request and gets one answer: labelled trips and comparison cards, each with all legs, totals and labels.
+- [ ] AC-1: The browser sends one request and gets one answer: labelled trips and the comparison card, each with all legs, totals and labels.
 - [ ] AC-2: Vertt legs come only from the Vertt API (PROJ-1-PRD-7); train legs, walk legs and prices only from OJP and OJP Fare (PROJ-1-PRD-6). The engine holds no leg data of its own.
 - [ ] AC-3: The answer is JSON and documented in `docs/api/trip-offers.md`.
 - [ ] AC-4: Not a public service: one entrance for our own frontend, behind the password gate; requests from other websites are refused and the number of searches per visitor is limited.
@@ -98,12 +99,12 @@ All values (thresholds, waiting times, radius) are configurable.
 ### US-4: As a customer, I want to see the fastest, cheapest and greenest trip so that I can choose by what matters to me (story 27)
 **Given** the candidate trips are calculated
 **When** the connection list is shown
-**Then** I see up to 3 labelled, bookable trips and the two comparison cards
+**Then** I see up to 3 labelled, bookable trips and the "Vertt only" comparison card
 
 **Acceptance Criteria:**
 - [ ] AC-20: Totals per trip: arrival time, duration (door to door), price (sum of rounded leg prices), CO₂.
 - [ ] AC-21: "Fastest" = earliest arrival; "Cheapest" = lowest total price; "Greenest" = lowest total CO₂ – calculated only. A trip that wins several labels is shown once with all of them; ties: earlier arrival, then lower price.
-- [ ] AC-22: Comparison "Vertt only": one Vertt API offer for the whole route. "Public transport only": OJP door to door. Both show times, price and CO₂.
+- [ ] AC-22: Comparison "Vertt only": one Vertt API offer for the whole route, with times, price and CO₂. ("Public transport only" is not required – see "Decisions".)
 - [ ] AC-23: Changing the travelcard recalculates prices and labels from the stored half-fare price, without new partner calls.
 - [ ] AC-24: Partner calls run in parallel; the list appears within ~5 s, with a loading state until then.
 

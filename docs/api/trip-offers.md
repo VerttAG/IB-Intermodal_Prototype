@@ -61,7 +61,7 @@ Coordinates come from the swisstopo address search in the browser (`docs/api/geo
 | `labels` | Fastest / Cheapest / Greenest per travelcard; one trip can carry several |
 | `legs[].kind` | `vertt` (with car, waiting time, price), `train` (line, platform), `transfer` (minutes between trains), `walk` (minutes, distance) |
 | `route` | `[lat, lon]` points for the map |
-| `comparisons` | The two comparison cards; `null` if one could not be calculated |
+| `comparisons` | `vertt_only`: the comparison card; `null` if it could not be calculated. `public_transport_only`: **not required by the spec** (PRD-8 "Decisions") – still returned, so the local app can show why it was dropped |
 
 Times are Swiss local time (ISO 8601). Prices are shown as normal prices – where OJP Fare gave none, the engine estimated it (server log only).
 

@@ -34,14 +34,8 @@ This PRD says **what** the demo gets from SBB. Whether the answers are fetched w
 - [ ] AC-10 *(Could)*: The platform of each train leg is taken from OJP when it is present.
 - [ ] AC-11: The demo date lies within the timetable period OJP covers; journeys are not planned for past dates.
 
-### US-3: As a customer, I want the public-transport-only alternative to be a real connection so that the comparison is fair (stories 6, 22)
-**Given** a start and a destination that are not both stations
-**When** the comparison connections are built
-**Then** the public-transport-only connection comes from OJP 2.0, door to door
-
-**Acceptance Criteria:**
-- [ ] AC-12: The public-transport-only connection is the OJP 2.0 answer for the same start, destination and departure time, including bus, tram and walking parts.
-- [ ] AC-13: If OJP finds no such connection, the card is left out or a note explains why (PROJ-1-PRD-2 AC-5).
+### ~~US-3: Public-transport-only alternative~~ – not required since 2026-10-12, see PROJ-1-PRD-8 "Decisions".
+`src/ojp.py` still offers `public_transport_only()` for the local app.
 
 ### US-4: As SBB, I want the train price in the demo to come from the official price interface so that the customer and the partners see a real price (story 23)
 **Given** a train connection from OJP 2.0 and a travelcard

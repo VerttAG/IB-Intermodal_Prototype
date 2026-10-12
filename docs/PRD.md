@@ -44,11 +44,12 @@ Trip engine (our server on Vercel) – PRD-8
 Totals per trip → labels Fastest / Cheapest / Greenest (calculated)
         │
         ▼
-Booking app: up to 3 labelled trips + "Vertt only" + "Public transport only" (comparison)
+Booking app: up to 3 labelled trips + "Vertt only" (comparison)
 ```
 
 - **No preset trips:** every trip is calculated live. The 9 recorded Vertt rides only **validate** the calculator.
 - **Vertt tariff:** CHF 3.00 + 1.80/km + 0.30/min, minimum CHF 10.00, the same everywhere, factor 1.0.
+- **No "Public transport only" comparison:** with main stations only, SBB's own planner was almost always better – not required since 2026-10-12, see PRD-8 "Decisions".
 - **Stations:** main stations only (70 hubs, Tier 1–3). Tier 1 is always tried; a Tier 2 or 3 hub only if it is closer. No AI in Prototype 1.
 - **Server:** Python on Vercel; keys for OJP, OJP Fare and the Vertt API stay on the server; a password gate protects the demo.
 
@@ -59,7 +60,7 @@ Phone layout (on a laptop: phone-sized in the middle). One neutral design for bo
 | Step | What happens | Spec |
 |---|---|---|
 | **0 – Choose app** | "Vertt app" or "SBB app". Decides who sells and collects the money. Fixed for the run. | PRD-1 |
-| **1 – Plan** *(most important)* | Start + destination address (swisstopo suggestions, empty at first); "depart at" date and time; travelcard (default half-fare) **or** "Log in with SwissPass" with test profile → travelcard locked; "Search". Up to 3 trips labelled Fastest / Cheapest / Greenest ("door to door with one booking") + 2 comparison cards, each with price and CO₂. Details: legs (Vertt / walk / train), line, car category, waiting time, transfers, map. | PRD-1, PRD-2 |
+| **1 – Plan** *(most important)* | Start + destination address (swisstopo suggestions, empty at first); "depart at" date and time; travelcard (default half-fare) **or** "Log in with SwissPass" with test profile → travelcard locked; "Search". Up to 3 trips labelled Fastest / Cheapest / Greenest ("door to door with one booking") + the "Vertt only" comparison card, with price and CO₂. Details: legs (Vertt / walk / train), line, car category, waiting time, transfers, map. | PRD-1, PRD-2 |
 | **2 – Log in** | Google / Apple / SwissPass / email + password (pre-filled, not editable) – one click. Skipped after SwissPass in step 1. | PRD-3 |
 | **3 – Overview & pay** | Map, legs, price per leg + total, CO₂, travelcard, "You pay [Vertt/SBB] for the whole journey". Promo tick 5 / 10 / 20 % on the Vertt part. Payment: card / TWINT / invoice / business (none pre-selected). No back button. | PRD-3 |
 | **Receipt** | Short payment animation → receipt for everyone. Buttons "Cancel journey" and "New booking". Data link "Settlement data (for project partners)" + copy; export of all bookings. | PRD-3, PRD-4, PRD-5 |
@@ -145,7 +146,7 @@ The data is stored online on **Vercel**; after a cancellation the **same link** 
 
 ## 8. Not in scope (Prototype 1)
 
-Real payments and logins, "arrive by", "use my location", peak-time factors, booking or cancelling a ride through the Vertt API, more than 1 passenger, 1st class, settlement animation or operator dashboard, cancellation of a single leg or after leaving the receipt, payment fees, business VAT receipt, blockchain integration, production hosting, delay / missed connection / no-show cases, official SBB or Vertt logos.
+Real payments and logins, "arrive by", "use my location", peak-time factors, booking or cancelling a ride through the Vertt API, more than 1 passenger, 1st class, settlement animation or operator dashboard, cancellation of a single leg or after leaving the receipt, payment fees, business VAT receipt, blockchain integration, production hosting, delay / missed connection / no-show cases, a "Public transport only" comparison, official SBB or Vertt logos.
 
 ## 9. Definition of done
 
