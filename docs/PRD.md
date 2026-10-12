@@ -160,5 +160,5 @@ Real payments and logins, "arrive by", "use my location", peak-time factors, boo
 ## 10. Next steps
 
 1. CTO meeting: go through [open-topics.md](open-topics.md), confirm this PRD.
-2. Build (Python, Vercel) in this order: Vertt API (done) → OJP client → trip engine → booking app → settlement, data link and export → Vercel setup. Each step is a GitHub issue.
+2. Build (Python, Vercel) in this order: Vertt API → OJP client → trip engine (all done) → booking app → settlement, data link and export → Vercel setup. Each step is a GitHub issue.
 3. Later: more stations (issue #19), more cars (issue #20).

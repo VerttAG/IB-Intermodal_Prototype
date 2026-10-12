@@ -1,6 +1,6 @@
 # PROJ-1-PRD-8: Trip engine
 
-## Status: Planned – decided by Tim 2026-10-05/06, ready to code
+## Status: Built 2026-10-12 – `src/engine.py`, web entrance `api/trips.py`, tests in `tests/test_engine.py`, answer described in [docs/api/trip-offers.md](../../../docs/api/trip-offers.md)
 
 A service of our own on the server (**Vercel**, Python), between the partner interfaces and the booking app. For every search it **builds door-to-door trips live** from the customer's start address, destination address and departure time: a Vertt ride (or a walk) to a **main station**, a train (OJP), and a Vertt ride (or a walk) to the destination. It gets the legs from SBB (PROJ-1-PRD-6) and Vertt (PROJ-1-PRD-7), calculates totals and labels, and serves the result to the booking app. Stories 27, 28, 29 (see [docs/PRD.md](../../../docs/PRD.md) section 5).
 
@@ -47,7 +47,7 @@ A service of our own on the server (**Vercel**, Python), between the partner int
 | Pickup | **5 min** after the chosen time at the start; **2 min** after the train arrival at the destination station. |
 | Train price | Only the **half-fare** price from OJP Fare (normal ticket); no travelcard = 2 × half-fare, GA = CHF 0.00. If OJP Fare cannot price a connection, the price is estimated per km. Shown as normal prices. |
 | Train CO₂ | The **OJP value** (EmissionCO₂ per person-km × distance). |
-| Response time | Results within ~5 s, with a loading state. Partner calls run in parallel. Measured 2026-10-12: 1.5–4 s and 9–12 calls per search (`spikes/e2e_search.py`). |
+| Response time | Results within ~5 s, with a loading state. Partner calls run in parallel. Measured 2026-10-12: 4–5 s for a new search, 9–12 partner calls; repeated searches come from the cache. |
 | Offers shown | Only the labelled trips (max. 3) + the two comparison cards (not bookable, not clickable). |
 | Hosting | **Vercel** (Python functions), behind the password gate (`mockup/middleware.js`, `DEMO_PASSWORD`). Keys are stored in Vercel. |
 
