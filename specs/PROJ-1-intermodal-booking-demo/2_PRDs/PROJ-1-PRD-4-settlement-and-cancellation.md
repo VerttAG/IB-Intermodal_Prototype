@@ -83,8 +83,9 @@ Terms used below: **train part** = price of all SBB legs after travelcard. **Ver
 - ~~Rounding of the commission~~ → **Decided (Tim 2026-10-05):** half up to the centime.
 - ~~Cancel after leaving the receipt~~ → **Decided (Tim 2026-10-05):** not possible. Once the receipt is left ("New booking" or reload), the booking stays "paid" in the export.
 - Refund event refers to the original customer payment (`refers_to_event`, default 2026-10-12) – still to align with the partners ([open topics](../../../docs/open-topics.md) #10).
-- Is the commission asymmetry OK to present to partners? ([open topics](../../../docs/open-topics.md) #1)
-- Real cancellation rules and settlement timing per booking vs. monthly ([open topics](../../../docs/open-topics.md) #7, #4) are out of scope but should be confirmed.
+- ~~Commission asymmetry~~ → **Decided 2026-10-12:** OK to present to the partners (deliberate demo decision, PRD section 6).
+- ~~Settlement timing~~ → **Decided 2026-10-12:** per booking.
+- ~~Real cancellation rules~~ → **Decided 2026-10-12:** too complicated for the demo; full refund, no fee.
 
 ## Dependencies
 - Requires: PROJ-1-PRD-3 (payment creates the booking; "Cancel journey" sits on the receipt), PROJ-1-PRD-2 (leg prices), PROJ-1-PRD-6 and PROJ-1-PRD-7 (where the prices come from).

@@ -25,7 +25,7 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 
 **Acceptance Criteria:**
 - [ ] AC-5: Start and destination are address fields. While typing, matching official Swiss addresses are suggested by the swisstopo address search; choosing one sets the address. Nothing is taken over without the customer choosing it.
-- [ ] AC-6: In the first version both fields start **empty**; typing is the one exception to the rule "nothing has to be typed". A pre-filled example pair is added later, once the engine has been tried (decided by Tim 2026-10-05).
+- [ ] AC-6: Both fields start **empty**; typing is the one exception to the rule "nothing has to be typed". No pre-filled example pair (decided 2026-10-12).
 - [ ] AC-7: The chosen address is turned into coordinates by swisstopo. Address and coordinates are passed to the trip engine (PROJ-1-PRD-8) – all trips in the demo are mock trips.
 - [ ] AC-8: An address that swisstopo cannot find, or that lies outside Switzerland, cannot be chosen; a message says so.
 - [ ] AC-9: If no trip can be built for the addresses and time, a message says so and no connections are shown.
@@ -80,8 +80,8 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 - The page is reloaded in the middle of a run: the run starts again at step 0, nothing is booked or stored.
 
 ## Open Questions
-- Answered 2026-10-05 (Tim): "Search" button only · fields empty in the first version, example pair later · no addresses or coordinates in the data link.
-- **Later:** which example pair to pre-fill (e.g. Wettswil am Albis → Ostermundigen), once the engine has been tried.
+- Answered 2026-10-05 (Tim): "Search" button only · fields empty · no addresses or coordinates in the data link.
+- ~~Example pair to pre-fill~~ → **Decided 2026-10-12:** none, the fields stay empty.
 
 ## Dependencies
 - Requires: swisstopo address search ([docs/api/geocoding.md](../../../docs/api/geocoding.md)), PROJ-1-PRD-8 (trip engine).

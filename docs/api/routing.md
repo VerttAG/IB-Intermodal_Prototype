@@ -37,12 +37,12 @@ Findings:
 | **OSRM** – public demo server | none | no | Meant for demos and tests only; ride times too short |
 | **OpenRouteService** | yes (free tier) | no | Not tried. Stated daily quota; OpenStreetMap data |
 | **Google Routes** | yes (paid after a free allowance) | **yes** | Not tried. Vertt's recorded routes are in Google's format, so probably what Vertt uses itself. Restrictions on storing results |
-| **Vertt's own route component** | internal | ? | Would match Vertt's real prices best. To ask the CTO |
+| **Vertt's own route component** | internal | ? | Would match Vertt's real prices best. Not needed for the demo (decided 2026-10-12) |
 | Run Valhalla or OSRM ourselves | none | no | No limits, but something to install and host |
 
 Because the Vertt API runs on our server and is not called from the browser (PRD-7), a key is no obstacle.
 
-**Decided for Prototype 1:** Valhalla, with every answer stored so that a repeated demo does not depend on the public server. Switch to Vertt's own component or Google if the CTO wants prices closer to Vertt's real ones.
+**Decided for Prototype 1:** Valhalla, with every answer stored so that a repeated demo does not depend on the public server. Good enough for the demo; Vertt's own component is not needed (decided 2026-10-12).
 
 ## 5. How to call Valhalla (checked 2026-10-12)
 
@@ -71,4 +71,4 @@ Valhalla + Vertt tariff on the start and end points of the 9 recorded rides, com
 
 - 6 of 9 rides within ±12 % on price, 4 of them within ±4 %.
 - One outlier at +44 %: Valhalla's route was a third longer than the one driven.
-- Conclusion: calculated Vertt prices are realistic for the demo, on average about 10 % too high. Closer prices would need Vertt's own route component (open topics #3).
+- Conclusion: calculated Vertt prices are realistic for the demo, on average about 10 % too high. Closer prices would need Vertt's own route component, which the demo does not need.

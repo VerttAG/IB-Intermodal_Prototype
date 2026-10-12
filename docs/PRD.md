@@ -20,7 +20,7 @@ The customer pays only **one** operator. The interesting part is the **B2B settl
 
 | Order | User | What they want to get out of it |
 |---|---|---|
-| 1 | **Vertt CTO** | Click through the customer flow, check trip data and settlement rules, decide the open topics. |
+| 1 | **Vertt CTO** | Click through the customer flow, check trip data and settlement rules. |
 | 2 | **Innovation Booster partners** | Click through realistic bookings (travelcards, promo, payment methods, cancellation) and **collect the data** for their transaction layer. |
 | (3) | Project team | Single reference for booking, trip and settlement data. |
 
@@ -112,7 +112,7 @@ The full stories with acceptance criteria are in the specs. Story numbers are us
 | **Vertt app** | total → **Vertt** | Vertt → SBB: train ticket price · SBB → Vertt: **commission 5 % of the train ticket** (separate entry) |
 | **SBB app** | total → **SBB** | SBB → Vertt: full Vertt part · **no commission** |
 
-> **Deliberate demo decision:** the asymmetry (Vertt earns a commission, SBB does not) is chosen to show two different settlement rules in the data. It is **not** a business agreement with SBB.
+> **Deliberate demo decision:** the asymmetry (Vertt earns a commission, SBB does not) is chosen to show two different settlement rules in the data. It is **not** a business agreement with SBB. Confirmed for the demo (2026-10-12).
 
 Example (made-up numbers: Vertt ride CHF 30.00, train ticket CHF 8.40):
 
@@ -156,10 +156,10 @@ Real payments and logins, "arrive by", "use my location", peak-time factors, boo
 - Cancellation works and updates the data link; export contains all bookings.
 - Data links and export are valid JSON matching `docs/schema.md`.
 - No personal data in the repo, on the page, in links or exports.
-- The CTO has reviewed the demo and the open topics.
+- The CTO has reviewed the demo.
 
 ## 10. Next steps
 
-1. CTO meeting: go through [open-topics.md](open-topics.md), confirm this PRD.
+1. Show the demo to the CTO and confirm this PRD.
 2. Build (Python, Vercel) in this order: Vertt API → OJP client → trip engine → settlement (all done) → booking app → data link and export → Vercel setup. Each step is a GitHub issue.
 3. Later: more stations (issue #19), more cars (issue #20).

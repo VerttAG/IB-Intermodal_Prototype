@@ -115,7 +115,8 @@ Checked 2026-10-12 (US-5, rough): Valhalla + tariff come within about 10 % of th
 ## Open Questions
 - ~~Tariff outside Zurich~~ → **Decided (Tim 2026-10-05):** same tariff everywhere, factor 1.0.
 - ~~Rounding~~ → **Decided (Tim 2026-10-05):** the API returns prices exact to CHF 0.01 (like Vertt's specification); the booking app rounds every customer price to CHF 0.05 (story 8). The settlement starts from the rounded customer amounts (PROJ-1-PRD-4).
-- **VAT.** Whether the tariff values include VAT, and the rate, are open in Vertt's own specification too (8.1 % assumed there). → Vertt finance.
+- ~~VAT~~ → **Decided 2026-10-12:** all prices include VAT (8.1 %).
+- ~~Vertt's own route component~~ → **Decided 2026-10-12:** not needed for the demo, Valhalla stays ([routing.md](../../../docs/api/routing.md)).
 - ~~CO₂ unit~~ → **Decided (Tim 2026-10-05):** g/km (GitHub issue #14). The car pool uses g/km.
 - ~~Minimum distance for a Vertt ride (AC-8)~~ → **Decided:** 1 km straight line, the walk threshold of PROJ-1-PRD-8.
 - Is "book a ride" / "cancel a ride" through the API wanted later (Prototype 2)? Not part of this PRD.

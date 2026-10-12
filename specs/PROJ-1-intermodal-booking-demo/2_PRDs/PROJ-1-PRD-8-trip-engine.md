@@ -122,7 +122,7 @@ All values (thresholds, waiting times, radius) are configurable.
 - **AI spike (2026-10-06):** Jev 1.13 (OpenRouter) chose hubs well (9 of 12 confident and correct) but nearby stations poorly – it only knew distance and detour, not which trains stop there. A simple "smallest detour" rule chose the same hub in 10 of 12 cases. Jev was therefore dropped; the tier list carries the train-service information instead. A possible later use: a "Recommended" label weighing time, price, CO₂ and transfers.
 
 ## Open Questions
-- **Example address pair** to pre-fill later (e.g. Wettswil am Albis → Ostermundigen), once the engine has been tried.
+- None. (No pre-filled example pair – decided 2026-10-12, PROJ-1-PRD-1 AC-6.)
 
 ## Dependencies
 - Requires: `config/hubs.yaml`, swisstopo ([docs/api/geocoding.md](../../../docs/api/geocoding.md)), Valhalla ([docs/api/routing.md](../../../docs/api/routing.md)), OJP 2.0 and OJP Fare ([ojp20.md](../../../docs/api/ojp20.md), [ojpfare.md](../../../docs/api/ojpfare.md)), Vertt API (PROJ-1-PRD-7), Vercel.

@@ -91,7 +91,7 @@ Covers step 2 (log in), step 3 (overview and pay) and the receipt. Source: [docs
 ## Open Questions
 - ~~Reload during the payment animation~~ → **Decided (Tim 2026-10-05):** the booking exists from the moment "Pay" is clicked.
 - ~~`booked_at` vs. a fixed scenario departure~~ → no longer an issue: the customer chooses the departure time (PROJ-1-PRD-1), so `booked_at` is the real clock time of the click. A trip whose departure has already passed cannot be booked.
-- Real-world topics that the demo ignores and the CTO should confirm: unpaid invoice, payment fees ([open topics](../../../docs/open-topics.md) #5, #6).
+- ~~Unpaid invoice, payment fees~~ → **Decided 2026-10-12:** not part of the demo. An invoice counts as paid immediately; payment fees are ignored.
 
 ## Dependencies
 - Requires: PROJ-1-PRD-1 (app, travelcard, SwissPass login), PROJ-1-PRD-2 (legs, prices, CO₂, map, car), and through it PROJ-1-PRD-6 (train prices) and PROJ-1-PRD-7 (Vertt prices).
