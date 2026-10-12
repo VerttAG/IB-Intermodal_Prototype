@@ -1,6 +1,6 @@
 # PROJ-1-PRD-4: Settlement between operators and cancellation
 
-## Status: Planned
+## Status: Built 2026-10-12 – `src/settlement.py` (`book()`, `cancel()`), tests in `tests/test_settlement.py`. The screen parts (AC-16, AC-17) come with the booking app
 
 Covers the money movements each booking produces and what a cancellation adds. No screen shows the settlement; it exists as data (PROJ-1-PRD-5). Source: [docs/PRD.md](../../../docs/PRD.md) section 6, [docs/PRD.md](../../../docs/PRD.md) section 5 stories 18, 19, 20. Story numbers are given in brackets.
 
@@ -15,12 +15,12 @@ Terms used below: **train part** = price of all SBB legs after travelcard. **Ver
 **And** Vertt passes the train part to SBB, and SBB pays Vertt a 5 % commission as a separate entry
 
 **Acceptance Criteria:**
-- [ ] AC-1: Event "customer → Vertt" (`b2c_payment`) with the total.
-- [ ] AC-2: Event "Vertt → SBB" (`b2b_transfer`) with the train part.
-- [ ] AC-3: A separate event "SBB → Vertt" (`commission`) with 5 % of the train part. The commission is never netted into the transfer.
-- [ ] AC-4: With half-fare, transfer and commission are based on the half-fare price.
-- [ ] AC-5: With GA the train part is CHF 0: there is no transfer event and no commission event.
-- [ ] AC-6: A promo lowers the customer payment and Vertt's own income only. Transfer and commission are the same with and without promo.
+- [x] AC-1: Event "customer → Vertt" (`b2c_payment`) with the total.
+- [x] AC-2: Event "Vertt → SBB" (`b2b_transfer`) with the train part.
+- [x] AC-3: A separate event "SBB → Vertt" (`commission`) with 5 % of the train part. The commission is never netted into the transfer.
+- [x] AC-4: With half-fare, transfer and commission are based on the half-fare price.
+- [x] AC-5: With GA the train part is CHF 0: there is no transfer event and no commission event.
+- [x] AC-6: A promo lowers the customer payment and Vertt's own income only. Transfer and commission are the same with and without promo.
 
 ### US-2: As SBB, when a customer books the whole journey in my app, I want to collect the full price and pass Vertt's full share on so that Vertt is paid for its rides (story 20)
 **Given** the SBB app was chosen
@@ -29,10 +29,10 @@ Terms used below: **train part** = price of all SBB legs after travelcard. **Ver
 **And** SBB passes the Vertt part to Vertt, with no commission
 
 **Acceptance Criteria:**
-- [ ] AC-7: Event "customer → SBB" (`b2c_payment`) with the total.
-- [ ] AC-8: Event "SBB → Vertt" (`b2b_transfer`) with the Vertt part after promo.
-- [ ] AC-9: There is no commission event in the SBB app.
-- [ ] AC-10: Travelcards change only the train part. With GA, SBB passes the whole customer payment on and keeps CHF 0.00.
+- [x] AC-7: Event "customer → SBB" (`b2c_payment`) with the total.
+- [x] AC-8: Event "SBB → Vertt" (`b2b_transfer`) with the Vertt part after promo.
+- [x] AC-9: There is no commission event in the SBB app.
+- [x] AC-10: Travelcards change only the train part. With GA, SBB passes the whole customer payment on and keeps CHF 0.00.
 
 ### US-3: As an operator, I want the money movements of every booking to follow fixed rules and add up so that the settlement data can be trusted (stories 19, 20, general rules)
 **Given** any paid booking
@@ -40,12 +40,12 @@ Terms used below: **train part** = price of all SBB legs after travelcard. **Ver
 **Then** the amounts follow the rules above and add up to the customer payment
 
 **Acceptance Criteria:**
-- [ ] AC-11: B2B amounts (transfer, commission) are exact to the centime. Customer amounts are rounded to CHF 0.05.
-- [ ] AC-11a: The settlement starts from the **rounded** leg amounts the customer paid (e.g. the Vertt part CHF 33.05, not the API's exact CHF 33.04), so that customer payment and B2B transfers add up.
-- [ ] AC-12: Settlement is per booking: every event belongs to exactly one booking.
-- [ ] AC-13: Vertt is one party. No event names a driver.
-- [ ] AC-14: For a paid booking, what Vertt ends with plus what SBB ends with equals the customer payment.
-- [ ] AC-15: The reference case holds (Vertt part CHF 30.00, train part CHF 8.40, no promo):
+- [x] AC-11: B2B amounts (transfer, commission) are exact to the centime. Customer amounts are rounded to CHF 0.05.
+- [x] AC-11a: The settlement starts from the **rounded** leg amounts the customer paid (e.g. the Vertt part CHF 33.05, not the API's exact CHF 33.04), so that customer payment and B2B transfers add up.
+- [x] AC-12: Settlement is per booking: every event belongs to exactly one booking.
+- [x] AC-13: Vertt is one party. No event names a driver.
+- [x] AC-14: For a paid booking, what Vertt ends with plus what SBB ends with equals the customer payment.
+- [x] AC-15: The reference case holds (Vertt part CHF 30.00, train part CHF 8.40, no promo):
 
 | Seller | Events | Vertt ends with | SBB ends with |
 |---|---|---|---|
@@ -61,14 +61,14 @@ Terms used below: **train part** = price of all SBB legs after travelcard. **Ver
 **Acceptance Criteria:**
 - [ ] AC-16: "Cancel journey" asks for confirmation ("Really cancel?"). Declining changes nothing.
 - [ ] AC-17: After confirming, the receipt is marked "Cancelled" and shows the refund amount, which equals the total paid.
-- [ ] AC-18: Only the whole journey can be cancelled. There is no way to cancel a single leg.
-- [ ] AC-19: A booking can be cancelled once. After that "Cancel journey" is no longer offered.
-- [ ] AC-20: The refund is the full amount with no fee.
-- [ ] AC-21: A cancellation only adds events: a refund from the seller to the customer, a reversal of each B2B transfer, and a reversal of each commission.
-- [ ] AC-22: Each reversal has the same amount as the event it reverses, with payer and payee swapped, and refers to that event.
-- [ ] AC-23: Events that existed before the cancellation are unchanged afterwards: same content, same order.
-- [ ] AC-24: After a cancellation, customer, Vertt and SBB each end with CHF 0.00 for this booking.
-- [ ] AC-25: The booking status changes from "paid" to "cancelled".
+- [x] AC-18: Only the whole journey can be cancelled. There is no way to cancel a single leg.
+- [x] AC-19: A booking can be cancelled once. After that "Cancel journey" is no longer offered.
+- [x] AC-20: The refund is the full amount with no fee.
+- [x] AC-21: A cancellation only adds events: a refund from the seller to the customer, a reversal of each B2B transfer, and a reversal of each commission.
+- [x] AC-22: Each reversal has the same amount as the event it reverses, with payer and payee swapped, and refers to that event.
+- [x] AC-23: Events that existed before the cancellation are unchanged afterwards: same content, same order.
+- [x] AC-24: After a cancellation, customer, Vertt and SBB each end with CHF 0.00 for this booking.
+- [x] AC-25: The booking status changes from "paid" to "cancelled".
 
 ## Edge Cases
 - Vertt app + GA: the only event is the customer payment. A cancellation adds only the refund.
@@ -82,7 +82,7 @@ Terms used below: **train part** = price of all SBB legs after travelcard. **Ver
 ## Open Questions
 - ~~Rounding of the commission~~ → **Decided (Tim 2026-10-05):** half up to the centime.
 - ~~Cancel after leaving the receipt~~ → **Decided (Tim 2026-10-05):** not possible. Once the receipt is left ("New booking" or reload), the booking stays "paid" in the export.
-- Should the refund event refer to the original customer payment (like reversals refer to their event)? The lite mockup leaves it empty. → align with partners ([open topics](../../../docs/open-topics.md) #10).
+- Refund event refers to the original customer payment (`refers_to_event`, default 2026-10-12) – still to align with the partners ([open topics](../../../docs/open-topics.md) #10).
 - Is the commission asymmetry OK to present to partners? ([open topics](../../../docs/open-topics.md) #1)
 - Real cancellation rules and settlement timing per booking vs. monthly ([open topics](../../../docs/open-topics.md) #7, #4) are out of scope but should be confirmed.
 

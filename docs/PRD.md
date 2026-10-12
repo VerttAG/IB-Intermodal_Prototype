@@ -137,7 +137,7 @@ Example (made-up numbers: Vertt ride CHF 30.00, train ticket CHF 8.40):
 
 Each booking has one link (copy button) showing JSON – **transactional data only**:
 
-1. **Booking** – `booking_id`, `system` (vertt / sbb), `login_method`, `travelcard`, `promo_percent`, `promo_chf`, `payment_method`, `booked_at`, `status`, pseudonymous demo customer ID.
+1. **Booking** – `booking_id`, `system` (vertt / sbb), `login_method`, `travelcard`, `promo_percent`, `promo_chf`, `payment_method`, `booked_at`, `status`, `total_chf`, pseudonymous demo customer ID.
 2. **Amounts per leg** – operator (Vertt / SBB), type (Vertt ride / train), amount in CHF, CO₂ in kg, plus the trip's total CO₂. **No** addresses, coordinates, stations, times, car or labels.
 3. **Settlement events** – append-only list: `event_id, booking_id, seq, timestamp, event_type (b2c_payment | b2b_transfer | commission | refund | reversal), payer, payee, amount_chf, reason, refers_to_event`.
 
@@ -160,5 +160,5 @@ Real payments and logins, "arrive by", "use my location", peak-time factors, boo
 ## 10. Next steps
 
 1. CTO meeting: go through [open-topics.md](open-topics.md), confirm this PRD.
-2. Build (Python, Vercel) in this order: Vertt API → OJP client → trip engine (all done) → booking app → settlement, data link and export → Vercel setup. Each step is a GitHub issue.
+2. Build (Python, Vercel) in this order: Vertt API → OJP client → trip engine → settlement (all done) → booking app → data link and export → Vercel setup. Each step is a GitHub issue.
 3. Later: more stations (issue #19), more cars (issue #20).
