@@ -27,7 +27,7 @@ This PRD says **what** the demo gets from SBB. Whether the answers are fetched w
 **Acceptance Criteria:**
 - [ ] AC-4: Each train leg has from, to, departure, arrival, duration and line (e.g. IC 8, S11), taken from the OJP 2.0 answer.
 - [ ] AC-5: Times are shown in Swiss local time (OJP answers in UTC).
-- [ ] AC-6: After the first leg (Vertt ride or walk), only trains departing at least 8 minutes after the arrival at the station are considered, and only the **first** such train is used per station pair (decided 2026-10-05, PROJ-1-PRD-8). Variety comes from the candidate stations.
+- [ ] AC-6: After the first leg (Vertt ride or walk), only trains departing at least 8 minutes after the arrival at the station are considered, and one train is used per station pair: the earliest arrival, but the fewest transfers among trains arriving within 10 min of it (decided 2026-10-12, PROJ-1-PRD-8). Variety comes from the candidate stations.
 - [ ] AC-7: A train part with a change of trains is kept as several train legs with the transfer time between them.
 - [ ] AC-8: The route of each train leg on the map follows the railway line, using the geometry from OJP.
 - [ ] AC-9: The distance of each train leg comes from OJP.
@@ -73,15 +73,15 @@ This PRD says **what** the demo gets from SBB. Whether the answers are fetched w
 **Then** the missing value is shown as not available or comes from a stored earlier answer, marked as such
 
 **Acceptance Criteria:**
-- [ ] AC-24: A missing price is shown as "not available", never as CHF 0.00.
-- [ ] AC-25: A connection without a train price cannot be booked.
+- [ ] AC-24: If OJP Fare returns no price (NOVA sometimes cannot price a connection, e.g. Hedingen → Bern, also on retry), the half-fare price is **estimated**: train km × the average CHF/km of the other trains priced in the same search, or CHF 0.22/km if none was priced; rounded to CHF 0.05 and shown as a normal price. The server log records the estimate (decided by Tim 2026-10-12).
+- [ ] AC-25: A price is never shown as CHF 0.00 unless the travelcard is GA.
 - [ ] AC-26: A value taken from a stored earlier answer is marked as such in its data source.
 - [ ] AC-27: No value is invented when an interface fails.
 
 ## Edge Cases
 - The train part runs over midnight or over a daylight-saving change: local times and durations stay correct.
 - No train within a sensible wait after the Vertt arrival (late evening): the journey is not offered, or the long wait is marked (PROJ-1-PRD-2 AC-12).
-- OJP Fare returns no product for a connection: "not available" (AC-24), not bookable (AC-25).
+- OJP Fare returns no price for a connection ("There was no valid NOVA response"), also on one retry: the price is estimated (AC-24); the trip stays bookable.
 - OJP Fare returns only a saver ticket for a connection: its half-fare price is used (AC-18).
 - The same connection gets a different price later the same day (saver prices follow demand): bookings already made keep their price (AC-23).
 - Values come back with stray spaces or without a time zone (seen in the test): they are read correctly or not used.
@@ -89,7 +89,7 @@ This PRD says **what** the demo gets from SBB. Whether the answers are fetched w
 - The demo date is after the end of the current timetable period: the route is not offered.
 
 ## Open Questions
-- ~~Saver or normal ticket?~~ → **Decided (Tim 2026-10-05):** always the half-fare price (normal ticket where offered), × 2 for no travelcard, 0 for GA.
+- ~~Saver or normal ticket?~~ → **Decided (Tim 2026-10-05):** always the half-fare price (normal ticket where offered), × 2 for no travelcard, 0 for GA. **Checked 2026-10-12:** with half-fare, OJP Fare returns the normal ticket (Streckenbillett), e.g. Zürich HB → Bern CHF 26.50, Winterthur → Bern CHF 30.50.
 - ~~Train CO₂~~ → **Decided (Tim 2026-10-05):** the OJP value (0.007 kg per person-km × distance → 0.8 kg for Zürich–Bern) is shown and used.
 - ~~Live or prepared in advance?~~ → **Decided 2026-10-05: live** for every search (PROJ-1-PRD-8). The demo needs internet access to SBB during the presentation; answers are cached.
 - ~~SBB → Vertt journeys: search by arrival time?~~ → **Decided:** no "arrive by"; the last Vertt pickup follows the train arrival + waiting time (PROJ-1-PRD-8).

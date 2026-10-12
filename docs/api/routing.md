@@ -43,3 +43,19 @@ Findings:
 Because the Vertt API runs on our server and is not called from the browser (PRD-7), a key is no obstacle.
 
 **Decided for Prototype 1:** Valhalla, with every answer stored so that a repeated demo does not depend on the public server. Switch to Vertt's own component or Google if the CTO wants prices closer to Vertt's real ones.
+
+## 5. How to call Valhalla (checked 2026-10-12)
+
+```
+POST https://valhalla1.openstreetmap.de/route
+{"locations": [{"lat": 47.3416, "lon": 8.4708}, {"lat": 47.37818, "lon": 8.54021}], "costing": "auto"}
+```
+
+| Field | Example | Use |
+|---|---|---|
+| `trip.summary.length` | `13.506` | Distance in km → price, CO₂ |
+| `trip.summary.time` | `1326` | Ride time in **seconds** → minutes for the price |
+| `trip.legs[0].shape` | encoded text, 555 points | Street route for the map |
+
+- Use **POST** with a JSON body. The GET variant (`?json=…`) answered "Failed to parse json request".
+- The route line is an encoded polyline with **precision 6** (not the usual 5): decoded with precision 6 it starts 0.00 km from the start and ends 30 m from Zürich HB; with precision 5 the points land about 5,800 km away. Drawn on the map it follows the real streets (A4, Uetliberg tunnel, Wollishofen, Enge).

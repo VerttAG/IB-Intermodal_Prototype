@@ -16,8 +16,8 @@ A service of our own on the server (**Vercel**, Python), between the partner int
      best = smallest (distance from the address + detour)
 4. For each combination (max. 3 × 3 = 9):
      start → station:   ≤ 1 km → walk (OJP), otherwise Vertt leg (Vertt API)
-     station → station: OJP – first train leaving ≥ 8 min after arrival at the station
-                        OJP Fare – half-fare price only; no travelcard = 2 × half-fare; GA = CHF 0.00
+     station → station: OJP – train leaving ≥ 8 min after arrival: earliest arrival, fewest transfers within 10 min
+                        OJP Fare – half-fare price only (estimated if none); no travelcard = 2 × half-fare; GA = CHF 0.00
      station → dest.:   same rule as the start
      Vertt leg: pickup = chosen time + 5 min (start) / train arrival + 2 min (destination station)
 5. Totals per trip: arrival time, duration, price, CO₂
@@ -39,15 +39,15 @@ A service of our own on the server (**Vercel**, Python), between the partner int
 | Stations | **Main stations only**: the 70 hubs in `config/hubs.yaml` (Tier 1 national, Tier 2 regional, Tier 3 local; standard gauge, Swiss only). Smaller stations later (GitHub issue #19). |
 | Candidate rule | **Tier rule** (step 3): Tier 1 always (within 25 km, else the nearest); Tier 2 only if closer than Tier 1; Tier 3 only if closer than the hubs already chosen. Within a tier: smallest distance + detour. Max. 3 per side. |
 | AI model | **None in Prototype 1** (Jev dropped 2026-10-06 – see "Background"). |
-| Trains per station pair | Only the **first possible train** (≥ 8 min transfer). |
+| Trains per station pair | One train per pair: earliest arrival, but the **fewest transfers** among trains arriving within 10 min of it (≥ 8 min transfer). |
 | Walk instead of Vertt | At **both ends**, if the station is within **1 km** straight line. Also the minimum distance for a Vertt ride. |
 | Trips without Vertt leg | Offered only if they result from the normal calculation, without extra calls. |
 | Vertt tariff | **Same tariff everywhere** in Switzerland, factor 1.0. |
 | Car | Drawn from the **car pool** (`config/car_pool.yaml`), once per Vertt leg. |
 | Pickup | **5 min** after the chosen time at the start; **2 min** after the train arrival at the destination station. |
-| Train price | Only the **half-fare** price from OJP Fare; no travelcard = 2 × half-fare, GA = CHF 0.00. Shown as normal prices. |
+| Train price | Only the **half-fare** price from OJP Fare (normal ticket); no travelcard = 2 × half-fare, GA = CHF 0.00. If OJP Fare cannot price a connection, the price is estimated per km. Shown as normal prices. |
 | Train CO₂ | The **OJP value** (EmissionCO₂ per person-km × distance). |
-| Response time | Results within ~5 s, with a loading state. Partner calls run in parallel. |
+| Response time | Results within ~5 s, with a loading state. Partner calls run in parallel. Measured 2026-10-12: 1.5–4 s and 9–12 calls per search (`spikes/e2e_search.py`). |
 | Offers shown | Only the labelled trips (max. 3) + the two comparison cards (not bookable, not clickable). |
 | Hosting | **Vercel** (Python functions), behind the password gate (`mockup/middleware.js`, `DEMO_PASSWORD`). Keys are stored in Vercel. |
 
@@ -89,10 +89,10 @@ All values (thresholds, waiting times, radius) are configurable.
 - [ ] AC-12: Start and destination less than 10 km apart (straight line): no stations, no trips; the message "Trip not suitable for intermodal journey" is shown.
 - [ ] AC-13: For each combination (max. 9), one trip is built: first leg, train, last leg. First and last leg: walk (from OJP) if the station is within 1 km straight line, otherwise a Vertt leg from the Vertt API.
 - [ ] AC-14: First Vertt leg: pickup = chosen time + 5 min. Last Vertt leg: pickup = train arrival + 2 min.
-- [ ] AC-15: Train leg: the first train from OJP that leaves at least 8 minutes after the arrival at the station; times, line, platform, route and distance from OJP.
-- [ ] AC-16: Train price: only the half-fare price (2nd class) from OJP Fare (PROJ-1-PRD-6); no travelcard = 2 × half-fare; GA = CHF 0.00. All shown as normal prices.
+- [ ] AC-15: Train leg: among the train-only connections OJP returns that leave at least 8 minutes after the arrival at the station, take those arriving at most **10 min** after the earliest one, and of these the one with the **fewest transfers** (decided by Tim 2026-10-12 – the plain "first train" picked e.g. RE37 + S26 + IC6 instead of the direct IC). Times, line, platform, route and distance from OJP (request with leg geometry, needed for distance and CO₂).
+- [ ] AC-16: Train price: only the half-fare price (2nd class) from OJP Fare (PROJ-1-PRD-6); no travelcard = 2 × half-fare; GA = CHF 0.00. All shown as normal prices. If OJP Fare returns no price (NOVA sometimes cannot price a connection, e.g. Hedingen → Bern, also on retry), the half-fare price is **estimated**: train km × the average CHF/km of the other trains priced in the same search, or CHF 0.22/km if none was priced; rounded to CHF 0.05 and shown as a normal price. The server log records the estimate (decided by Tim 2026-10-12). The same applies to "Public transport only".
 - [ ] AC-17: Train CO₂ = OJP value (kg per person-km × distance).
-- [ ] AC-18: A trip with a missing train price, or a leg that cannot be calculated, is not offered.
+- [ ] AC-18: A trip with a leg that cannot be calculated (no train, no route) is not offered. A missing train price alone does not drop the trip (AC-16).
 - [ ] AC-19: If both ends are walks, the trip is a train-only trip and is offered like any other.
 
 ### US-4: As a customer, I want to see the fastest, cheapest and greenest trip so that I can choose by what matters to me (story 27)
