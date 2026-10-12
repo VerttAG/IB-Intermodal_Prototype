@@ -119,8 +119,6 @@ OJPLocationInformationDelivery
 </OJPTripRequest>
 ```
 
-Still to verify from the spec: how to search by **arrival** time (brief, trip 2) – not needed for Prototype 1 ("depart at" only).
-
 ### Response structure
 
 ```

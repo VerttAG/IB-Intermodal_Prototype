@@ -2,7 +2,7 @@
 
 A clickable booking demo for the Innovation Booster project "Seamless Data Exchange and Payment Settlement Layer among Transport Providers". For any two Swiss addresses it builds a door-to-door trip live – a **Vertt** ride to a station, an **SBB** train, a Vertt ride to the destination – shows price and CO₂ per carrier, and produces the **B2B settlement data** (who owes whom) for the partners' transaction layer.
 
-> Status: specification done (PRD v0.5), not yet built. A lite mockup with made-up data is in `mockup/`.
+> Status: specification done (PRD v0.5). Built so far: the Vertt API (`src/vertt.py`, `api/vertt/offer.py`). Build tasks: GitHub issues. A mockup with made-up data is in `mockup/`.
 
 ## Where to find what
 
@@ -11,8 +11,9 @@ A clickable booking demo for the Innovation Booster project "Seamless Data Excha
 | [docs/PRD.md](docs/PRD.md) | **Start here.** Why, for whom, how it works, customer flow, story list, settlement rules, data output, scope |
 | [specs/PROJ-1-intermodal-booking-demo/2_PRDs/](specs/PROJ-1-intermodal-booking-demo/2_PRDs/) | Feature specs with user stories and acceptance criteria: PRD-1 inputs · PRD-2 connections · PRD-3 login and checkout · PRD-4 settlement and cancellation · PRD-5 data link and export · PRD-6 SBB data · PRD-7 Vertt API · PRD-8 trip engine and AI |
 | [docs/design-brief.md](docs/design-brief.md) | Brief for the UX/UI design (no technical details) |
-| [docs/open-topics.md](docs/open-topics.md) | What is still open (CTO, Vertt finance, partners, spikes) |
+| [docs/open-topics.md](docs/open-topics.md) | What is still open (CTO, Vertt finance, partners, to find out) |
 | [docs/api/](docs/api/) | Reference for the external APIs, from real test calls |
+| [src/](src/), [api/](api/), [tests/](tests/) | Code: logic in `src/`, Vercel functions (web entrances) in `api/`, automatic tests in `tests/` |
 | [config/](config/) | `hubs.yaml` – 70 main stations with tier, stop ID and position · `car_pool.yaml` – cars for the Vertt legs |
 | [spikes/](spikes/) | `e2e_search.py` – one real trip search through all partner APIs, without the app (first working version of the trip engine) |
 | [mockup/](mockup/) | Lite clickable mockup (`index.html`) and the password gate for Vercel (`middleware.js`) |

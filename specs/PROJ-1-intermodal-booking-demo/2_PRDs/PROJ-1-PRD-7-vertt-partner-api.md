@@ -1,6 +1,6 @@
 # PROJ-1-PRD-7: Vertt partner API
 
-## Status: Planned
+## Status: Built 2026-10-12 – `src/vertt.py`, `api/vertt/offer.py`, tests in `tests/test_vertt.py`, description in [docs/api/vertt.md](../../../docs/api/vertt.md)
 
 Vertt gets its own interface, the counterpart to OJP on the SBB side: a partner asks it what a Vertt ride from position A to position B at a given time looks like and costs. Every offer is **calculated**: distance, ride time and route from the route service **Valhalla**, price with the **Vertt tariff**, CO₂ with a car drawn from the **car pool**. It is a building block for the later prototypes; Vertt's real price engine can later replace what is behind it without changing the interface. Source: [docs/PRD.md](../../../docs/PRD.md) section 5 stories 24, 25, 26; trip engine [PROJ-1-PRD-8](PROJ-1-PRD-8-trip-engine.md).
 
@@ -33,7 +33,7 @@ The Excel export in `data/raw/` (not in Git, contains personal data) holds 9 fin
 
 What is known already: the tariff, applied to the **recorded** distance and ride time, gives the export's "Base fare" within CHF 0.05 for 7 of the 9 rides (the two rides from 2021 differ by about CHF 0.55). The **charged** "Ride Price" differs from it by −12 % to +7 %, because it was calculated before the ride from estimated distance and time.
 
-Still to check (US-5): how close **Valhalla's** distance and time come to the recorded ones, and so how close a calculated offer comes to the real price.
+Checked 2026-10-12 (US-5, rough): Valhalla + tariff come within about 10 % of the charged prices (on average +9 %), see [routing.md](../../../docs/api/routing.md) section 6.
 
 ## The car pool
 
@@ -48,14 +48,14 @@ Still to check (US-5): how close **Valhalla's** distance and time come to the re
 **And** the route to draw on the map
 
 **Acceptance Criteria:**
-- [ ] AC-1: Request: start position, destination position (latitude, longitude) and planned pickup time.
-- [ ] AC-2: The offer contains: offer ID, start, destination, distance (km), ride time (min), price in CHF, factor used, car category ("Vertt"), car (make, model, year), CO₂ factor (g/km), route line.
-- [ ] AC-3: Distance, ride time and route line come from **Valhalla** (car profile) for exactly the two positions.
-- [ ] AC-4: The car is drawn from the car pool. Asking twice with the same offer ID returns the same offer, car included.
-- [ ] AC-5: Every offer says it is **calculated** and names its assumptions: factor 1.0, car drawn from the pool.
-- [ ] AC-6: The offer has no fixed timetable: it gives a ride time; the trip engine places it before or after the train and adds the waiting time for the car (PROJ-1-PRD-8).
-- [ ] AC-7: Positions outside Switzerland, or positions Valhalla cannot route between: a clear "not served" answer. No price is guessed.
-- [ ] AC-8: Start and destination are the same, or closer than a minimum distance: "not served" (a walk is the right answer, PROJ-1-PRD-8).
+- [x] AC-1: Request: start position, destination position (latitude, longitude) and planned pickup time.
+- [x] AC-2: The offer contains: version, offer ID, pickup time, distance (km), ride time (min), price in CHF, factor used, car category ("Vertt"), car (make, model, year, CO₂ factor in g/km), CO₂ in kg, route line, assumptions.
+- [x] AC-3: Distance, ride time and route line come from **Valhalla** (car profile) for exactly the two positions.
+- [x] AC-4: The car is drawn from the car pool. Asking twice with the same offer ID returns the same offer, car included.
+- [x] AC-5: Every offer says it is **calculated** and names its assumptions: factor 1.0, car drawn from the pool.
+- [x] AC-6: The offer has no fixed timetable: it gives a ride time; the trip engine places it before or after the train and adds the waiting time for the car (PROJ-1-PRD-8).
+- [x] AC-7: Positions outside Switzerland, or positions Valhalla cannot route between: a clear "not served" answer. No price is guessed.
+- [x] AC-8: Start and destination are the same, or closer than a minimum distance: "not served" (a walk is the right answer, PROJ-1-PRD-8).
 
 ### US-2: As Vertt, I want the price in an offer to follow one clear rule so that partners and the settlement work with the right amount (story 24)
 **Given** an offer's distance and ride time
@@ -63,14 +63,14 @@ Still to check (US-5): how close **Valhalla's** distance and time come to the re
 **Then** it follows the Vertt tariff
 
 **Acceptance Criteria:**
-- [ ] AC-9: Price = CHF 3.00 + CHF 1.80 per km + CHF 0.30 per minute of ride time.
-- [ ] AC-10: A price below CHF 10.00 is raised to CHF 10.00.
-- [ ] AC-11: The result is multiplied by the factor – 1.0 in Prototype 1. The offer names the factor.
-- [ ] AC-12: Reference cases: 10 km and 5 min → CHF 22.50 (corrected 2026-10-12, was 25.50). 2 km and 3 min → CHF 7.50, raised to CHF 10.00. 13.172 km and 21.2 min → CHF 33.05.
-- [ ] AC-13: The price does not depend on the car.
-- [ ] AC-14: The offer contains no tip, no waiting charge and no discount. Promo codes are applied by the booking app (PROJ-1-PRD-3).
-- [ ] AC-15: The offer contains no internal split of the price (driver earnings, service fee). Vertt is one party.
-- [ ] AC-16: The price is in CHF; the booking app rounds customer prices to CHF 0.05 (story 8).
+- [x] AC-9: Price = CHF 3.00 + CHF 1.80 per km + CHF 0.30 per minute of ride time.
+- [x] AC-10: A price below CHF 10.00 is raised to CHF 10.00.
+- [x] AC-11: The result is multiplied by the factor – 1.0 in Prototype 1. The offer names the factor.
+- [x] AC-12: Reference cases: 10 km and 5 min → CHF 22.50 (corrected 2026-10-12, was 25.50). 2 km and 3 min → CHF 7.50, raised to CHF 10.00. 13.172 km and 21.2 min → CHF 33.05.
+- [x] AC-13: The price does not depend on the car.
+- [x] AC-14: The offer contains no tip, no waiting charge and no discount. Promo codes are applied by the booking app (PROJ-1-PRD-3).
+- [x] AC-15: The offer contains no internal split of the price (driver earnings, service fee). Vertt is one party.
+- [x] AC-16: The price is in CHF; the booking app rounds customer prices to CHF 0.05 (story 8).
 
 ### US-3: As an IB partner, I want the Vertt API to be documented and stable so that we can use it in the later prototypes (story 25)
 **Given** I want to build on the Vertt API
@@ -78,9 +78,9 @@ Still to check (US-5): how close **Valhalla's** distance and time come to the re
 **Then** I find every request and every field explained, with an example
 
 **Acceptance Criteria:**
-- [ ] AC-17: `docs/api/vertt.md` describes every request and every field, with type, meaning and one example answer, in the same style as the OJP documents.
-- [ ] AC-18: Every answer of the API matches the description.
-- [ ] AC-19: The API answers in JSON and carries a version; a change of a field name or meaning is a new version.
+- [x] AC-17: `docs/api/vertt.md` describes every request and every field, with type, meaning and one example answer, in the same style as the OJP documents.
+- [x] AC-18: Every answer of the API matches the description.
+- [x] AC-19: The API answers in JSON and carries a version; a change of a field name or meaning is a new version.
 - [ ] AC-20: The demo gets its Vertt data only through this API – the trip engine calls it.
 
 ### US-4: As Vertt, I want only our own app to reach the Vertt API so that the tariff and the offers are not open to everyone (decided 2026-10-05)
@@ -89,9 +89,9 @@ Still to check (US-5): how close **Valhalla's** distance and time come to the re
 **Then** the call is refused
 
 **Acceptance Criteria:**
-- [ ] AC-21: The Vertt API is called only by the server side of our app (PROJ-1-PRD-8). The page in the customer's browser never calls it directly.
-- [ ] AC-22: A call without the valid secret is refused with a clear "not allowed" answer and reveals no data.
-- [ ] AC-23: The secret never appears in the page, the repo, a data link or an export.
+- [x] AC-21: The Vertt API is called only by the server side of our app (PROJ-1-PRD-8). The page in the customer's browser never calls it directly.
+- [x] AC-22: A call without the valid secret is refused with a clear "not allowed" answer and reveals no data.
+- [x] AC-23: The secret never appears in the page, the repo, a data link or an export.
 - [ ] AC-24: Partners get the description of the API (US-3), but no access of their own in Prototype 1.
 
 ### US-5: As the CTO, I want the calculator checked against the recorded rides so that I can trust the Vertt prices (story 26)
@@ -100,9 +100,9 @@ Still to check (US-5): how close **Valhalla's** distance and time come to the re
 **Then** calculated and recorded distance, time and price are compared
 
 **Acceptance Criteria:**
-- [ ] AC-25: A one-off script computes per ride: Valhalla distance and time vs. recorded; tariff price on Valhalla values vs. "Base fare" and vs. charged price.
-- [ ] AC-26: The result is documented as deviations in % in `docs/api/routing.md` – without addresses, dates, ride IDs or anything that leads to the passenger.
-- [ ] AC-27: The Excel export is never committed, deployed or used by the running API.
+- [x] AC-25: A one-off script computes per ride: Valhalla distance and time vs. recorded; tariff price on Valhalla values vs. "Base fare" and vs. charged price.
+- [x] AC-26: The result is documented as deviations in % in `docs/api/routing.md` – without addresses, dates, ride IDs or anything that leads to the passenger.
+- [x] AC-27: The Excel export is never committed, deployed or used by the running API.
 
 ## Edge Cases
 - A very short ride: the minimum price applies (AC-10).

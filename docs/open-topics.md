@@ -2,7 +2,7 @@
 
 Only what is **still open**. Everything decided is in [PRD.md](PRD.md) and the specs (`specs/PROJ-1-intermodal-booking-demo/2_PRDs/`). When a topic is decided, write the decision there and delete it here.
 
-Last update: 2026-10-05.
+Last update: 2026-10-12.
 
 ## For the CTO
 
@@ -29,10 +29,9 @@ Last update: 2026-10-05.
 |---|---|---|---|
 | 10 | **Settlement data format** | Draft in PRD section 7 | Align with the partners' transaction layer before building? |
 
-## To find out by trying (spikes)
+## To find out
 
 | # | Topic | Where |
 |---|---|---|
-| 13 | How close do Valhalla + tariff come to the 9 recorded rides? | PRD-7 |
 | 14 | Which example address pair to pre-fill in the address fields? | PRD-1, PRD-8 |
 | 15 | Which online store on Vercel holds the data behind the links? | PRD-5 |
