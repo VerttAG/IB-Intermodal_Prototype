@@ -1,6 +1,7 @@
 # OJP 2.0 – Data model (journey planner)
 
 Status: derived from **real responses** on 2026-10-05 (spike). Field names below appear exactly like this in the responses.
+Used by: `src/ojp.py` (OJP client), tests on saved answers in `tests/fixtures/ojp/`.
 Related: [ojpfare.md](ojpfare.md) (prices) · [PRD](../PRD.md) · [open topics](../open-topics.md)
 
 ## 1. Overview

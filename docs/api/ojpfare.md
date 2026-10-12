@@ -1,6 +1,7 @@
 # OJP Fare – Data model (ticket prices)
 
 Status: derived from **real responses** on 2026-10-05 (spike). Field names below appear exactly like this in the responses.
+Used by: `src/ojp.py` (OJP client) – the trip is sent unchanged, only without geometry.
 Related: [ojp20.md](ojp20.md) (journey planner, provides the input trip) · [PRD](../PRD.md) · [open topics](../open-topics.md)
 
 ## 1. Overview
