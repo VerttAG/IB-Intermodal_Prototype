@@ -2,7 +2,7 @@
 
 A clickable booking demo for the Innovation Booster project "Seamless Data Exchange and Payment Settlement Layer among Transport Providers". For any two Swiss addresses it builds a door-to-door trip live – a **Vertt** ride to a station, an **SBB** train, a Vertt ride to the destination – shows price and CO₂ per carrier, and produces the **B2B settlement data** (who owes whom) for the partners' transaction layer.
 
-> Status: specification done (PRD v0.5). Built so far: Vertt API (`src/vertt.py`), OJP client (`src/ojp.py`) and trip engine (`src/engine.py`, web entrance `api/trips.py`). Build tasks: GitHub issues. A mockup with made-up data is in `mockup/`.
+> Status: specification done (PRD v0.5). Built so far: Vertt API (`src/vertt.py`), OJP client (`src/ojp.py`), trip engine (`src/engine.py`, web entrance `api/trips.py`) and settlement (`src/settlement.py`). Build tasks: GitHub issues. A mockup with made-up data is in `mockup/`.
 
 ## Where to find what
 
