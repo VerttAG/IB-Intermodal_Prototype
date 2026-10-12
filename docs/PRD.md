@@ -4,7 +4,7 @@
 |---|---|
 | Status | **Draft v0.5** – decided by Tim 2026-10-05; to be confirmed with the Vertt CTO |
 | Owner | Tim Diethelm (Vertt AG) · contributors: Aleksandar Bozic |
-| Last update | 2026-10-05 |
+| Last update | 2026-10-12 |
 | Details | Feature specs: [`specs/PROJ-1-intermodal-booking-demo/2_PRDs/`](../specs/PROJ-1-intermodal-booking-demo/2_PRDs/) (PRD-1 … PRD-8) · open points: [open-topics.md](open-topics.md) · API references: [`api/`](api/) |
 
 ## 1. Why are we building this?
@@ -160,7 +160,5 @@ Real payments and logins, "arrive by", "use my location", peak-time factors, boo
 ## 10. Next steps
 
 1. CTO meeting: go through [open-topics.md](open-topics.md), confirm this PRD.
-2. Validation of the calculator against the recorded rides (PRD-7).
-3. Create the build tasks as GitHub issues from the specs.
-4. Build (Python, Vercel): Vertt API → OJP client → trip engine → booking app → settlement, data link and export.
-5. Later: more stations (issue #19), more cars (issue #20).
+2. Build (Python, Vercel) in this order: Vertt API (done) → OJP client → trip engine → booking app → settlement, data link and export → Vercel setup. Each step is a GitHub issue.
+3. Later: more stations (issue #19), more cars (issue #20).
