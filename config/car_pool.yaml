@@ -1,9 +1,18 @@
 # Car pool for calculated Vertt legs (PRD-7). One car is drawn at random per Vertt leg.
-# Source: cars of the recorded rides (Excel export), CO2 in g/km. No number plates, no vehicle IDs.
-# Optional per car later: fuel (petrol | diesel | hybrid | electric), weight. More cars: GitHub issue #20.
+# CO2 in g/km. No number plates, no vehicle IDs. Electric and hybrid cars later: GitHub issue #20.
 cars:
+  # Cars of the recorded rides (Excel export)
   - {make: "VW", model: "Passat", year: 2013, co2_g_per_km: 123}
   - {make: "Renault", model: "Megane", year: 2015, co2_g_per_km: 90}
   - {make: "Renault", model: "Megane", year: 2017, co2_g_per_km: 95}
   - {make: "Renault", model: "Talisman", year: 2018, co2_g_per_km: 120}
   - {make: "BMW", model: "3 Series", year: 2020, co2_g_per_km: 134}
+  # Added for variety (Tim 2026-10-19): petrol / diesel sedans, approximate typical values, not measured
+  - {make: "Skoda", model: "Superb", year: 2019, co2_g_per_km: 125}          # diesel
+  - {make: "Audi", model: "A4", year: 2019, co2_g_per_km: 128}               # diesel
+  - {make: "Mercedes-Benz", model: "E-Class", year: 2021, co2_g_per_km: 138} # diesel
+  - {make: "BMW", model: "5 Series", year: 2022, co2_g_per_km: 132}          # diesel
+  - {make: "Peugeot", model: "508", year: 2021, co2_g_per_km: 124}           # diesel
+  - {make: "Opel", model: "Insignia", year: 2018, co2_g_per_km: 152}         # petrol
+  - {make: "Mazda", model: "6", year: 2019, co2_g_per_km: 155}               # petrol
+  - {make: "Skoda", model: "Octavia", year: 2023, co2_g_per_km: 130}         # petrol
