@@ -1,6 +1,6 @@
 # PROJ-1-PRD-5: Booking data link and export
 
-## Status: Local version built 2026-10-12 – `api/bookings.py` (book, cancel, data link), `src/store.py` (one JSON file per booking in `data/local/bookings/`), used by the local app. Schema documented 2026-10-19 in [docs/schema.md](../../../docs/schema.md). Still open: online storage on Vercel (#22, #23)
+## Status: Local version built 2026-10-12 – `api/bookings.py` (book, cancel, data link), `src/store.py` (one JSON file per booking in `data/local/bookings/`). Schema documented 2026-10-19 in [docs/schema.md](../../../docs/schema.md). Online storage prepared 2026-10-19: `src/store.py` uses Upstash Redis when it is connected in Vercel (#23).
 
 Covers the output for the Innovation Booster partners: one data link per booking, an export of all bookings, and the rule that none of it contains personal data. Source: [docs/PRD.md](../../../docs/PRD.md) section 7, [docs/PRD.md](../../../docs/PRD.md) section 5 stories 17, 21. Story numbers are given in brackets.
 
@@ -76,13 +76,13 @@ Covers the output for the Innovation Booster partners: one data link per booking
 - A value has no real source (placeholder or estimate): its data source says so; it is never presented as measured.
 
 ## Open Questions
-- ~~Where does the data behind the link live?~~ → **Decided (Tim 2026-10-05): online storage on Vercel**, next to the trip engine. AC-8 and AC-9 hold as written.
+- ~~Where does the data behind the link live?~~ → **Decided (Tim 2026-10-05): online storage on Vercel**, next to the trip engine: **Upstash Redis** from the Vercel Marketplace (free plan, 2026-10-19), one entry per booking (`booking:BK-123456`). AC-8 and AC-9 hold as written.
 - ~~Does "Clear" invalidate links already sent?~~ → **Decided (Tim 2026-10-05):** no. "Clear" only empties the local list in the browser; data links already sent keep working.
 - Align the event format with the partners' transaction layer before building? ([open topics](../../../docs/open-topics.md) #10)
 
 ## Dependencies
 - Requires: PROJ-1-PRD-3 (booking), PROJ-1-PRD-4 (settlement events, cancellation), PROJ-1-PRD-2 (legs, car, data sources), PROJ-1-PRD-6 (SBB price details), PROJ-1-PRD-7 (Vertt amounts), PROJ-1-PRD-8 (amounts and CO₂ per operator and leg).
-- Hosting: Vercel (decided 2026-10-05) – the data behind the links is stored in an online store on Vercel.
+- Hosting: Vercel (decided 2026-10-05) – the data behind the links is stored in Upstash Redis, connected in Vercel.
 
 ## Technical Requirements
 - The output is valid JSON with stable field names; amounts are numbers in CHF, timestamps carry a time zone.

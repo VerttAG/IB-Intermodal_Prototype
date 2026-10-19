@@ -1,6 +1,6 @@
 // Password gate in front of the whole demo (Vercel Routing Middleware).
 // One shared password, no user name. Set it as the environment variable DEMO_PASSWORD
-// in the Vercel project; without it nobody gets in.
+// in the Vercel project; without it nobody gets in. Covers the app, the mockup and the API functions.
 // ponytail: no limit on wrong attempts; add rate limiting if the demo is ever more than a prototype.
 
 export const config = { matcher: '/(.*)' };

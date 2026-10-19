@@ -25,3 +25,6 @@ Thumbs.db
 .vercel
 .env*
 !.env.example
+
+# --- Vercel build output (made from app/ and mockup/ by vercel.json) ---
+public/
