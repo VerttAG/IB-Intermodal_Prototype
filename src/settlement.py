@@ -17,6 +17,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from src import vertt
 from src.ojp import SWISS
 
+SCHEMA_VERSION = "1"                       # docs/schema.md – raise it when a field name or meaning changes
 COMMISSION_RATE = Decimal("0.05")          # Vertt app only: 5 % of the train ticket, paid by SBB to Vertt
 SELLER = {"vertt": "Vertt", "sbb": "SBB"}
 TRAVELCARDS = ("none", "half", "ga")
@@ -65,7 +66,8 @@ def book(trip: dict, system: str, travelcard: str, promo_percent: int, payment_m
             base = r05(money(vertt.tariff(leg["distance_km"], leg["ride_time_min"])))
             paid = r05(base * (1 - Decimal(promo_percent) / 100))          # promo per Vertt ride (decided 2026-10-12)
             promo_chf += base - paid
-            legs.append({"operator": "Vertt", "type": "vertt_ride", "amount_chf": paid, "co2_kg": round(leg["co2_kg"], 3)})
+            legs.append({"operator": "Vertt", "type": "vertt_ride", "amount_before_promo_chf": base, "amount_chf": paid,
+                         "co2_kg": round(leg["co2_kg"], 3)})
         elif leg["kind"] == "train":
             has_train, train_co2 = True, train_co2 + leg["co2_kg"]
     if has_train:                                                            # one SBB ticket for all train legs
@@ -79,6 +81,7 @@ def book(trip: dict, system: str, travelcard: str, promo_percent: int, payment_m
 
     total = sum((l["amount_chf"] for l in legs), Decimal("0"))
     record = {
+        "schema_version": SCHEMA_VERSION,
         "booking": {"booking_id": booking_id, "system": system, "status": "paid", "customer": f"demo-{secrets.token_hex(2)}",
                     "login_method": login_method, "travelcard": travelcard, "promo_percent": promo_percent,
                     "promo_chf": promo_chf, "payment_method": payment_method, "booked_at": booked_at, "total_chf": total},

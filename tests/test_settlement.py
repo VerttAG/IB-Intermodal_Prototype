@@ -60,6 +60,7 @@ def test_travelcards(card, train, transfer):
 def test_promo_only_on_vertt_and_carried_by_vertt():       # AC-6, AC-8
     rec = book(promo=10)
     assert rec["legs"][0]["amount_chf"] == 27.00 and rec["booking"]["promo_chf"] == 3.00
+    assert rec["legs"][0]["amount_before_promo_chf"] == 30.00 and "amount_before_promo_chf" not in rec["legs"][1]
     assert events(rec)[1:] == [("b2b_transfer", "Vertt", "SBB", 8.40), ("commission", "SBB", "Vertt", 0.42)]
     assert ("b2b_transfer", "SBB", "Vertt", 27.00) in events(book(promo=10, system="sbb"))
 
@@ -107,10 +108,11 @@ def test_cancel():
 
 def test_data_link_holds_transactional_data_only():        # PRD-5 AC-4 to AC-6
     rec = book()
-    assert set(rec) == {"booking", "legs", "co2_total_kg", "settlement_events"}
+    assert set(rec) == {"schema_version", "booking", "legs", "co2_total_kg", "settlement_events"} and rec["schema_version"] == "1"
     assert set(rec["booking"]) == {"booking_id", "system", "status", "customer", "login_method", "travelcard", "promo_percent",
                                    "promo_chf", "payment_method", "booked_at", "total_chf"}
-    assert all(set(l) == {"seq", "operator", "type", "amount_chf", "co2_kg"} for l in rec["legs"])
+    assert set(rec["legs"][0]) == {"seq", "operator", "type", "amount_before_promo_chf", "amount_chf", "co2_kg"}     # Vertt ride
+    assert set(rec["legs"][1]) == {"seq", "operator", "type", "amount_chf", "co2_kg"}                                # train
     assert set(rec["settlement_events"][0]) == {"event_id", "booking_id", "seq", "timestamp", "event_type", "payer", "payee",
                                                 "amount_chf", "reason", "refers_to_event"}
     text = json.dumps(rec)

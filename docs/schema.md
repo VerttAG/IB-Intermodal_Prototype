@@ -2,7 +2,7 @@
 
 The data that every booking of the demo produces for the Innovation Booster partners. Produced by `src/settlement.py`, rules in [PRD.md](PRD.md) section 6, requirements in PRD-5 (`specs/PROJ-1-intermodal-booking-demo/2_PRDs/`).
 
-Last update: 2026-10-19. A change to a field name or meaning is always a visible change to this file.
+Schema version **1** · last update 2026-10-19. A change to a field name or meaning is always a visible change to this file and raises `schema_version`.
 
 ## 1. Where the data comes from
 
@@ -17,11 +17,12 @@ Only transactional data: no names, addresses, coordinates, stations, times of th
 ## 2. Booking record
 
 ```
-{ "booking": {...}, "legs": [...], "co2_total_kg": 1.288, "settlement_events": [...] }
+{ "schema_version": "1", "booking": {...}, "legs": [...], "co2_total_kg": 1.288, "settlement_events": [...] }
 ```
 
 | Field | Type | Meaning |
 |---|---|---|
+| `schema_version` | string | Version of this schema, currently `"1"` |
 | `booking` | object | The booking (section 3) |
 | `legs` | list | Amount and CO₂ per paid leg (section 4) |
 | `co2_total_kg` | number | CO₂ of the whole trip in kg, 3 decimals = sum of the legs |
@@ -52,6 +53,7 @@ One entry per **Vertt ride** and **one** entry for the SBB ticket (all train leg
 | `seq` | integer | 1, 2, 3 … | Order in the trip |
 | `operator` | string | `Vertt` · `SBB` | Who provides the leg |
 | `type` | string | `vertt_ride` · `train` | Kind of leg |
+| `amount_before_promo_chf` | number | CHF, multiple of 0.05 | **Vertt rides only:** price before the promo (equals `amount_chf` without promo) |
 | `amount_chf` | number | CHF, multiple of 0.05 | Price the customer pays for this leg – after promo (Vertt) or travelcard (SBB; `0` with GA) |
 | `co2_kg` | number | kg, 3 decimals | CO₂ of this leg (Vertt: km × car's g/km; train: from SBB's OJP) |
 
@@ -95,11 +97,12 @@ Events with amount 0 are not written: with GA the Vertt app has no transfer and 
 
 ```json
 {
+ "schema_version": "1",
  "booking": {"booking_id": "BK-240891", "system": "vertt", "status": "cancelled", "customer": "demo-3f9a",
   "login_method": "swisspass", "travelcard": "half", "promo_percent": 0, "promo_chf": 0.0,
   "payment_method": "twint", "booked_at": "2026-10-19T08:12:05+02:00", "total_chf": 38.4},
  "legs": [
-  {"seq": 1, "operator": "Vertt", "type": "vertt_ride", "amount_chf": 30.0, "co2_kg": 1.2},
+  {"seq": 1, "operator": "Vertt", "type": "vertt_ride", "amount_before_promo_chf": 30.0, "amount_chf": 30.0, "co2_kg": 1.2},
   {"seq": 2, "operator": "SBB", "type": "train", "amount_chf": 8.4, "co2_kg": 0.088}
  ],
  "co2_total_kg": 1.288,
