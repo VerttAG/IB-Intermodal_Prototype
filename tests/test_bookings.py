@@ -1,4 +1,4 @@
-"""Tests for the booking entrance and the local store (PRD-5, issue #22).  Run: pytest"""
+"""Tests for the booking entrance and the store, local and online (PRD-5, issue #22).  Run: pytest"""
 import importlib.util
 from pathlib import Path
 
@@ -16,6 +16,8 @@ TRIP = {"train_price_half_chf": 8.40, "legs": [
 @pytest.fixture(autouse=True)
 def temp_store(tmp_path, monkeypatch):
     monkeypatch.setenv("BOOKING_STORE_DIR", str(tmp_path))
+    for name in ("KV_REST_API_URL", "KV_REST_API_TOKEN", "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN"):
+        monkeypatch.delenv(name, raising=False)
 
 
 def book():
@@ -44,3 +46,31 @@ def test_unknown_and_bad_requests():
     assert api.handle_get({"id": ["../../.env"]})[0] == 404          # never a path from outside
     assert api.handle_post({"action": "pay"})[0] == 400
     assert api.handle_post({"action": "book", "trip": TRIP, "system": "vertt"})[0] == 400
+
+
+def test_online_store_when_upstash_is_connected(monkeypatch, tmp_path):
+    from src import store
+    redis, calls = {}, []
+
+    class Answer:
+        def __init__(self, result): self.result = result
+        def raise_for_status(self): pass
+        def json(self): return {"result": self.result}
+
+    def fake_post(url, json, headers, timeout):          # stands in for Upstash's REST interface
+        calls.append((url, headers["Authorization"]))
+        command, key, *value = json
+        if command == "SET":
+            redis[key] = value[0]
+            return Answer("OK")
+        return Answer(redis.get(key))
+
+    monkeypatch.setenv("KV_REST_API_URL", "https://example.upstash.io")
+    monkeypatch.setenv("KV_REST_API_TOKEN", "test-token")
+    monkeypatch.setattr(store.httpx, "post", fake_post)
+    _, rec = book()
+    bid = rec["booking"]["booking_id"]
+    assert f"booking:{bid}" in redis and not list(tmp_path.iterdir())   # online, not in the local folder
+    assert api.handle_get({"id": [bid]}) == (200, rec)
+    assert api.handle_get({"id": ["BK-000000"]})[0] == 404
+    assert calls[0] == ("https://example.upstash.io", "Bearer test-token")

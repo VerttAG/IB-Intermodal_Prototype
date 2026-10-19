@@ -50,7 +50,7 @@ A service of our own on the server (**Vercel**, Python), between the partner int
 | Response time | Results within ~5 s, with a loading state. Partner calls run in parallel. Measured 2026-10-12: 4–5 s for a new search, 9–12 partner calls; repeated searches come from the cache. |
 | Offers shown | Only the labelled trips (max. 3) + the "Vertt only" comparison card (not bookable, not clickable). |
 | No "Public transport only" card | **Not required** (decided by Tim 2026-10-12). In the local app it was faster, cheaper and greener than Vertt + train for almost every search. Reason: the engine deliberately uses only main stations and one train per station pair, while the SBB journey planner uses every stop, bus and connection. Showing Vertt's real advantage would need smaller stations, better station choice and more train options (GitHub issue #19) – too much for Prototype 1. The local app (`app/`) and the mockup still show the card, to explain this decision. |
-| Hosting | **Vercel** (Python functions), behind the password gate (`mockup/middleware.js`, `DEMO_PASSWORD`). Keys are stored in Vercel. |
+| Hosting | **Vercel** (Python functions), behind the password gate (`middleware.js`, `DEMO_PASSWORD`); servers in Frankfurt (`fra1`, `vercel.json`). Keys are stored in Vercel. |
 
 All values (thresholds, waiting times, radius) are configurable.
 

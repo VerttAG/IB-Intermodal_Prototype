@@ -16,7 +16,8 @@ A clickable booking demo for the Innovation Booster project "Seamless Data Excha
 | [src/](src/), [api/](api/), [tests/](tests/) | Code: logic in `src/`, Vercel functions (web entrances) in `api/`, automatic tests in `tests/` |
 | [config/](config/) | `hubs.yaml` – 70 main stations with tier, stop ID and position · `car_pool.yaml` – cars for the Vertt legs |
 | [app/](app/), `dev_server.py` | The usable app with real data – runs locally, see "Run" |
-| [mockup/](mockup/) | Lite clickable mockup (`index.html`) and the password gate for Vercel (`middleware.js`) |
+| [mockup/](mockup/) | Lite clickable mockup with made-up data (online at `/mockup/`) |
+| `vercel.json`, `middleware.js` | Online hosting: the app is the main page, the mockup is at `/mockup/`; password gate in front of everything (`DEMO_PASSWORD`) |
 
 ## Which API does what
 
@@ -30,7 +31,8 @@ A clickable booking demo for the Innovation Booster project "Seamless Data Excha
 | Trips for the booking app | Trip engine (ours) – combines all of the above, `POST /api/trips` | – (password gate) | [trip-offers.md](docs/api/trip-offers.md) |
 | Candidate stations | Fixed list of 70 main stations with tiers (`config/hubs.yaml`) | none | PRD-8 |
 | Map | Leaflet + OpenStreetMap tiles | none | – |
-| Hosting, data behind the links | Vercel (password gate `DEMO_PASSWORD`) | Vercel account | PRD-5, PRD-8 |
+| Hosting | Vercel (password gate `DEMO_PASSWORD`) | Vercel account | PRD-8 |
+| Data behind the links | Upstash Redis, connected in Vercel (local: `data/local/bookings/`) | `KV_REST_API_URL`, `KV_REST_API_TOKEN` (set by Vercel) | PRD-5 |
 
 Keys live in `.env` locally and in the Vercel project settings online – never in the repo.
 

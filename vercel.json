@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "rm -rf public && mkdir -p public/mockup && cp app/index.html public/ && cp mockup/index.html public/mockup/",
+  "outputDirectory": "public",
+  "regions": ["fra1"],
+  "functions": {
+    "api/**/*.py": { "includeFiles": "{src,config}/**", "maxDuration": 60 }
+  }
+}
