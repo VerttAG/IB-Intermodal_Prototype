@@ -37,7 +37,7 @@ Checked 2026-10-12 (US-5, rough): Valhalla + tariff come within about 10 % of th
 
 ## The car pool
 
-`config/car_pool.yaml`: make, model, year, CO₂ factor (g/km). For now the **5 cars of the recorded rides** that have a CO₂ value (Renault Megane 2015 = 90 g/km, decided 2026-10-06); more cars and fuel types later (GitHub issue #20). **Every car has a CO₂ factor** (no gaps). No number plates, no vehicle IDs.
+`config/car_pool.yaml`: make, model, year, CO₂ factor (g/km). **13 cars:** the 5 cars of the recorded rides that have a CO₂ value (Renault Megane 2015 = 90 g/km, decided 2026-10-06) and 8 petrol / diesel sedans from 2018–2023 with approximate typical values (added 2026-10-19, no electric or hybrid so that the CO₂ comparison stays as it is); electric and hybrid cars later (GitHub issue #20). **Every car has a CO₂ factor** (no gaps). No number plates, no vehicle IDs.
 
 ## User Stories
 
