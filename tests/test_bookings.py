@@ -74,3 +74,20 @@ def test_online_store_when_upstash_is_connected(monkeypatch, tmp_path):
     assert api.handle_get({"id": [bid]}) == (200, rec)
     assert api.handle_get({"id": ["BK-000000"]})[0] == 404
     assert calls[0] == ("https://example.upstash.io", "Bearer test-token")
+
+
+def test_booking_numbers_stay_unique(monkeypatch):
+    first = book()[1]
+    real_book, drawn = api.settlement.book, []
+
+    def book_twice(*args):                                 # the first draw repeats an existing number
+        rec = real_book(*args)
+        if not drawn:
+            rec["booking"]["booking_id"] = first["booking"]["booking_id"]
+        drawn.append(rec["booking"]["booking_id"])
+        return rec
+
+    monkeypatch.setattr(api.settlement, "book", book_twice)
+    status, second = book()
+    assert status == 200 and len(drawn) == 2 and second["booking"]["booking_id"] != first["booking"]["booking_id"]
+    assert api.handle_get({"id": [first["booking"]["booking_id"]]})[1] == first          # the first booking is untouched
