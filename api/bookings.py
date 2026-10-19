@@ -29,6 +29,9 @@ def handle_post(payload: dict) -> tuple[int, dict]:
                                      payload["payment_method"], payload["login_method"])
         except (KeyError, TypeError, ValueError, StopIteration) as e:
             return 400, {"version": VERSION, "status": "invalid_request", "message": str(e)}
+        while store.load(record["booking"]["booking_id"]):     # booking numbers are unique (PRD-5 edge case)
+            record = settlement.book(payload["trip"], payload["system"], payload["travelcard"], int(payload.get("promo_percent", 0)),
+                                     payload["payment_method"], payload["login_method"])
         store.save(record)                     # the booking exists from the click on "Pay" (PRD-3)
         return 200, record
     if action == "cancel":

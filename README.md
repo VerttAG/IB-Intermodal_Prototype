@@ -11,6 +11,7 @@ A clickable booking demo for the Innovation Booster project "Seamless Data Excha
 | [docs/PRD.md](docs/PRD.md) | **Start here.** Why, for whom, how it works, customer flow, story list, settlement rules, data output, scope |
 | [specs/PROJ-1-intermodal-booking-demo/2_PRDs/](specs/PROJ-1-intermodal-booking-demo/2_PRDs/) | Feature specs with user stories and acceptance criteria: PRD-1 inputs · PRD-2 connections · PRD-3 login and checkout · PRD-4 settlement and cancellation · PRD-5 data link and export · PRD-6 SBB data · PRD-7 Vertt API · PRD-8 trip engine and AI |
 | [docs/design-brief.md](docs/design-brief.md) | Brief for the UX/UI design (no technical details) |
+| [docs/schema.md](docs/schema.md) | Data schema of the data link and the export, for the partners |
 | [docs/open-topics.md](docs/open-topics.md) | What is still open (partners, to find out) |
 | [docs/api/](docs/api/) | Reference for the external APIs, from real test calls |
 | [src/](src/), [api/](api/), [tests/](tests/) | Code: logic in `src/`, Vercel functions (web entrances) in `api/`, automatic tests in `tests/` |
