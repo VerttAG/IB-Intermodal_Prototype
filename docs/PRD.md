@@ -142,7 +142,7 @@ Each booking has one link (copy button) showing JSON – **transactional data on
 2. **Amounts per leg** – operator (Vertt / SBB), type (Vertt ride / train), amount in CHF, CO₂ in kg, plus the trip's total CO₂. **No** addresses, coordinates, stations, times, car or labels.
 3. **Settlement events** – append-only list: `event_id, booking_id, seq, timestamp, event_type (b2c_payment | b2b_transfer | commission | refund | reversal), payer, payee, amount_chf, reason, refers_to_event`.
 
-The data is stored online on **Vercel**; after a cancellation the **same link** shows the updated content. **Export** of all bookings since the page was first opened in this browser (across reloads, incl. cancellations) until "Clear" – which empties only the local list; links already sent keep working. Field names documented in `docs/schema.md` (to be written).
+The data is stored online on **Vercel**; after a cancellation the **same link** shows the updated content. **Export** of all bookings since the page was first opened in this browser (across reloads, incl. cancellations) until "Clear" – which empties only the local list; links already sent keep working. Field names documented in [schema.md](schema.md).
 
 ## 8. Not in scope (Prototype 1)
 
