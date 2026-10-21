@@ -17,7 +17,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from src import vertt
 from src.ojp import SWISS
 
-SCHEMA_VERSION = "1"                       # docs/schema.md – raise it when a field name or meaning changes
+SCHEMA_VERSION = "2"                       # docs/schema.md – raise it when a field name or meaning changes
 COMMISSION_RATE = Decimal("0.05")          # Vertt app only: 5 % of the train ticket, paid by SBB to Vertt
 SELLER = {"vertt": "Vertt", "sbb": "SBB"}
 TRAVELCARDS = ("none", "half", "ga")
@@ -82,11 +82,11 @@ def book(trip: dict, system: str, travelcard: str, promo_percent: int, payment_m
     total = sum((l["amount_chf"] for l in legs), Decimal("0"))
     record = {
         "schema_version": SCHEMA_VERSION,
+        "summary": {},                                                     # filled by _summary() – first thing a partner reads
         "booking": {"booking_id": booking_id, "system": system, "status": "paid", "customer": f"demo-{secrets.token_hex(2)}",
                     "login_method": login_method, "travelcard": travelcard, "promo_percent": promo_percent,
                     "promo_chf": promo_chf, "payment_method": payment_method, "booked_at": booked_at, "total_chf": total},
         "legs": legs,
-        "co2_total_kg": round(sum(l["co2_kg"] for l in legs), 3),
         "settlement_events": [],
     }
     seller = SELLER[system]
@@ -98,7 +98,7 @@ def book(trip: dict, system: str, travelcard: str, promo_percent: int, payment_m
         _add(record, booked_at, "commission", "SBB", "Vertt", cents(train_part * COMMISSION_RATE), "5 % sales commission on the train ticket")
     elif system == "sbb" and vertt_part > 0:
         _add(record, booked_at, "b2b_transfer", "SBB", "Vertt", vertt_part, "Vertt rides sold by SBB, no commission")
-    return _plain(record)
+    return _plain(_summary(record))
 
 
 def cancel(record: dict, now: str | None = None) -> dict:
@@ -115,7 +115,7 @@ def cancel(record: dict, now: str | None = None) -> dict:
         if e["event_type"] in ("b2b_transfer", "commission"):
             _add(out, at, "reversal", e["payee"], e["payer"], money(e["amount_chf"]), f"Reversal of {e['event_type']}", e["event_id"])
     out["booking"]["status"] = "cancelled"
-    return _plain(out)
+    return _plain(_summary(out))
 
 
 def balances(record: dict) -> dict:
@@ -125,6 +125,17 @@ def balances(record: dict) -> dict:
         out[e["payer"]] -= money(e["amount_chf"])
         out[e["payee"]] += money(e["amount_chf"])
     return out
+
+
+def _summary(record: dict) -> dict:
+    """CO₂ per operator and the net transfer between Vertt and SBB over all events (0 after a cancellation)."""
+    co2 = lambda op: round(sum(l["co2_kg"] for l in record["legs"] if op in (None, l["operator"])), 3)
+    vertt_to_sbb = sum((money(e["amount_chf"]) * (1 if e["payer"] == "Vertt" else -1) for e in record["settlement_events"]
+                        if {e["payer"], e["payee"]} == {"Vertt", "SBB"}), Decimal("0"))
+    payer, payee = ("Vertt", "SBB") if vertt_to_sbb > 0 else ("SBB", "Vertt") if vertt_to_sbb < 0 else (None, None)
+    record["summary"] = {"co2_kg": {"vertt": co2("Vertt"), "sbb": co2("SBB"), "total": co2(None)},
+                         "settlement": {"payer": payer, "payee": payee, "amount_chf": abs(vertt_to_sbb)}}
+    return record
 
 
 def _add(record, at, event_type, payer, payee, amount, reason, refers_to=None):
