@@ -82,7 +82,7 @@ def test_amounts_are_recalculated_and_trains_combined():
              {"kind": "walk", "minutes": 6, "co2_kg": 0.0})
     rec = book(t)
     assert [(l["seq"], l["operator"], l["amount_chf"]) for l in rec["legs"]] == [(1, "Vertt", 18.80), (2, "SBB", 31.40)]
-    assert rec["legs"][1]["co2_kg"] == 0.9 and rec["co2_total_kg"] == 1.7
+    assert rec["legs"][1]["co2_kg"] == 0.9 and rec["summary"]["co2_kg"] == {"vertt": 0.8, "sbb": 0.9, "total": 1.7}
 
 
 def test_everything_adds_up():                             # AC-14
@@ -108,7 +108,7 @@ def test_cancel():
 
 def test_data_link_holds_transactional_data_only():        # PRD-5 AC-4 to AC-6
     rec = book()
-    assert set(rec) == {"schema_version", "booking", "legs", "co2_total_kg", "settlement_events"} and rec["schema_version"] == "1"
+    assert list(rec) == ["schema_version", "summary", "booking", "legs", "settlement_events"] and rec["schema_version"] == "2"
     assert set(rec["booking"]) == {"booking_id", "system", "status", "customer", "login_method", "travelcard", "promo_percent",
                                    "promo_chf", "payment_method", "booked_at", "total_chf"}
     assert set(rec["legs"][0]) == {"seq", "operator", "type", "amount_before_promo_chf", "amount_chf", "co2_kg"}     # Vertt ride
@@ -124,3 +124,11 @@ def test_bad_input():
         st.book(REF, "vertt", "half", 15, "twint", "google")
     with pytest.raises(ValueError, match="system"):
         st.book(REF, "bls", "half", 0, "twint", "google")
+
+
+def test_summary_shows_the_net_transfer():                 # schema v2: first lines of the data link
+    rec = book()                                           # Vertt app, half-fare: Vertt -> SBB 8.40, SBB -> Vertt 0.42
+    assert rec["summary"]["settlement"] == {"payer": "Vertt", "payee": "SBB", "amount_chf": 7.98}
+    assert book(system="sbb")["summary"]["settlement"] == {"payer": "SBB", "payee": "Vertt", "amount_chf": 30.00}
+    assert book(card="ga")["summary"]["settlement"] == {"payer": None, "payee": None, "amount_chf": 0.00}    # GA: no transfer
+    assert st.cancel(rec)["summary"]["settlement"] == {"payer": None, "payee": None, "amount_chf": 0.00}     # all reversed

@@ -2,7 +2,7 @@
 
 The data that every booking of the demo produces for the Innovation Booster partners. Produced by `src/settlement.py`, rules in [PRD.md](PRD.md) section 6, requirements in PRD-5 (`specs/PROJ-1-intermodal-booking-demo/2_PRDs/`).
 
-Schema version **1** · last update 2026-10-19. A change to a field name or meaning is always a visible change to this file and raises `schema_version`.
+Schema version **2** · last update 2026-10-21 (v2: `summary` added at the top, `co2_total_kg` moved into it). A change to a field name or meaning is always a visible change to this file and raises `schema_version`.
 
 ## 1. Where the data comes from
 
@@ -17,18 +17,40 @@ Only transactional data: no names, addresses, coordinates, stations, times of th
 ## 2. Booking record
 
 ```
-{ "schema_version": "1", "booking": {...}, "legs": [...], "co2_total_kg": 1.288, "settlement_events": [...] }
+{ "schema_version": "2", "summary": {...}, "booking": {...}, "legs": [...], "settlement_events": [...] }
 ```
 
 | Field | Type | Meaning |
 |---|---|---|
-| `schema_version` | string | Version of this schema, currently `"1"` |
-| `booking` | object | The booking (section 3) |
-| `legs` | list | Amount and CO₂ per paid leg (section 4) |
-| `co2_total_kg` | number | CO₂ of the whole trip in kg, 3 decimals = sum of the legs |
-| `settlement_events` | list | All money movements, in order (section 5) |
+| `schema_version` | string | Version of this schema, currently `"2"` |
+| `summary` | object | The overview: CO₂ per operator and the net transfer between Vertt and SBB (section 3) |
+| `booking` | object | The booking (section 4) |
+| `legs` | list | Amount and CO₂ per paid leg (section 5) |
+| `settlement_events` | list | All money movements, in order (section 6) |
 
-## 3. `booking`
+## 3. `summary`
+
+Calculated from `legs` and `settlement_events` – the first thing to read; the details below stay the reference.
+
+| Field | Type | Meaning |
+|---|---|---|
+| `co2_kg.vertt` | number | CO₂ of all Vertt rides in kg, 3 decimals |
+| `co2_kg.sbb` | number | CO₂ of the train part in kg, 3 decimals |
+| `co2_kg.total` | number | CO₂ of the whole trip = `vertt` + `sbb` |
+| `settlement.payer` | string or `null` | `Vertt` or `SBB` – who owes the other party money for this booking |
+| `settlement.payee` | string or `null` | The other party |
+| `settlement.amount_chf` | number | **Net** amount between Vertt and SBB over all events, ≥ 0 |
+
+`payer` and `payee` are `null` when nothing is owed: Vertt app with GA, and every booking after a cancellation (all transfers reversed, amount `0`). The customer's payment and refund are not part of the summary.
+
+| Example | Events between Vertt and SBB | `settlement` |
+|---|---|---|
+| Vertt app, train CHF 8.40 | Vertt → SBB 8.40 · SBB → Vertt 0.42 | Vertt → SBB **7.98** |
+| SBB app, Vertt rides CHF 30.00 | SBB → Vertt 30.00 | SBB → Vertt **30.00** |
+| Vertt app, GA | none | `null` → `null`, **0** |
+| Any booking, cancelled | transfers and reversals | `null` → `null`, **0** |
+
+## 4. `booking`
 
 | Field | Type | Allowed values / format | Meaning |
 |---|---|---|---|
@@ -44,7 +66,7 @@ Only transactional data: no names, addresses, coordinates, stations, times of th
 | `booked_at` | string | ISO 8601 with time zone, Swiss time | Click on "Pay" |
 | `total_chf` | number | CHF, multiple of 0.05 | What the customer paid = sum of `legs[].amount_chf` |
 
-## 4. `legs[]`
+## 5. `legs[]`
 
 One entry per **Vertt ride** and **one** entry for the SBB ticket (all train legs of the trip together). Walks are not listed (no amount, no CO₂).
 
@@ -57,7 +79,7 @@ One entry per **Vertt ride** and **one** entry for the SBB ticket (all train leg
 | `amount_chf` | number | CHF, multiple of 0.05 | Price the customer pays for this leg – after promo (Vertt) or travelcard (SBB; `0` with GA) |
 | `co2_kg` | number | kg, 3 decimals | CO₂ of this leg (Vertt: km × car's g/km; train: from SBB's OJP) |
 
-## 5. `settlement_events[]`
+## 6. `settlement_events[]`
 
 **Append-only:** events are never changed or deleted. A cancellation adds new events at the end.
 
@@ -84,20 +106,22 @@ One entry per **Vertt ride** and **one** entry for the SBB ticket (all train leg
 
 Events with amount 0 are not written: with GA the Vertt app has no transfer and no commission.
 
-## 6. Rules for the numbers
+## 7. Rules for the numbers
 
 - All amounts in **CHF including VAT** (8.1 %), as JSON numbers with at most two decimals (`38.4` = CHF 38.40).
 - Customer amounts (`legs`, `total_chf`, `b2c_payment`, `refund`) are rounded to CHF 0.05; B2B amounts are exact to the centime, the commission rounded half up.
 - Settled **per booking**. Vertt and SBB are one party each.
 - Summing all events per party gives what each party ends with; after a cancellation everyone is back at 0.
 
-## 7. Examples
+## 8. Examples
 
 **Vertt app, half-fare, cancelled** (Vertt ride CHF 30.00, train CHF 8.40):
 
 ```json
 {
- "schema_version": "1",
+ "schema_version": "2",
+ "summary": {"co2_kg": {"vertt": 1.2, "sbb": 0.088, "total": 1.288},
+  "settlement": {"payer": null, "payee": null, "amount_chf": 0.0}},
  "booking": {"booking_id": "BK-240891", "system": "vertt", "status": "cancelled", "customer": "demo-3f9a",
   "login_method": "swisspass", "travelcard": "half", "promo_percent": 0, "promo_chf": 0.0,
   "payment_method": "twint", "booked_at": "2026-10-19T08:12:05+02:00", "total_chf": 38.4},
@@ -105,7 +129,6 @@ Events with amount 0 are not written: with GA the Vertt app has no transfer and 
   {"seq": 1, "operator": "Vertt", "type": "vertt_ride", "amount_before_promo_chf": 30.0, "amount_chf": 30.0, "co2_kg": 1.2},
   {"seq": 2, "operator": "SBB", "type": "train", "amount_chf": 8.4, "co2_kg": 0.088}
  ],
- "co2_total_kg": 1.288,
  "settlement_events": [
   {"event_id": "BK-240891-ev1", "booking_id": "BK-240891", "seq": 1, "timestamp": "2026-10-19T08:12:05+02:00",
    "event_type": "b2c_payment", "payer": "customer", "payee": "Vertt", "amount_chf": 38.4,
@@ -129,7 +152,7 @@ Events with amount 0 are not written: with GA the Vertt app has no transfer and 
 }
 ```
 
-**SBB app, GA, 10 % promo** – only the events (Vertt ride CHF 30.00 → 27.00, train CHF 0.00):
+**SBB app, GA, 10 % promo** – summary `"settlement": {"payer": "SBB", "payee": "Vertt", "amount_chf": 27.0}`; the events (Vertt ride CHF 30.00 → 27.00, train CHF 0.00):
 
 ```json
 [
