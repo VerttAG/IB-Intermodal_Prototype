@@ -18,7 +18,7 @@ from typing import Callable
 import httpx
 import yaml
 
-from src import ojp, vertt
+from src import ojp, settlement, vertt
 
 API_VERSION = "1"
 WALK_KM = 1.0                  # station within 1 km (straight line): walk instead of Vertt
@@ -83,7 +83,8 @@ def candidates(pos, start, dest) -> list[dict]:
 
 # ---------- helpers ----------
 def r05(x: float) -> float:
-    return round(round(x * 20) / 20, 2)
+    """CHF 0.05, half up – the same rounding as the booking (settlement.r05), not Python's float round."""
+    return float(settlement.r05(settlement.money(x)))
 
 
 def _iso(t: dt.datetime) -> str:

@@ -92,6 +92,7 @@ def calculate_offer(start, dest, pickup: datetime, route=valhalla_route) -> dict
     if straight_km(start, dest) < MIN_DISTANCE_KM:
         raise NotServed("too_short")
     km, minutes, points = route(start, dest)
+    km, minutes = round(km, 3), round(minutes, 1)               # price from the published values, so the booking recomputes the same
     oid = offer_id(start, dest, pickup)
     car = random.Random(oid).choice(car_pool())                 # "random", but the same for the same offer
     return {
@@ -99,8 +100,8 @@ def calculate_offer(start, dest, pickup: datetime, route=valhalla_route) -> dict
         "status": "offer",
         "offer_id": oid,
         "pickup_time": pickup.isoformat(timespec="minutes"),
-        "distance_km": round(km, 3),
-        "ride_time_min": round(minutes, 1),
+        "distance_km": km,
+        "ride_time_min": minutes,
         "price_chf": tariff(km, minutes),
         "currency": "CHF",
         "factor": FACTOR,

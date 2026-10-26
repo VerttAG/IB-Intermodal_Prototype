@@ -132,3 +132,17 @@ def test_summary_shows_the_net_transfer():                 # schema v2: first li
     assert book(system="sbb")["summary"]["settlement"] == {"payer": "SBB", "payee": "Vertt", "amount_chf": 30.00}
     assert book(card="ga")["summary"]["settlement"] == {"payer": None, "payee": None, "amount_chf": 0.00}    # GA: no transfer
     assert st.cancel(rec)["summary"]["settlement"] == {"payer": None, "payee": None, "amount_chf": 0.00}     # all reversed
+
+
+def test_booked_vertt_amount_equals_offer_price():
+    """Regression 2026-10-26: the offer showed CHF 19.90, the booking stored 19.95 (PRD-3: the price shown is the price paid)."""
+    from datetime import datetime
+    from src import engine, vertt
+    assert engine.r05(19.925) == float(st.r05(Decimal("19.925"))) == 19.95     # half up on both sides, not float round
+    rng, pickup = random.Random(7), datetime.fromisoformat("2026-10-26T10:30+01:00")
+    for _ in range(2000):
+        km, minutes = rng.uniform(2, 40), rng.uniform(3, 60)                       # unrounded, as Valhalla returns them
+        o = vertt.calculate_offer((47.34, 8.47), (46.95, 7.49), pickup, lambda a, b: (km, minutes, [a, b]))
+        leg = {**vertt_leg(o["distance_km"], o["ride_time_min"]), "price_chf": engine.r05(o["price_chf"])}  # as the engine builds it
+        rec = book(trip(0, leg), promo=10)
+        assert float(rec["legs"][0]["amount_before_promo_chf"]) == leg["price_chf"], (km, minutes)
