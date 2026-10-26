@@ -40,16 +40,16 @@ Covers step 2 (log in), step 3 (overview and pay) and the receipt. Source: [docs
 
 ### US-4: As a customer, I want to apply a promo code before paying so that I get the discount I was promised (story 14)
 **Given** I am on the overview
-**When** I tick 5 %, 10 % or 20 %
+**When** I enter 5, 10 or 20 as promo
 **Then** the Vertt part gets cheaper and the total updates
 **And** the train price stays the same
 
 **Acceptance Criteria:**
-- [ ] AC-11: A "promo code" area offers 5 %, 10 % and 20 %. At most one can be ticked, and the tick can be removed.
+- [ ] AC-11: A "Promo for Vertt rides" field accepts 5, 10 or 20 (per cent). Any other value shows "Enter 5, 10 or 20" and gives no discount; clearing the field removes the promo.
 - [ ] AC-12: The discount applies to every Vertt leg and to no SBB leg.
 - [ ] AC-13: Each discounted Vertt leg shows old and new price (e.g. "CHF 23.90 → CHF 21.50"), the new price rounded to CHF 0.05.
 - [ ] AC-14: The total and the amount on the pay button update at once.
-- [ ] AC-15: Removing the tick restores the original prices.
+- [ ] AC-15: Clearing the promo field restores the original prices.
 - [ ] AC-16: The behaviour is the same in both apps.
 - [ ] AC-17: The booking stores the percentage, the discount in CHF, and that Vertt carries the discount.
 
@@ -59,7 +59,7 @@ Covers step 2 (log in), step 3 (overview and pay) and the receipt. Source: [docs
 **Then** I can pay
 
 **Acceptance Criteria:**
-- [ ] AC-18: Four methods are offered: card, TWINT, invoice, business. None is selected when the overview opens.
+- [ ] AC-18: TWINT and invoice are offered directly; "More options" opens a sheet with Visa, Mastercard, American Express, PostFinance Card, PayPal, Apple Pay and Google Pay. None is selected when the overview opens. (Decided Tim 2026-10-26, replaces card / business.)
 - [ ] AC-19: "Pay" is disabled until a method is chosen, and shows the amount to pay.
 - [ ] AC-20: No payment data is asked for (no card number, no phone number, no address).
 - [ ] AC-21: Every method counts as paid immediately, with no payment fee added.
@@ -82,7 +82,7 @@ Covers step 2 (log in), step 3 (overview and pay) and the receipt. Source: [docs
 - The page is reloaded during the payment animation: the booking exists from the moment "Pay" is clicked – it is in the export with its settlement events, but its receipt is not shown and it cannot be cancelled any more (PROJ-1-PRD-4).
 - Promo with two Vertt legs: each leg is discounted and rounded on its own; the stored discount in CHF is the difference between the totals before and after.
 - Promo with GA: the customer pays the discounted Vertt part only.
-- A promo is ticked, then the customer pays without removing it: the discounted prices are the booked prices and appear on the receipt.
+- A promo is entered, then the customer pays without removing it: the discounted prices are the booked prices and appear on the receipt.
 - Login via SwissPass in step 2 with travelcard "none" chosen in step 1: the travelcard stays "none" (AC-6).
 - No booking without a discount shows a discount line with CHF 0.00 on the receipt.
 - The train price is a saver price that changes over time: the price shown in the overview is the price paid and stored (PROJ-1-PRD-6 AC-22, AC-23).
@@ -100,13 +100,13 @@ Covers step 2 (log in), step 3 (overview and pay) and the receipt. Source: [docs
 ## Technical Requirements
 - No real login and no real payment: nothing is sent to Google, Apple, SwissPass, TWINT or a card provider.
 - The demo email and password are obvious demo values and no real person's data.
-- Login options, promo ticks, payment methods and "Pay" work with a pointer and with the keyboard; the disabled state of "Pay" is announced.
+- Login options, promo field, payment methods and "Pay" work with a pointer and with the keyboard; the disabled state of "Pay" is announced.
 - The payment animation is short (about 1–2 seconds) and does not block the receipt if animations are reduced on the device.
 
 ## UI Implementation Notes
 - Project mode: new prototype, built in this repo (full chain).
-- Reuse: screens "login", "overview", "paying" and "receipt" of the lite mockup, [mockup/index.html](../../../mockup/index.html), live at https://ib-intermodal-prototype.vercel.app.
+- Design: the designer's mockup at https://intermodal-demo.vercel.app (screens login, overview, paying, receipt). The overview keeps the map and legs (AC-8) although the mockup drops them.
 - New component candidates: discount line with CHF amount on the receipt (the mockup shows the percentage only).
 - Design tokens: none defined yet.
-- Interaction contract: one-click login, promo tick with live price update, payment method enabling "Pay", animation then receipt, no back button on the overview.
+- Interaction contract: one-click login, promo field with live price update, payment method enabling "Pay", animation then receipt, no back button on the overview.
 - Implementation tolerance: layout and wording may change; the receipt fields, the rounding and "no back button" may not.

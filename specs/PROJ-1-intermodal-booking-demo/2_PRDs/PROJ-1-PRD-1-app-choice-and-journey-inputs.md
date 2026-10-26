@@ -63,7 +63,7 @@ Covers step 0 and the input part of step 1. Source: [docs/PRD.md](../../../docs/
 **Acceptance Criteria:**
 - [ ] AC-18: The planning screen has a "Log in with SwissPass" button in both apps.
 - [ ] AC-19: The click opens a **SwissPass mock login screen** (pre-filled, nothing to type) where the customer picks one of three test profiles – no travelcard, half-fare, GA – and logs in with one click. "Cancel" returns to the planning screen without change.
-- [ ] AC-20: Picking a profile sets the travelcard, updates all prices, and locks the travelcard with the hint "from SwissPass".
+- [ ] AC-20: Picking a profile sets the travelcard, updates all prices, and locks the travelcard with the hint "from SwissPass". A "Remove" link unlocks it again (designer mockup, decided Tim 2026-10-26).
 - [ ] AC-21: After the SwissPass login the button is gone and there is no log-out within the run.
 - [ ] AC-22: After the SwissPass login, "Continue" from the connection details leads straight to the overview; step 2 is not shown.
 - [ ] AC-23: The booking stores `login_method = swisspass` and the travelcard of the profile.

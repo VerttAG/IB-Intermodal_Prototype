@@ -22,7 +22,8 @@ COMMISSION_RATE = Decimal("0.05")          # Vertt app only: 5 % of the train ti
 SELLER = {"vertt": "Vertt", "sbb": "SBB"}
 TRAVELCARDS = ("none", "half", "ga")
 PROMOS = (0, 5, 10, 20)
-PAYMENT_METHODS = ("card", "twint", "invoice", "business")
+PAYMENT_METHODS = ("twint", "invoice",                                   # shown first on the overview
+                   "visa", "mastercard", "amex", "postfinance", "paypal", "apple_pay", "google_pay")  # "More options"
 LOGIN_METHODS = ("google", "apple", "swisspass", "email")
 
 
