@@ -62,7 +62,7 @@ Phone layout (on a laptop: phone-sized in the middle). One neutral design for bo
 | **0 – Choose app** | "Vertt app" or "SBB app". Decides who sells and collects the money. Fixed for the run. | PRD-1 |
 | **1 – Plan** *(most important)* | Start + destination address (swisstopo suggestions, empty at first); "depart at" date and time; travelcard (default half-fare) **or** "Log in with SwissPass" with test profile → travelcard locked; "Search". Up to 3 trips labelled Fastest / Cheapest / Greenest ("door to door with one booking") + the "Vertt only" comparison card, with price and CO₂. Details: legs (Vertt / walk / train), line, car category, waiting time, transfers, map. | PRD-1, PRD-2 |
 | **2 – Log in** | Google / Apple / SwissPass / email + password (pre-filled, not editable) – one click. Skipped after SwissPass in step 1. | PRD-3 |
-| **3 – Overview & pay** | Map, legs, price per leg + total, CO₂, travelcard, "You pay [Vertt/SBB] for the whole journey". Promo tick 5 / 10 / 20 % on the Vertt part. Payment: card / TWINT / invoice / business (none pre-selected). No back button. | PRD-3 |
+| **3 – Overview & pay** | Map, legs, price per leg + total, CO₂, travelcard, "You pay [Vertt/SBB] for the whole journey". Promo field 5 / 10 / 20 % on the Vertt part. Payment: TWINT / invoice, more options (Visa, Mastercard, Amex, PostFinance, PayPal, Apple Pay, Google Pay) in a sheet (none pre-selected). No back button. | PRD-3 |
 | **Receipt** | Short payment animation → receipt for everyone. Buttons "Cancel journey" and "New booking". Data link "Settlement data (for project partners)" + copy; export of all bookings. | PRD-3, PRD-4, PRD-5 |
 
 ## 5. User stories
@@ -151,7 +151,7 @@ Real payments and logins, "arrive by", "use my location", peak-time factors, boo
 
 ## 9. Definition of done
 
-- A user can search any Swiss start and destination address (10 km or more apart) with a chosen departure time and click through steps 0–3 and the receipt, in both apps, with all travelcards, with and without promo, all four payment methods.
+- A user can search any Swiss start and destination address (10 km or more apart) with a chosen departure time and click through steps 0–3 and the receipt, in both apps, with all travelcards, with and without promo, every payment method.
 - The demo gets Vertt data only through the Vertt API (`docs/api/vertt.md`) and trips only through the trip engine (`docs/api/trip-offers.md`).
 - The calculator has been validated against the recorded rides, without anything that leads back to the passenger.
 - Cancellation works and updates the data link; export contains all bookings.

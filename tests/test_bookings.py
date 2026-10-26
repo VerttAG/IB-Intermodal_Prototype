@@ -22,7 +22,7 @@ def temp_store(tmp_path, monkeypatch):
 
 def book():
     return api.handle_post({"action": "book", "trip": TRIP, "system": "vertt", "travelcard": "half", "promo_percent": 0,
-                            "payment_method": "card", "login_method": "email"})
+                            "payment_method": "visa", "login_method": "email"})
 
 
 def test_book_then_read_the_data_link():

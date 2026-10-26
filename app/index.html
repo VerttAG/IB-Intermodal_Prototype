@@ -5,92 +5,243 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Intermodal Booking App</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
+  /* design tokens from the designer's mockup (https://intermodal-demo.vercel.app) */
   :root {
-    --bg: #F6F6F6; --card: #FFFFFF; --text: #212121; --muted: #6B6B6B; --line: #E4E4E4;
-    --accent: #2D3E50; --accent-text: #FFFFFF; --danger: #A61B1B;
-    --vertt: #5B4BB7; --sbb: #B42318; --walk: #6B7280; --radius: 6px;
+    --black: #0A0A0A; --black-80: #3B3B3B; --text2: #6C6C6C; --placeholder: #9D9D9D; --text-disabled: #CECECE;
+    --red: #DA291C; --red-dark: #AE2116; --red-20: #F8D4D2;
+    --mist-200: #B8B9BA; --mist-100: #E6E7E8; --mist-80: #EBECED; --mist-60: #F0F1F1; --mist-40: #F5F5F6; --mist-20: #FAFAFA;
+    --green: #03890E; --green-dark: #025909; --green-ring: #68B86F; --green-light: #DCEFDE;
+    --orange-dark: #CC5900; --orange-ring: #FFB266; --orange-light: #FFEDDC;
+    --error: #FF3B30; --error-dark: #A6261F; --error-ring: #FF8983; --error-light: #FFE4E2;
+    --vertt: var(--black); --train: var(--red); --walk: var(--mist-200);
+    --r-m: 4px; --r-l: 8px; --r-xl: 12px;
+    --shadow-md: 0 2px 6px -1px #0000000f; --shadow-xl: 0 8px 24px -4px #0000001f;
+    --font: "Funnel Sans", "Helvetica Neue", Arial, sans-serif;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: #E9E9E9; color: var(--text); font: 15px/1.45 Inter, "Helvetica Neue", Arial, sans-serif;
-         display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 16px; }
-  .phone { width: 390px; max-width: 100%; height: 820px; max-height: calc(100vh - 32px); background: var(--bg);
-           border: 1px solid #D0D0D0; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
-  .bar { background: var(--card); padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
-  .bar b { font-weight: 700; } .bar span { font-size: 12px; color: var(--muted); }
-  .demo { font-size: 11px; text-align: center; color: var(--muted); padding: 4px; border-bottom: 1px solid var(--line); }
-  .screen { flex: 1; overflow-y: auto; padding: 16px; }
-  h1 { font-size: 20px; margin: 0 0 12px; font-weight: 700; }
-  h2 { font-size: 12px; margin: 18px 0 6px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; margin-bottom: 8px; }
-  .card.click { cursor: pointer; } .card.cmp { color: var(--muted); }
-  .btn { display: block; width: 100%; padding: 13px; border: 0; border-radius: var(--radius); background: var(--accent); color: var(--accent-text);
-         font: inherit; font-weight: 600; cursor: pointer; margin-top: 10px; }
-  .btn.secondary { background: var(--card); color: var(--text); border: 1px solid var(--line); }
-  .btn.danger { background: var(--card); color: var(--danger); border: 1px solid var(--danger); }
-  .btn:disabled { opacity: .35; cursor: not-allowed; }
-  .field { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 12px; margin-bottom: 8px; position: relative; }
-  .field label { display: block; font-size: 12px; color: var(--muted); }
-  .field input { width: 100%; border: 0; background: transparent; font: inherit; font-weight: 600; color: var(--text); padding: 2px 0; outline: none; }
-  .sugg { position: absolute; left: -1px; right: -1px; top: 100%; background: var(--card); border: 1px solid var(--line); z-index: 500; }
-  .sugg div { padding: 8px 12px; border-top: 1px solid var(--line); cursor: pointer; font-size: 14px; }
-  .row2 { display: flex; gap: 8px; } .row2 .field { flex: 1; }
-  .seg { display: flex; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--card); }
-  .seg button { flex: 1; padding: 9px 4px; border: 0; border-left: 1px solid var(--line); background: transparent; font: inherit; font-size: 13px; cursor: pointer; color: var(--text); }
-  .seg button:first-child { border-left: 0; } .seg button.on { background: var(--accent); color: var(--accent-text); }
-  .seg button:disabled { cursor: not-allowed; }
-  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-  .times { font-size: 17px; font-weight: 700; }
-  .muted { color: var(--muted); font-size: 13px; }
-  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 6px; border: 1px solid var(--accent); border-radius: 3px; color: var(--accent); margin-right: 4px; }
-  .tag.grey { border-color: var(--line); color: var(--muted); }
-  .bars { display: flex; gap: 2px; margin: 8px 0; height: 4px; } .bars span { border-radius: 2px; }
-  .leg { border-left: 3px solid; padding: 2px 0 10px 10px; margin-left: 4px; }
+  body { margin: 0; background: var(--mist-100); color: var(--black); font: 16px/1.4 var(--font);
+         display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 32px; }
+  .phone { position: relative; width: 390px; height: min(860px, calc(100vh - 64px)); background: #fff; border-radius: var(--r-xl);
+           box-shadow: var(--shadow-xl), 0 0 0 1px var(--mist-60); overflow: hidden; display: flex; flex-direction: column; }
+  @media (max-width: 500px) { body { padding: 0; } .phone { width: 100%; height: 100dvh; border-radius: 0; box-shadow: none; } }
+  button { font-family: inherit; }
+
+  /* header */
+  .head { display: flex; align-items: center; gap: 8px; padding: 16px; border-bottom: 1px solid var(--mist-60); min-height: 57px; }
+  .head .brand { flex: 1; display: flex; align-items: center; font-size: 20px; font-weight: 700; }
+  .toggle { display: flex; align-items: center; gap: 4px; }
+  .toggle > button:not(.switch) { background: none; border: 0; padding: 0; font-size: 16px; color: var(--text2); cursor: pointer; }
+  .toggle > button.on { color: var(--black); font-weight: 700; }
+  .switch { width: 52px; height: 28px; border-radius: 14px; border: 0; background: var(--black); position: relative; cursor: pointer; transition: background .2s; }
+  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 30px; height: 22px; border-radius: 11px; background: #fff; transition: transform .2s; }
+  .switch[aria-checked="true"] { background: var(--red); } .switch[aria-checked="true"]::after { transform: translateX(16px); }
+  .iconbtn { background: none; border: 0; padding: 0; cursor: pointer; display: flex; color: var(--black); }
+
+  /* screen */
+  .screen { flex: 1; overflow-y: auto; padding: 24px 16px 0; display: flex; flex-direction: column; }
+  .foot { position: sticky; bottom: 0; margin-top: auto; background: #fff; padding: 16px 0; display: flex; flex-direction: column; gap: 12px; }
+  .foot.row { flex-direction: row; } .foot.row .btn { flex: 1; } .foot.static { position: static; }
+  .stack { display: flex; flex-direction: column; gap: 12px; }
+  .titlerow { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  h1 { font-size: 24px; line-height: 30px; margin: 0; font-weight: 700; }
+  h2 { font-size: 20px; line-height: 26px; margin: 8px 0 0; font-weight: 700; }
+  .sub { color: var(--text2); margin: 4px 0 0; }
+  .muted { color: var(--text2); font-size: 14px; }
+  .xs { font-size: 12px; }
+  section { margin-top: 16px; }
+
+  /* buttons */
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 52px; padding: 0 16px; border: 0; border-radius: var(--r-m);
+         background: var(--black); color: #fff; font-size: 18px; font-weight: 700; cursor: pointer; text-decoration: none; flex-shrink: 0; }
+  .btn:hover:not(:disabled) { background: var(--black-80); }
+  .btn:disabled { background: var(--mist-80); color: var(--text-disabled); cursor: not-allowed; }
+  .btn.outline { background: #fff; color: var(--black); box-shadow: inset 0 0 0 1px var(--black); }
+  .btn.outline:hover:not(:disabled) { background: var(--mist-20); }
+  .btn.grey { background: var(--mist-100); color: var(--black); } .btn.grey:hover:not(:disabled) { background: var(--mist-200); }
+  .btn.danger { background: var(--error); } .btn.danger:hover:not(:disabled) { background: var(--error-dark); }
+  .btn.m { height: 44px; font-size: 16px; }
+  .btn img { width: 24px; height: 24px; }
+  .link { background: none; border: 0; padding: 0; font-size: 16px; font-weight: 700; color: var(--black); text-decoration: underline; cursor: pointer; white-space: nowrap; }
+  .link.s { font-size: 14px; } .link.muted { color: var(--text2); font-weight: 500; }
+  .center { text-align: center; }
+
+  /* form fields */
+  .fgroup { position: relative; margin-top: 16px; }
+  .fgroup > label, .lbl { display: block; font-size: 14px; font-weight: 500; color: var(--text2); margin-bottom: 8px; }
+  .lblrow { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .lblrow .lbl { margin: 0; }
+  .input { display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 16px; border-radius: var(--r-m); background: var(--mist-40);
+           box-shadow: inset 0 0 0 1px var(--mist-60); cursor: text; position: relative; }
+  .input:hover { box-shadow: inset 0 0 0 1px var(--black); }
+  .input:focus-within, .input.open { background: #fff; box-shadow: inset 0 0 0 2px var(--black); }
+  .input.err { box-shadow: inset 0 0 0 1px var(--error); } .input.err:focus-within { box-shadow: inset 0 0 0 2px var(--error); }
+  .input.ro, .input.ro:hover { box-shadow: inset 0 0 0 1px var(--mist-60); background: var(--mist-40); cursor: default; }
+  .input input { flex: 1; min-width: 0; border: 0; background: transparent; font: inherit; color: var(--black); padding: 12px 0; outline: none; }
+  .input input::placeholder { color: var(--placeholder); }
+  .input.ro input { color: var(--placeholder); }
+  .input svg { flex-shrink: 0; }
+  .input.open .chev { transform: rotate(180deg); }
+  .input button.datebtn { flex: 1; text-align: left; border: 0; background: none; font: inherit; color: var(--black); padding: 12px 0; cursor: pointer; }
+  .input input[type=time]::-webkit-calendar-picker-indicator { opacity: 0; position: absolute; right: 12px; width: 28px; height: 28px; cursor: pointer; }
+  .help { font-size: 12px; color: var(--text2); margin-top: 4px; } .help.err { color: var(--error-dark); } .help:empty { display: none; }
+  .hint { display: flex; align-items: center; gap: 4px; color: var(--text2); font-size: 14px; margin-top: 12px; }
+  .row2 { display: flex; gap: 12px; } .row2 > .fgroup { flex: 1; min-width: 0; }
+
+  /* address suggestions */
+  .sugg { position: absolute; left: 0; right: 0; top: calc(100% + 4px); background: #fff; border-radius: var(--r-l); box-shadow: var(--shadow-xl), 0 0 0 1px var(--mist-60); z-index: 600; padding: 4px; }
+  .sugg button { display: flex; gap: 8px; align-items: center; width: 100%; padding: 8px 12px; border: 0; background: none; text-align: left; border-radius: var(--r-m); cursor: pointer; font: inherit; color: var(--black); }
+  .sugg button:hover { background: var(--mist-40); }
+  .sugg .pin { color: var(--red); } .sugg small { display: block; font-size: 12px; color: var(--text2); }
+  .sugg .none { padding: 8px 12px; color: var(--text2); font-size: 14px; }
+
+  /* calendar */
+  .cal { position: absolute; left: 0; top: calc(100% + 4px); width: calc(200% + 12px); background: #fff; border-radius: var(--r-l); box-shadow: var(--shadow-xl), 0 0 0 1px var(--mist-60); z-index: 600; padding: 16px; }
+  .cal .mon { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 20px; margin-bottom: 8px; }
+  .cal .mon button:disabled { opacity: .25; cursor: default; }
+  .cal .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+  .cal .grid span { font-size: 14px; color: var(--text2); padding: 4px 0; }
+  .cal .grid button { height: 36px; border: 0; background: none; border-radius: var(--r-m); font: inherit; cursor: pointer; color: var(--black); }
+  .cal .grid button:hover:not(:disabled) { background: var(--mist-40); }
+  .cal .grid button:disabled { color: var(--text-disabled); cursor: default; }
+  .cal .grid button.today { font-weight: 700; }
+  .cal .grid button.sel { background: var(--red); color: #fff; }
+
+  /* segmented selector */
+  .seg { display: flex; padding: 4px; background: var(--mist-40); border-radius: var(--r-m); }
+  .seg button { flex: 1; height: 40px; border: 0; background: none; border-radius: var(--r-m); font: inherit; font-size: 16px; color: var(--text2); cursor: pointer; }
+  .seg button.on { background: var(--black); color: #fff; font-weight: 500; }
+  .locked { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+
+  /* chips, alerts, cards */
+  .chip { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; padding: 2px 8px; border-radius: var(--r-m); font-size: 12px; font-weight: 700; background: var(--mist-100); color: var(--black); }
+  .chip.green { background: var(--green-light); color: var(--green); }
+  .alert { display: flex; gap: 8px; align-items: flex-start; padding: 12px 16px; border-radius: var(--r-l); background: var(--mist-20); box-shadow: inset 0 0 0 1px var(--mist-60); font-size: 14px; }
+  .alert b { display: block; font-size: 16px; font-weight: 500; } .alert p { margin: 2px 0 0; color: var(--text2); }
+  .alert > div { flex: 1; } .alert svg { flex-shrink: 0; }
+  .alert.success { background: var(--green-light); box-shadow: inset 0 0 0 1px var(--green-ring); color: var(--green-dark); }
+  .alert.warning { background: var(--orange-light); box-shadow: inset 0 0 0 1px var(--orange-ring); color: var(--orange-dark); }
+  .alert.error { background: var(--error-light); box-shadow: inset 0 0 0 1px var(--error-ring); color: var(--error-dark); }
+  .card { background: var(--mist-20); border-radius: var(--r-l); box-shadow: inset 0 0 0 1px var(--mist-60); padding: 16px; }
+  .card.white { background: #fff; }
+  .between { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .price { display: inline-flex; align-items: baseline; gap: 4px; white-space: nowrap; }
+  .price small { font-size: 12px; } .price b { font-size: 18px; } .price.l b { font-size: 24px; }
+  .price.was { color: var(--text2); text-decoration: line-through; } .price.was b { font-size: 16px; }
+  s { color: var(--text2); }
+
+  /* trip cards on the results screen */
+  .trip { cursor: pointer; transition: box-shadow .15s; } .trip:hover { box-shadow: inset 0 0 0 1px var(--mist-200); }
+  .trip .top { display: flex; align-items: center; gap: 8px; color: var(--text2); }
+  .trip .tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; } .trip .tags > span:not(.chip) { white-space: nowrap; }
+  .trip .top .iconbtn { margin-left: auto; color: var(--mist-200); }
+  .trip .times { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-top: 8px; }
+  .trip .times b { font-size: 20px; } .trip .times span { color: var(--text2); font-size: 14px; }
+  .trip.cmp { cursor: default; } .trip.cmp:hover { box-shadow: inset 0 0 0 1px var(--mist-60); }
+  .trip.cmp .times b, .trip.cmp .price, .trip.cmp .bottom > span { color: var(--text-disabled); }
+  .trip.cmp .times span { color: var(--mist-200); }
+  .trip .bottom { display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px; font-size: 14px; }
+  .legbar { display: flex; gap: 6px; margin: 16px 2px 4px; }
+  .legbar span { position: relative; height: 10px; }
+  .legbar span::before { content: ""; position: absolute; left: 0; right: 0; top: 3px; height: 4px; border-radius: 2px; background: var(--c); }
+  .legbar i { position: absolute; top: 0; width: 10px; height: 10px; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 2px var(--c); }
+  .legbar i.s { left: -2px; } .legbar i.e { right: -2px; } .legbar i.f { background: var(--c); }
+  .legs-mini { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .legs-mini li { display: flex; gap: 8px; } .legs-mini small { display: block; color: var(--text2); font-size: 12px; }
+
+  /* legs on the details and overview screens */
+  .legs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .leg { background: var(--mist-20); border-left: 2px solid var(--c); border-radius: 0 var(--r-m) var(--r-m) 0; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
   .leg.walk { border-left-style: dashed; }
-  .mode { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
-  .gap { margin: 0 0 10px 17px; font-size: 13px; color: var(--muted); }
-  .map { height: 210px; border-radius: var(--radius); border: 1px solid var(--line); margin-bottom: 8px; }
-  .legend { display: flex; gap: 12px; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
-  .legend i { display: inline-block; width: 12px; height: 3px; vertical-align: middle; margin-right: 4px; }
-  .sum { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 8px; font-weight: 700; }
-  .opt { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-top: 1px solid var(--line); cursor: pointer; }
-  .opt:first-child { border-top: 0; }
-  .list { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); }
-  .strike { text-decoration: line-through; color: var(--muted); }
-  .center { text-align: center; padding-top: 120px; }
-  .spinner { width: 40px; height: 40px; border: 4px solid var(--line); border-top-color: var(--accent); border-radius: 50%; margin: 0 auto 14px; animation: spin 1s linear infinite; }
+  .leg .line { display: flex; gap: 8px; align-items: flex-start; } .leg .line small { display: block; color: var(--text2); font-size: 14px; margin-top: 2px; }
+  .gap { display: flex; gap: 8px; align-items: center; font-size: 16px; }
+  .map { height: 210px; border-radius: var(--r-l); box-shadow: 0 0 0 1px var(--mist-60); z-index: 0; }
+  .legend { display: flex; gap: 20px; justify-content: center; font-size: 14px; color: var(--text2); margin-top: 8px; }
+  .legend i { display: inline-block; width: 16px; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: 6px; }
+
+  /* payment */
+  .radio { display: flex; align-items: center; gap: 12px; padding: 8px 0; cursor: pointer; }
+  .radio input { appearance: none; width: 22px; height: 22px; margin: 0; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--black); cursor: pointer; }
+  .radio input:checked { box-shadow: inset 0 0 0 2px var(--red), inset 0 0 0 6px #fff; background: var(--red); }
+  .radio .chip { margin-left: auto; font-weight: 500; }
+  .paygrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .paygrid button { aspect-ratio: 70 / 48; border: 0; padding: 0; border-radius: 6px; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font: inherit; }
+  .paygrid button img { width: 100%; height: 100%; display: block; }
+  .paygrid button.on { box-shadow: 0 0 0 2px var(--red); }
+  .paygrid .pf { background: #FFCC00; box-shadow: inset 0 0 0 1px #D9D9D9; font-weight: 700; font-size: 13px; color: var(--black); line-height: 1.1; }
+
+  /* overlays */
+  .overlay { position: absolute; inset: 0; background: #000a; z-index: 1000; display: flex; align-items: flex-end; animation: fade .15s; }
+  .overlay.mid { align-items: center; padding: 24px; }
+  .sheet { width: 100%; max-height: 85%; background: var(--mist-60); border-radius: 24px 24px 0 0; padding: 12px 24px 24px; display: flex; flex-direction: column; gap: 16px; animation: up .2s ease-out; }
+  .sheet::before { content: ""; align-self: center; width: 36px; height: 4px; border-radius: 2px; background: var(--mist-200); }
+  .modal { width: 100%; max-height: 100%; background: #fff; border-radius: var(--r-xl); padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+  .modal pre { margin: 0; flex: 1; min-height: 120px; overflow: auto; background: var(--mist-40); border-radius: var(--r-m); padding: 12px; font-size: 12px; }
+  @keyframes fade { from { opacity: 0; } } @keyframes up { from { transform: translateY(40px); opacity: 0; } }
+
+  /* loading */
+  .loading { text-align: center; padding-top: 48px; }
+  .spinner { width: 72px; height: 72px; border: 6px solid var(--mist-60); border-top-color: var(--red); border-right-color: var(--red); border-bottom-color: var(--red);
+             border-radius: 50%; margin: 0 auto 32px; animation: spin 1s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .note { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; font-size: 13px; margin: 8px 0; }
-  .note.error { border-color: var(--danger); color: var(--danger); }
-  a { color: var(--accent); }
+
+  /* landing illustration */
+  .hero { display: block; width: 100%; height: auto; margin: 24px 0 8px; overflow: visible; }
+  .hero .draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.4s ease-out .2s forwards; }
+  .hero .pop { opacity: 0; animation: show .4s ease-out 1.2s forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } } @keyframes show { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .hero .draw { animation: none; stroke-dashoffset: 0; } .hero .pop { animation: none; opacity: 1; } }
 </style>
 </head>
 <body>
-<div class="phone">
-  <div class="bar"><b id="app">Intermodal demo</b><span id="step"></span></div>
-  <div class="demo">Local app – real timetable, prices from OJP Fare and the Vertt tariff</div>
+<div class="phone" id="phone">
+  <div class="head" id="head"></div>
   <div class="screen" id="screen"></div>
+  <div id="layer"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="assets.js"></script>
 <script>
 const NAMES = { none: "No travelcard", half: "Half-fare", ga: "GA" };
-const COL = { vertt: "var(--vertt)", train: "var(--sbb)", walk: "var(--walk)" };
-const HEX = { vertt: "#5B4BB7", train: "#B42318", walk: "#6B7280" };
+const PAY = { twint: "TWINT", invoice: "Invoice", visa: "Visa", mastercard: "Mastercard", amex: "American Express", postfinance: "PostFinance Card",
+              paypal: "PayPal", apple_pay: "Apple Pay", google_pay: "Google Pay" };
+const MORE_PAY = ["visa", "mastercard", "amex", "postfinance", "paypal", "apple_pay", "google_pay"];   // the "More options" sheet
+const HEX = { vertt: "#0A0A0A", train: "#DA291C", walk: "#B8B9BA" };
+const COL = { vertt: "var(--vertt)", train: "var(--train)", walk: "var(--walk)" };
 const MODE = { vertt: "Vertt", train: "Train", walk: "Walk" };
+const LEG_ICON = { vertt: "car", train: "sbb", walk: "walk" };
 
 // ---------- helpers ----------
 const r05 = x => Math.round(x * 20) / 20;
 const chf = x => "CHF " + Number(x).toFixed(2);
 const kg = x => x == null ? "not available" : Number(x).toFixed(1) + " kg";
 const hm = iso => iso ? iso.slice(11, 16) : "";
+const mins = (a, b) => Math.round((new Date(b) - new Date(a)) / 60000);
+const dur = m => m >= 60 ? `${Math.floor(m / 60)} h ${m % 60} min` : `${m} min`;
+const transfers = n => `${n} transfer${n === 1 ? "" : "s"}`;
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const seller = () => S.app === "vertt" ? "Vertt" : "SBB";
 const ids = () => { try { return JSON.parse(localStorage.getItem("bookings") || "[]"); } catch { return []; } };
 const saveIds = list => { try { localStorage.setItem("bookings", JSON.stringify(list)); } catch {} };
 const pad = n => String(n).padStart(2, "0");
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const icon = (name, size = 24, cls = "") => `<svg class="${cls}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">${ICONS[name]}</svg>`;
+const price = (x, cls = "") => { const [, n] = chf(x).split(" "); return `<span class="price ${cls}"><small>CHF</small><b>${n}</b></span>`; };
+const alertBox = (type, title, text = "", { ic = type === "success" ? "wallet" : "info-circle", close = "" } = {}) =>
+  `<div class="alert ${type}" role="${type === "error" ? "alert" : "status"}">${icon(ic, 20)}<div><b>${esc(title)}</b>${text ? `<p>${esc(text)}</p>` : ""}</div>
+   ${close ? `<button class="iconbtn" aria-label="Close" onclick="${close}">${icon("x", 20)}</button>` : ""}</div>`;
+function dayLabel(date) {
+  const today = new Date(), tomorrow = new Date(Date.now() + 864e5);
+  if (date === ymd(today)) return "Today";
+  if (date === ymd(tomorrow)) return "Tomorrow";
+  return new Date(date + "T12:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+}
+const longDate = date => new Date(date + "T12:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+const route = () => `${esc(S.from.town)} → ${esc(S.to.town)}`;
 
 const NO_SERVER = "Server not reachable – start dev_server.py and open http://localhost:8000";
 async function api(path, body) {
@@ -108,13 +259,14 @@ async function api(path, body) {
 let S, maps = [], timer = null;
 function reset() {
   const t = new Date(Date.now() + 15 * 60000); t.setMinutes(Math.ceil(t.getMinutes() / 15) * 15, 0, 0);
-  S = { app: null, from: { text: "", pos: null }, to: { text: "", pos: null }, sugg: { from: [], to: [] },
-        date: `${t.getFullYear()}-${pad(t.getMonth() + 1)}-${pad(t.getDate())}`, time: `${pad(t.getHours())}:${pad(t.getMinutes())}`,
-        card: "half", swisspass: false, spFrom: null, spCard: null, login: null, promo: 0, pay: null,
-        screen: "app", result: null, error: null, sel: null, booking: null };
+  const empty = () => ({ text: "", pos: null, town: "" });
+  S = { app: "vertt", from: empty(), to: empty(), sugg: { from: [], to: [] }, notFound: {},
+        date: ymd(t), time: `${pad(t.getHours())}:${pad(t.getMinutes())}`, cal: null,
+        card: "half", swisspass: false, spFrom: null, spCard: "half", login: null, promoText: "", promo: 0, pay: null, morePay: null,
+        screen: "app", result: null, error: null, sel: null, open: {}, booking: null, layer: null, sheetPick: null, copied: null };
   render();
 }
-function go(s) { S.screen = s; render(); }
+function go(s) { S.screen = s; S.layer = null; render(); document.getElementById("screen").scrollTop = 0; }
 const trip = () => S.result.trips[S.sel];
 
 // ---------- prices (preview; the server recalculates when booking) ----------
@@ -123,51 +275,105 @@ function trainPrice(t) { return S.card === "ga" ? 0 : S.card === "half" ? r05(t.
 function total(t) { return r05(t.legs.reduce((s, l) => s + legPrice(l), 0) + trainPrice(t)); }
 
 // ---------- rendering ----------
-const STEP = { app: "Step 0", swisspass: "SwissPass", plan: "Step 1", detail: "Step 1", login: "Step 2", overview: "Step 3", paying: "", receipt: "Receipt" };
 function render() {
+  const a = document.activeElement, keep = a && a.dataset && a.dataset.keep ? [a.id, a.selectionStart] : null;
   maps.forEach(m => m.remove()); maps = [];
-  document.getElementById("app").textContent = S.app ? (S.app === "vertt" ? "Vertt app" : "SBB app") : "Intermodal demo";
-  document.getElementById("step").textContent = STEP[S.screen];
+  document.getElementById("head").innerHTML = headHtml();
   document.getElementById("screen").innerHTML = VIEWS[S.screen]();
+  document.getElementById("layer").innerHTML = S.layer ? LAYERS[S.layer]() : "";
   document.querySelectorAll("[data-map]").forEach(drawMap);
+  if (keep) { const el = document.getElementById(keep[0]); if (el) { el.focus(); try { el.setSelectionRange(keep[1], keep[1]); } catch {} } }
+}
+function headHtml() {
+  if (S.screen === "app") return `<span class="brand">Vertt × SBB</span>
+    <div class="toggle"><button class="${S.app === "vertt" ? "on" : ""}" aria-pressed="${S.app === "vertt"}" onclick="S.app='vertt';render()">Vertt</button>
+      <button class="switch" role="switch" aria-checked="${S.app === "sbb"}" aria-label="Use the SBB app" onclick="S.app=S.app==='sbb'?'vertt':'sbb';render()"></button>
+      <button class="${S.app === "sbb" ? "on" : ""}" aria-pressed="${S.app === "sbb"}" onclick="S.app='sbb';render()">SBB</button></div>`;
+  const close = S.screen === "swisspass" ? `<button class="iconbtn" aria-label="Close" onclick="go(S.spFrom)">${icon("x")}</button>` : "";
+  return `<span class="brand">${S.app === "vertt" ? VERTT_LOGO : SBB_LOGO}</span>${close}`;
+}
+
+// landing illustration: Switzerland with an example journey (walk → train Lausanne–Bern–Zürich → Vertt home)
+function heroSvg() {
+  const pin = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0C-5-7-8-10.5-8-15a8 8 0 1 1 16 0c0 4.5-3 8-8 15Z" fill="#0A0A0A"/><circle cy="-15" r="3" fill="#fff"/></g>`;
+  const node = (x, y) => `<circle cx="${x}" cy="${y}" r="4.5" fill="#fff" stroke="#0A0A0A" stroke-width="2"/>`;
+  const badge = (x, y, bg, fg, name) => `<g class="pop"><circle cx="${x}" cy="${y}" r="12" fill="${bg}" filter="url(#sh)"/>
+    <svg x="${x - 7.5}" y="${y - 7.5}" width="15" height="15" viewBox="0 0 24 24" fill="none" style="color:${fg}">${ICONS[name]}</svg></g>`;
+  const train = (x, y) => `<g class="pop" transform="translate(${x} ${y})"><circle r="16" fill="#DA291C" opacity=".2"/><circle r="12" fill="#DA291C" filter="url(#sh)"/>
+    <rect x="-5" y="-6.5" width="10" height="10.5" rx="2.5" fill="#fff"/><rect x="-3.4" y="-4.8" width="6.8" height="3.4" rx=".8" fill="#DA291C"/>
+    <circle cx="-2.4" cy="1.4" r=".9" fill="#DA291C"/><circle cx="2.4" cy="1.4" r=".9" fill="#DA291C"/>
+    <path d="M-3 4.6-4.6 7.2M3 4.6l1.6 2.6" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></g>`;
+  const label = (x, y, t, a = "middle") => `<text x="${x}" y="${y}" text-anchor="${a}" font-size="11" font-weight="500" fill="#0A0A0A">${t}</text>`;
+  return `<svg class="hero" viewBox="-6 -10 352 250" role="img" aria-label="Example journey: walk to Lausanne, train via Bern to Zürich, Vertt ride home">
+    <defs>
+      <pattern id="dots" width="4" height="4" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".55" fill="#D3D4D6"/></pattern>
+      <filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity=".2"/></filter>
+      <filter id="land" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="10" stdDeviation="8" flood-opacity=".14"/></filter>
+    </defs>
+    <path d="${CH_PATH}" transform="translate(0 7)" fill="#D2D3D5" stroke="#D2D3D5" stroke-width="2" stroke-linejoin="round" filter="url(#land)"/>
+    <path d="${CH_PATH}" fill="#F2F3F4" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="${CH_PATH}" fill="url(#dots)"/>
+    <path class="pop" d="M30 126 Q44 124 57 141" fill="none" stroke="#9D9D9D" stroke-width="2.5" stroke-dasharray="3 4" stroke-linecap="round"/>
+    <path d="M57 141 C78 140 92 100 114.7 96.1 C138 92 140 62 160 60 C176 58 186 62 193.3 51.4" fill="none" stroke="#DA291C" stroke-width="9" stroke-opacity=".12" stroke-linecap="round"/>
+    <path class="draw" pathLength="1" d="M57 141 C78 140 92 100 114.7 96.1 C138 92 140 62 160 60 C176 58 186 62 193.3 51.4" fill="none" stroke="#DA291C" stroke-width="3.5" stroke-linecap="round"/>
+    <path class="pop" d="M193.3 51.4 C199 40 210 42 216 30" fill="none" stroke="#0A0A0A" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="114.7" cy="96.1" r="10" fill="#DA291C" opacity=".15"/>
+    ${node(57, 141)}${node(114.7, 96.1)}${node(193.3, 51.4)}
+    ${label(57, 160, "Lausanne")}${label(114.7, 115, "Bern")}${label(199, 68, "Zürich", "start")}
+    ${pin(30, 126)}<g class="pop">${pin(216, 30, .85)}</g>
+    ${badge(42, 108, "#fff", "#0A0A0A", "walk")}${train(138.6, 77.3)}${badge(196, 30, "#0A0A0A", "#fff", "car")}
+    <g class="pop" filter="url(#sh)"><rect x="152" y="84" width="58" height="22" rx="4" fill="#fff"/>
+      <text x="181" y="99" text-anchor="middle" font-size="11" font-weight="500" fill="#0A0A0A">2 h 15 min</text></g>
+  </svg>`;
+}
+
+function legBar(legs) {
+  const shown = legs.filter(l => COL[l.kind]);
+  return `<div class="legbar">${shown.map((l, i) => `<span style="flex:${Math.max(4, minutesOf(l))};--c:${COL[l.kind]}">
+    <i class="s ${i === 0 ? "f" : ""}"></i><i class="e ${i === shown.length - 1 ? "f" : ""}"></i></span>`).join("")}</div>`;
 }
 function minutesOf(l) {
   if (l.kind === "vertt") return l.ride_time_min;
-  if (l.kind === "train") return (new Date(l.arrival) - new Date(l.departure)) / 60000;
+  if (l.kind === "train") return mins(l.departure, l.arrival);
   return l.minutes || 0;
 }
-function bars(legs) {
-  return `<div class="bars">${legs.filter(l => COL[l.kind]).map(l => `<span style="flex:${Math.max(1, minutesOf(l))};background:${COL[l.kind]}"></span>`).join("")}</div>`;
-}
-function legsHtml(t) {
-  let trainShown = false;
-  return t.legs.map(l => {
-    if (l.kind === "transfer") return `<div class="gap">Change trains – ${Math.round(l.minutes)} min</div>`;
-    let detail, price = "", head;
-    if (l.kind === "vertt") {
-      head = `${hm(l.pickup)} ${esc(l.from === "start" ? "Start" : l.from)}`;
-      const promo = S.promo && S.screen === "overview" ? ` · <span class="strike">${chf(l.price_chf)}</span> −${S.promo} %` : "";
-      detail = `Category Vertt · ${esc(l.car.make)} ${esc(l.car.model)} ${l.car.year} · ${l.car.co2_g_per_km} g/km · ${l.distance_km.toFixed(1)} km${promo}`;
-      price = chf(S.screen === "overview" ? legPrice(l) : l.price_chf);
-    } else if (l.kind === "train") {
-      head = `${hm(l.departure)} ${esc(l.from)}`;
-      detail = `${esc(l.line)}${l.platform ? " · Platform " + esc(l.platform) : ""}`;
-      if (!trainShown) { price = chf(trainPrice(t)); detail += S.card === "ga" ? " · covered by GA" : S.card === "half" ? " · half-fare price" : ""; trainShown = true; }
-    } else {
-      head = `${hm(l.departure)} ${esc(l.from === "start" ? "Start" : l.from)}`;
-      detail = `${(l.distance_km * 1000).toFixed(0)} m on foot`;
+const place = (name, side) => esc(name === "start" ? S.from.town : name === "destination" ? S.to.town : name);
+const modes = legs => [...new Set(legs.map(l => l.kind).filter(k => k === "vertt" || k === "train"))].map(k => MODE[k]).join(" + ");
+
+function trainNote(t) { return S.card === "ga" ? "covered by GA" : S.card === "half" ? "half-fare price" : ""; }
+function legsHtml(t, withPromo) {
+  let trainShown = false, prev = null;
+  const out = t.legs.map(l => {
+    let gap = "";
+    if (l.kind === "transfer") { prev = l; return `<li class="gap">${icon("info-circle", 20)}Transfer ${Math.round(l.minutes)} min</li>`; }
+    if (l.kind === "vertt") gap = `<li class="gap">${icon("info-circle", 20)}Car arrives ${l.wait_min} minutes after ${l.from === "start" ? "your departure time" : "the train"}</li>`;
+    else if (l.kind === "train" && prev && prev.kind !== "transfer" && prev.kind !== "train") {
+      const m = mins(prev.arrival, l.departure);
+      if (m > 0) gap = `<li class="gap">${icon("info-circle", 20)}Transfer ${m} min</li>`;
     }
-    const wait = l.kind === "vertt" ? `<div class="gap">Car arrives ${l.wait_min} min after ${l.from === "start" ? "your departure time" : "the train"}</div>` : "";
-    return `${wait}<div class="leg ${l.kind}" style="border-color:${COL[l.kind]}">
-      <div class="row"><span class="mode" style="color:${COL[l.kind]}">${MODE[l.kind]}</span><span>${price}</span></div>
-      <div><b>${head}</b></div>
-      <div class="muted">${detail} · ${Math.round(minutesOf(l))} min · CO₂ ${kg(l.co2_kg)}</div>
-      <div><b>${hm(l.arrival)} ${esc(l.to === "destination" ? "Destination" : l.to)}</b></div></div>`;
-  }).join("");
+    prev = l;
+    let body;
+    if (l.kind === "vertt") {
+      const p = withPromo && S.promo ? `<s>${chf(l.price_chf)}</s> ${chf(legPrice(l))}` : chf(l.price_chf);
+      body = `<b>${hm(l.pickup)} ${place(l.from)}</b>
+        <div class="line">${icon("car", 20)}<div>Vertt - ${esc(l.car.make)} ${esc(l.car.model)} ${l.car.year}
+          <small>Category Vertt · ${l.distance_km.toFixed(1)} km · ${Math.round(minutesOf(l))} min · ${p} · CO₂ ${kg(l.co2_kg)} · ${l.car.co2_g_per_km} g/km</small></div></div>
+        <b>${hm(l.arrival)} ${place(l.to)}</b>`;
+    } else if (l.kind === "train") {
+      const note = trainNote(t), p = trainShown ? "" : ` · ${chf(trainPrice(t))}${note ? ` (${note})` : ""}`;
+      trainShown = true;
+      body = `<div class="line">${icon("sbb", 20)}<div>Train - ${esc(l.line)} - ${esc(l.from)} → ${esc(l.to)}
+        <small>${hm(l.departure)} – ${hm(l.arrival)}${p} · CO₂ ${kg(l.co2_kg)}${l.platform ? " · Platform " + esc(l.platform) : ""}</small></div></div>`;
+    } else {
+      body = `<div class="line">${icon("walk", 20)}<div>Walk ${Math.round(minutesOf(l))} min<small>${(l.distance_km).toFixed(1)} km on foot</small></div></div>`;
+    }
+    return `${gap}<li class="leg ${l.kind}" style="--c:${COL[l.kind]}">${body}</li>`;
+  });
+  return `<ol class="legs">${out.join("")}</ol>`;
 }
 function mapHtml() {
-  return `<div class="map" data-map></div><div class="legend"><span><i style="background:var(--vertt)"></i>Vertt</span>
-    <span><i style="background:var(--sbb)"></i>Train</span><span><i style="background:var(--walk)"></i>Walk</span></div>`;
+  return `<div><div class="map" data-map></div><div class="legend"><span><i style="border-color:var(--vertt)"></i>Vertt</span>
+    <span><i style="border-color:var(--train)"></i>Train</span><span><i style="border-color:var(--walk);border-top-style:dashed"></i>Walk</span></div></div>`;
 }
 function drawMap(div) {
   const m = L.map(div, { zoomControl: false });
@@ -175,158 +381,301 @@ function drawMap(div) {
   const all = [];
   trip().legs.forEach(l => {
     if (!l.route || l.route.length < 2) return;
-    L.polyline(l.route, { color: HEX[l.kind], weight: 4, dashArray: l.kind === "walk" ? "6 6" : null }).addTo(m);
+    L.polyline(l.route, { color: HEX[l.kind], weight: 4, dashArray: l.kind === "walk" ? "4 6" : null }).addTo(m);
     all.push(...l.route);
   });
-  [S.from.pos, S.to.pos].forEach(p => L.circleMarker(p, { radius: 6, color: "#212121", weight: 2, fillColor: "#fff", fillOpacity: 1 }).addTo(m));
+  [S.from.pos, S.to.pos].forEach(p => L.circleMarker(p, { radius: 6, color: "#0A0A0A", weight: 2, fillColor: "#fff", fillOpacity: 1 }).addTo(m));
   const fit = () => { if (!div.clientWidth) return; m.invalidateSize(); m.fitBounds(all.length ? all : [S.from.pos, S.to.pos], { padding: [16, 16] }); };
   fit();
   new ResizeObserver(fit).observe(div);     // fit again once the map has a real size (e.g. page was in a background tab)
   maps.push(m);
 }
+
+// ---------- form pieces ----------
 function addrField(key, label) {
-  return `<div class="field"><label>${label}</label>
-    <input id="in-${key}" value="${esc(S[key].text)}" placeholder="Enter an address" autocomplete="off" oninput="typed('${key}', this.value)">
-    <div id="sugg-${key}"></div></div>`;
+  const nf = S.notFound[key];
+  return `<div class="fgroup"><label for="in-${key}">${label}</label>
+    <div class="input ${nf ? "err" : ""}" id="box-${key}"><input id="in-${key}" role="combobox" aria-expanded="false" value="${esc(S[key].text)}" placeholder="Search for an address"
+      autocomplete="off" oninput="typed('${key}', this.value)" onfocus="showSugg('${key}')" onblur="setTimeout(() => hideSugg('${key}'), 150)">
+      ${icon("chevron-down", 24, "chev")}</div>
+    <div id="sugg-${key}"></div><div class="help err" id="err-${key}">${nf ? "Address not found" : ""}</div></div>`;
 }
+function calHtml() {
+  const { y, m } = S.cal, first = new Date(y, m, 1), today = ymd(new Date()), now = new Date();
+  const lead = (first.getDay() + 6) % 7, days = new Date(y, m + 1, 0).getDate();
+  const cells = Array(lead).fill("<i></i>").concat(Array.from({ length: days }, (_, i) => {
+    const d = ymd(new Date(y, m, i + 1));
+    return `<button ${d < today ? "disabled" : ""} class="${d === S.date ? "sel" : ""} ${d === today ? "today" : ""}" onclick="S.date='${d}';S.cal=null;S.result=null;render()">${i + 1}</button>`;
+  }));
+  const atStart = y === now.getFullYear() && m === now.getMonth();
+  return `<div class="cal" role="dialog" aria-label="Choose a date"><div class="mon">
+      <button class="iconbtn" aria-label="Previous month" ${atStart ? "disabled" : ""} onclick="moveCal(-1)">${icon("chevron-left")}</button>
+      ${first.toLocaleDateString("en-GB", { month: "long", year: "numeric" })}
+      <button class="iconbtn" aria-label="Next month" onclick="moveCal(1)">${icon("chevron-right")}</button></div>
+    <div class="grid">${["M", "T", "W", "T", "F", "S", "S"].map(d => `<span>${d}</span>`).join("")}${cells.join("")}</div></div>`;
+}
+function travelcardHtml(where) {
+  if (S.swisspass) return `<div class="lblrow"><span class="lbl">Travelcard</span><button class="link s" onclick="removeSwissPass()">Remove</button></div>
+    <div class="locked"><span>${NAMES[S.card]}</span><span class="chip green">from SwissPass</span></div>`;
+  const seg = `<div class="seg" role="radiogroup" aria-label="Travelcard">${Object.keys(NAMES).map(c =>
+    `<button role="radio" aria-checked="${S.card === c}" class="${S.card === c ? "on" : ""}" onclick="S.card='${c}';render()">${NAMES[c]}</button>`).join("")}</div>`;
+  return where === "results"
+    ? `<div class="lblrow"><span class="lbl">Travelcard</span><button class="link s" onclick="S.spFrom='results';S.spCard=S.card;go('swisspass')">Log in with SwissPass</button></div>${seg}`
+    : `<span class="lbl">Travelcard</span>${seg}<button class="btn outline m" style="margin-top:12px" onclick="S.spFrom='plan';S.spCard=S.card;go('swisspass')">Log in with SwissPass</button>`;
+}
+function planAlert() {
+  const e = S.error;
+  if (!e) return "";
+  if (e.status === "too_many_searches") return alertBox("warning", "Too many searches, please wait a moment", "", { close: "S.error=null;render()" });
+  if (e.status === "past_time") return alertBox("warning", e.message, "", { close: "S.error=null;render()" });
+  return alertBox("error", "Search failed", e.message, { close: "S.error=null;render()" });
+}
+
+// ---------- result cards ----------
 function cardHtml(t, i) {
-  const cars = t.legs.filter(l => l.kind === "vertt").map(l => `Car: ${esc(l.car.make)} ${esc(l.car.model)} · ${l.car.co2_g_per_km} g/km`);
-  return `<div class="card click" onclick="S.sel=${i};go('detail')">
-    <div>${t.labels[S.card].map(l => `<span class="tag">${l}</span>`).join("")}<span class="muted">Door to door with one booking</span></div>
-    <div class="row" style="margin-top:6px"><span class="times">${hm(t.departure)} – ${hm(t.arrival)}</span>
-      <span class="muted">${Math.floor(t.duration_min / 60)} h ${t.duration_min % 60} min · ${t.transfers} transfers</span></div>
-    ${bars(t.legs)}${cars.length ? `<div class="muted">${cars.join(" &nbsp;|&nbsp; ")}</div>` : ""}
-    <div class="row"><b>${chf(t.price_chf[S.card])}</b><span class="muted">CO₂ ${kg(t.co2_kg)}</span></div></div>`;
+  const open = S.open[i], labels = t.labels[S.card];
+  let trainShown = false;
+  const mini = t.legs.filter(l => COL[l.kind]).map(l => {
+    if (l.kind === "vertt") return `<li>${icon("car", 20)}<div>Vertt - ${esc(l.car.make)} ${esc(l.car.model)}<small>${l.distance_km.toFixed(1)} km · ${Math.round(l.ride_time_min)} min ·${chf(l.price_chf)} · ${kg(l.co2_kg)} · ${l.car.co2_g_per_km} g/km</small></div></li>`;
+    if (l.kind === "train") { const p = trainShown ? "" : ` · ${chf(trainPrice(t))}`; trainShown = true;
+      return `<li>${icon("sbb", 20)}<div>Train - ${esc(l.line)} - ${esc(l.from)} → ${esc(l.to)}<small>${hm(l.departure)} – ${hm(l.arrival)}${p} · ${kg(l.co2_kg)}</small></div></li>`; }
+    return `<li>${icon("walk", 20)}<div>Walk ${Math.round(minutesOf(l))} min<small>${l.distance_km.toFixed(1)} km on foot</small></div></li>`;
+  }).join("");
+  return `<div class="card trip" role="button" tabindex="0" onclick="S.sel=${i};go('detail')" onkeydown="if(event.key==='Enter'){S.sel=${i};go('detail')}">
+    <div class="top"><div class="tags">${labels.map(l => `<span class="chip ${l === "Greenest" ? "green" : ""}">${l}</span>`).join("")}<span>${modes(t.legs)}</span></div>
+      <button class="iconbtn" aria-label="${open ? "Hide" : "Show"} legs" aria-expanded="${!!open}" onclick="event.stopPropagation();S.open[${i}]=!S.open[${i}];render()">${icon(open ? "chevron-up" : "chevron-down")}</button></div>
+    <div class="times"><b>${hm(t.departure)} – ${hm(t.arrival)}</b><span>${dur(t.duration_min)} - ${transfers(t.transfers)}</span></div>
+    ${open ? `<ul class="legs-mini">${mini}</ul>` : legBar(t.legs)}
+    <div class="bottom"><span>${t.co2_kg == null ? "CO₂ not available" : kg(t.co2_kg) + " CO₂"}</span>${price(t.price_chf[S.card])}</div></div>`;
 }
-function results() {
-  if (S.error) return `<div class="note error">${esc(S.error)}</div>`;
+function cmpHtml(title, dep, arr, detail, p, co2) {
+  return `<div class="card trip cmp" aria-disabled="true"><div class="top"><span>${title}</span></div>
+    <div class="times"><b>${hm(dep)} – ${hm(arr)}</b><span>${detail}</span></div>
+    <div class="bottom"><span>${co2 == null ? "CO₂ not available" : kg(co2) + " CO₂"}</span>${price(p)}</div></div>`;
+}
+function resultsHtml() {
   const r = S.result;
-  if (!r) return "";
-  if (r.status !== "ok") return `<div class="note">${esc(r.message)}</div>`;
-  const shown = r.trips.map((t, i) => [t, i]).filter(([t]) => t.labels[S.card].length);
-  const vo = r.comparisons.vertt_only, pt = r.comparisons.public_transport_only;
-  return `<h2>Connections</h2>${shown.map(([t, i]) => cardHtml(t, i)).join("")}
-    ${vo ? `<div class="card cmp"><div><span class="tag grey">For comparison</span>Vertt only</div>
-      <div class="row" style="margin-top:6px"><span class="times">${hm(vo.departure)} – ${hm(vo.arrival)}</span><span>${vo.distance_km.toFixed(0)} km by car</span></div>
-      <div class="row"><b>${chf(vo.price_chf)}</b><span>CO₂ ${kg(vo.co2_kg)}</span></div></div>` : ""}
-    ${/* not required by the spec (PRD-8 "Decisions") – shown to explain why it was dropped */ ""}
-    ${pt ? `<div class="card cmp"><div><span class="tag grey">For comparison</span>Public transport only</div>
-      <div class="row" style="margin-top:6px"><span class="times">${hm(pt.departure)} – ${hm(pt.arrival)}</span><span>${pt.transfers} transfers</span></div>
-      <div class="row"><b>${chf(pt.price_chf[S.card])}</b><span>CO₂ ${kg(pt.co2_kg)}</span></div></div>` : ""}`;
+  if (r.status === "not_suitable") return alertBox("warning", "Trip not suitable for intermodal journey", "Start and destination are less than 10 km apart. A direct Vertt ride is the better choice.");
+  const vo = r.comparisons && r.comparisons.vertt_only, pt = r.comparisons && r.comparisons.public_transport_only;
+  const shown = r.status === "ok" ? r.trips.map((t, i) => [t, i]).filter(([t]) => t.labels[S.card].length) : [];
+  return `${r.status === "no_trip" ? alertBox("warning", "No trip found for this time", "Please choose another departure time.") : ""}
+    ${shown.map(([t, i]) => cardHtml(t, i)).join("")}
+    ${vo ? cmpHtml("Vertt only", vo.departure, vo.arrival, `${dur(mins(vo.departure, vo.arrival))} - direct`, vo.price_chf, vo.co2_kg) : ""}
+    ${pt ? cmpHtml("Train only", pt.departure, pt.arrival, `${dur(mins(pt.departure, pt.arrival))} - ${transfers(pt.transfers)}`, pt.price_chf[S.card], pt.co2_kg) : ""}`;
 }
 
+function summaryCard(t, withPromo) {
+  const sum = withPromo ? total(t) : t.price_chf[S.card];
+  return `<div class="card white stack">
+    <div class="between"><span>Travelcard · ${NAMES[S.card]}</span>${S.swisspass ? `<span class="chip green">from SwissPass</span>` : ""}</div>
+    <div class="between"><h2 style="margin:0">Total</h2><span class="price">${withPromo && S.promo ? price(t.price_chf[S.card], "was") : ""}${price(sum, "l")}</span></div>
+    ${withPromo && S.promo ? `<span>Promo on Vertt rides · −${chf(r05(t.price_chf[S.card] - sum))}</span>` : ""}
+    <span>Total CO₂ · ${kg(t.co2_kg)}</span>
+    <span class="muted">1 adult · 2nd class · all legs included</span></div>`;
+}
+
+// ---------- screens ----------
 const VIEWS = {
-  app: () => `${!location.protocol.startsWith("http") ? `<div class="note error">${NO_SERVER}</div>` : ""}
-    <h1>Where do you book?</h1><p class="muted">The choice is fixed until you pay or reload.</p>
-    <button class="btn" onclick="S.app='vertt';go('plan')">Vertt app</button>
-    <button class="btn secondary" onclick="S.app='sbb';go('plan')">SBB app</button>`,
+  app: () => `${!location.protocol.startsWith("http") ? alertBox("error", "Server not reachable", "Start dev_server.py and open http://localhost:8000") : ""}
+    <h1>One journey. One booking.</h1><p class="sub">From your door to your destination, with Vertt and the train.</p>
+    ${heroSvg()}
+    <div class="foot"><button class="btn" onclick="go('plan')">Let’s go</button></div>`,
 
-  plan: () => `<h1>Plan your journey</h1>${addrField("from", "From")}${addrField("to", "To")}
-    <div class="row2"><div class="field"><label>Depart at – date</label><input type="date" value="${S.date}" onchange="S.date=this.value;S.result=null;render()"></div>
-      <div class="field"><label>Time</label><input type="time" value="${S.time}" onchange="S.time=this.value;S.result=null;render()"></div></div>
-    <h2>Travelcard${S.swisspass ? " – from SwissPass" : ""}</h2>
-    <div class="seg">${Object.keys(NAMES).map(c => `<button class="${S.card === c ? "on" : ""}" ${S.swisspass ? "disabled" : ""} onclick="S.card='${c}';render()">${NAMES[c]}</button>`).join("")}</div>
-    ${S.swisspass ? "" : `<button class="btn secondary" onclick="S.spFrom='plan';go('swisspass')">Log in with SwissPass</button>`}
-    <button class="btn" id="search" ${S.from.pos && S.to.pos ? "" : "disabled"} onclick="search()">Search</button>${results()}`,
+  plan: () => `<h1>Where are you going?</h1><p class="sub">Door to door with one booking.</p>
+    ${addrField("from", "From")}${addrField("to", "To")}
+    <div class="hint">${icon("location-pin", 16)}Swiss addresses at least 10 km apart</div>
+    <h2 style="margin-top:20px">Depart</h2>
+    <div class="row2">
+      <div class="fgroup"><label for="date">Date</label><div class="input ${S.cal ? "open" : ""}">
+        <button class="datebtn" id="date" aria-haspopup="dialog" onclick="toggleCal()">${dayLabel(S.date)}</button>${icon("calendar")}</div>${S.cal ? calHtml() : ""}</div>
+      <div class="fgroup"><label for="time">Time</label><div class="input">
+        <input type="time" id="time" value="${S.time}" onchange="S.time=this.value;S.result=null">${icon("clock")}</div></div>
+    </div>
+    <div class="fgroup"><label>Traveller</label><div class="input ro"><input value="1 Adult · 2nd class" readonly aria-readonly="true"></div></div>
+    <div class="fgroup">${travelcardHtml("plan")}</div>
+    <div class="foot">${planAlert()}<button class="btn" id="search" ${S.from.pos && S.to.pos ? "" : "disabled"} onclick="search()">Search</button></div>`,
 
-  swisspass: () => `<h1>SwissPass</h1><p class="muted">Demo login – nothing to type.</p>
-    <div class="field"><label>Email</label><input value="demo@swisspass.example" readonly></div>
-    <div class="field"><label>Password</label><input type="password" value="demopassword" readonly></div>
-    ${S.spFrom === "plan" ? `<h2>Test profile</h2><div class="list">${Object.keys(NAMES).map(c => `<label class="opt"><input type="radio" name="sp"
-      ${S.spCard === c ? "checked" : ""} onchange="S.spCard='${c}';render()"> ${NAMES[c]}</label>`).join("")}</div>` : ""}
-    <button class="btn" ${S.spFrom === "plan" && !S.spCard ? "disabled" : ""} onclick="swissPassLogin()">Log in</button>
-    <button class="btn secondary" onclick="go(S.spFrom)">Cancel</button>`,
+  swisspass: () => `<h1>Log in with SwissPass</h1><p class="sub">Secure sign-in for your journey.</p>
+    <div class="fgroup"><label>Email</label><div class="input ro"><input value="anna.keller@example.ch" readonly aria-readonly="true"></div></div>
+    <div class="fgroup"><label>Password</label><div class="input ro"><input type="password" value="demopassword" readonly aria-readonly="true"></div></div>
+    ${S.spFrom !== "login" ? `<div class="fgroup"><span class="lbl">Travelcard</span><div class="seg" role="radiogroup" aria-label="Test profile">${Object.keys(NAMES).map(c =>
+      `<button role="radio" aria-checked="${S.spCard === c}" class="${S.spCard === c ? "on" : ""}" onclick="S.spCard='${c}';render()">${NAMES[c]}</button>`).join("")}</div></div>` : ""}
+    <div class="foot"><button class="btn" onclick="swissPassLogin()">Log in</button>
+      ${S.spFrom !== "login" ? `<span class="muted">Your travelcard will be saved for future bookings.</span>` : ""}</div>`,
+
+  searching: () => `<h1>Finding your connections</h1><p class="sub">Matching Vertt and train rides.</p>
+    <div class="loading" role="status"><div class="spinner"></div><h2>${route()}</h2>
+      <p class="muted">Comparing arrival times, prices and CO₂.<br>This takes up to 5 seconds.</p></div>`,
+
+  results: () => `<div class="titlerow"><h1>Your connections</h1><button class="link" onclick="go('plan')">Edit</button></div>
+    <p class="sub">${route()} · ${new Date(S.date + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
+    <section>${travelcardHtml("results")}</section>
+    <section class="stack" style="padding-bottom:16px">${resultsHtml()}</section>`,
 
   detail: () => { const t = trip();
-    return `<h1>Your trip</h1>${mapHtml()}<div class="card">${legsHtml(t)}
-      <div class="row sum"><span>Total · CO₂ ${kg(t.co2_kg)}</span><span>${chf(t.price_chf[S.card])}</span></div></div>
-      <button class="btn" onclick="go(S.swisspass ? 'overview' : 'login')">Continue</button>
-      <button class="btn secondary" onclick="go('plan')">Back to connections</button>`; },
+    return `<div class="titlerow"><h1>Trip details</h1><button class="link" onclick="go('plan')">Reset</button></div>
+      <p class="sub">${hm(t.departure)} – ${hm(t.arrival)} · ${dur(t.duration_min)} - ${transfers(t.transfers)}</p>
+      <section class="stack">${mapHtml()}${legsHtml(t, false)}${summaryCard(t, false)}
+        ${t.co2_kg == null ? alertBox("warning", "CO₂ not available", "The emissions data of a leg is unavailable. We do not show a zero or estimate a journey total.") : ""}</section>
+      <div class="foot static"><button class="btn" onclick="go(S.swisspass || S.login === 'swisspass' ? 'overview' : 'login')">Continue</button>
+        <button class="btn outline" onclick="go('results')">Back to connections</button></div>`; },
 
-  login: () => `<h1>Log in</h1><p class="muted">One click – nothing to type in the demo.</p>
-    ${["Google", "Apple"].map(p => `<button class="btn secondary" onclick="S.login='${p.toLowerCase()}';go('overview')">Continue with ${p}</button>`).join("")}
-    <button class="btn secondary" onclick="S.spFrom='login';go('swisspass')">Continue with SwissPass</button>
-    <h2>Or with email</h2><div class="field"><label>Email</label><input value="demo@example.com" readonly></div>
-    <div class="field"><label>Password</label><input type="password" value="demopassword" readonly></div>
-    <button class="btn" onclick="S.login='email';go('overview')">Log in</button>`,
+  login: () => `<h1>Log in to book</h1><p class="sub">One quick step before you pay.</p>
+    <div class="fgroup"><label>Email</label><div class="input ro"><input value="anna.keller@example.ch" readonly aria-readonly="true"></div></div>
+    <div class="fgroup"><label>Password</label><div class="input ro"><input type="password" value="demopassword" readonly aria-readonly="true"></div></div>
+    <section class="stack"><button class="btn" onclick="S.login='email';go('overview')">Continue</button>
+      <span class="muted center">or</span>
+      <button class="btn outline" onclick="S.login='google';go('overview')"><img src="${LOGOS.google}" alt="">Continue with Google</button>
+      <button class="btn outline" onclick="S.login='apple';go('overview')"><img src="${LOGOS.apple}" alt="">Continue with Apple</button>
+      <button class="btn outline" onclick="S.spFrom='login';go('swisspass')"><img src="${LOGOS.swisspass}" alt="">Continue with SwissPass</button></section>`,
 
-  overview: () => { const t = trip();
-    return `<h1>Overview</h1>${mapHtml()}<div class="card">${legsHtml(t)}
-      <div class="row sum"><span>Total · CO₂ ${kg(t.co2_kg)}</span><span>${chf(total(t))}</span></div></div>
-      <div class="note">You pay <b>${seller()}</b> for the whole journey. Travelcard: <b>${NAMES[S.card]}</b></div>
-      <h2>Promo code (Vertt rides)</h2><div class="list">${[5, 10, 20].map(p => `<label class="opt"><input type="checkbox" ${S.promo === p ? "checked" : ""}
-        onchange="S.promo=this.checked?${p}:0;render()"> ${p} % off Vertt rides</label>`).join("")}</div>
-      <h2>Payment method</h2><div class="list">${["Card", "TWINT", "Invoice", "Business"].map(m => `<label class="opt"><input type="radio" name="pay"
-        ${S.pay === m.toLowerCase() ? "checked" : ""} onchange="S.pay='${m.toLowerCase()}';render()"> ${m}</label>`).join("")}</div>
-      ${S.error ? `<div class="note error">${esc(S.error)}</div>` : ""}
-      <button class="btn" ${S.pay ? "" : "disabled"} onclick="pay()">Pay ${chf(total(t))}</button>`; },
+  overview: () => { const t = trip(), bad = S.promoText !== "" && !S.promo;
+    const radio = m => `<label class="radio"><input type="radio" name="pay" ${S.pay === m ? "checked" : ""} onchange="S.pay='${m}';render()">${PAY[m]}
+      ${m === S.morePay ? `<span class="chip">Chosen</span>` : ""}</label>`;
+    return `<h1>Overview &amp; Payment</h1><p class="sub">${route()} · ${dayLabel(S.date)} · ${hm(t.departure)} – ${hm(t.arrival)}</p>
+      <section class="stack">${alertBox("", `You pay ${seller()} for the whole journey`, "", { ic: "wallet" })}
+        ${mapHtml()}${legsHtml(t, true)}</section>
+      <div class="fgroup"><label for="promo">Promo for Vertt rides</label><div class="input ${bad ? "err" : ""}">
+        <input id="promo" data-keep="1" inputmode="numeric" maxlength="2" value="${esc(S.promoText)}" placeholder="Enter 5, 10, or 20 for a Vertt ride discount" oninput="promoTyped(this.value)"></div>
+        <div class="help ${bad ? "err" : ""}">${bad ? "Enter 5, 10 or 20" : S.promo ? `${S.promo}% off your Vertt rides` : ""}</div></div>
+      <section class="card"><h2 style="margin:0 0 4px">Payment method</h2>
+        ${radio("twint")}${radio("invoice")}${S.morePay ? radio(S.morePay) : ""}
+        <div class="center" style="margin-top:8px"><button class="link" onclick="S.sheetPick=S.morePay;S.layer='pay';render()">More options</button></div></section>
+      <section>${summaryCard(t, true)}</section>
+      ${S.error ? `<section>${alertBox("error", "Booking failed", S.error)}</section>` : ""}
+      <div class="foot"><button class="btn" ${S.pay ? "" : "disabled"} aria-disabled="${!S.pay}" onclick="pay()">Pay ${chf(total(t))}</button></div>`; },
 
-  paying: () => `<div class="center"><div class="spinner"></div><b>Paying ${seller()} …</b></div>`,
+  paying: () => `<h1>Processing payment</h1><p class="sub">Please do not close this screen</p>
+    <div class="loading" role="status"><div class="spinner"></div><h2>Confirming your journey</h2><p class="muted">Paying ${seller()} – this only takes a moment…</p></div>`,
 
-  receipt: () => { const r = S.booking, b = r.booking, link = `${location.origin}/api/bookings?id=${b.booking_id}`, n = ids().length;
-    return `<h1>${b.status === "cancelled" ? "Cancelled" : "Paid"}</h1>
-      <div class="muted">Booking ${b.booking_id} · seller ${b.system === "vertt" ? "Vertt" : "SBB"}</div>
-      <div class="card" style="margin-top:10px"><b>${esc(S.from.text)} – ${esc(S.to.text)}</b>
-        ${r.legs.map(l => `<div class="row"><span>${l.type === "train" ? "Train" : "Vertt"}</span><span>${chf(l.amount_chf)}</span></div>`).join("")}
-        ${b.promo_percent ? `<div class="muted">Promo ${b.promo_percent} % on Vertt rides: −${chf(b.promo_chf)}</div>` : ""}
-        <div class="row sum"><span>Total</span><span>${chf(b.total_chf)}</span></div>
-        <div class="muted">Travelcard ${NAMES[b.travelcard]} · payment ${b.payment_method} · login ${b.login_method}</div></div>
-      ${b.status === "cancelled" ? `<div class="note">Refunded: <b>${chf(b.total_chf)}</b></div>` : ""}
-      <div class="note">Settlement data (for project partners)<br><a href="${link}" target="_blank">${link}</a>
-        <button class="btn secondary" onclick="navigator.clipboard.writeText('${link}').then(()=>this.textContent='Copied')">Copy link</button></div>
-      ${S.error ? `<div class="note error">${esc(S.error)}</div>` : ""}
-      ${b.status === "cancelled" ? "" : `<button class="btn danger" onclick="cancelJourney()">Cancel journey</button>`}
-      <button class="btn secondary" onclick="reset()">New booking</button>
-      <h2>Export (${n} booking${n === 1 ? "" : "s"} in this browser)</h2>
-      <button class="btn secondary" onclick="exportAll()">Download all bookings</button>
-      <button class="btn secondary" onclick="saveIds([]);render()">Clear list</button>`; },
+  receipt: () => { const r = S.booking, b = r.booking, t = trip(), n = ids().length, gone = b.status === "cancelled";
+    const before = r05(b.total_chf + (b.promo_chf || 0));
+    return `<h1>Your trip was ${gone ? "cancelled" : "booked"}</h1>
+      <p class="sub">${route()} · ${hm(t.departure)} – ${hm(t.arrival)}<br>${longDate(S.date)} · Booking ${b.booking_id} - ${b.system === "vertt" ? "Vertt" : "SBB"}</p>
+      ${gone ? "" : `<div class="center" style="margin-top:12px"><button class="link" onclick="shareBooking()">${S.copied === "share" ? "Link copied" : "Share booking"}</button></div>`}
+      <section class="stack">
+        ${gone ? alertBox("warning", "Journey cancelled", `Refunded: ${chf(b.total_chf)} to your payment method.`) : alertBox("success", "Your payment was successful.")}
+        <div class="card stack">
+          ${r.legs.map(l => `<div class="between"><span>${l.type === "train" ? "Train" : "Vertt"}</span><span class="price">
+            ${l.amount_before_promo_chf != null && l.amount_before_promo_chf !== l.amount_chf ? price(l.amount_before_promo_chf, "was") : ""}${price(l.amount_chf)}</span></div>`).join("")}
+          ${b.promo_percent ? `<div class="between"><span class="muted">Promo</span><span class="chip">${b.promo_percent}% off Vertt · −${chf(b.promo_chf)}</span></div>` : ""}
+          <div class="between"><span class="muted">Travelcard</span><span class="chip">${NAMES[b.travelcard]}</span></div>
+          <div class="between"><span class="muted">Payment</span><span class="chip">${PAY[b.payment_method] || esc(b.payment_method)}</span></div></div>
+        <div class="card white stack"><div class="between"><h2 style="margin:0">Total</h2><span class="price">${b.promo_chf ? price(before, "was") : ""}${price(b.total_chf, "l")}</span></div>
+          <span>Total CO₂ · ${kg(r.summary && r.summary.co2_kg ? r.summary.co2_kg.total : t.co2_kg)}</span></div>
+        <div class="card white stack center"><button class="btn grey m" onclick="S.layer='settle';render()">Settlement data</button>
+          <button class="link" ${n ? "" : "disabled"} onclick="exportAll()">Export all bookings</button>
+          <button class="link s muted" onclick="saveIds([]);render()">Clear list (${n} booking${n === 1 ? "" : "s"} in this browser)</button></div>
+        ${S.error ? alertBox("error", "Cancelling failed", S.error) : ""}</section>
+      <div class="foot ${gone ? "" : "row"}">${gone ? "" : `<button class="btn outline" onclick="S.layer='cancel';render()">Cancel journey</button>`}
+        <button class="btn" onclick="reset()">New booking</button></div>`; },
+};
+
+// sheets and dialogs on top of a screen
+const LAYERS = {
+  pay: () => `<div class="overlay" onclick="if(event.target===this){S.layer=null;render()}"><div class="sheet" role="dialog" aria-modal="true" aria-label="More payment options">
+    <div class="between"><h2 style="margin:0">More payment options</h2><button class="iconbtn" aria-label="Close" onclick="S.layer=null;render()">${icon("x")}</button></div>
+    <div class="paygrid">${MORE_PAY.map(m => `<button aria-pressed="${S.sheetPick === m}" aria-label="${PAY[m]}" class="${S.sheetPick === m ? "on" : ""} ${m === "postfinance" ? "pf" : ""}"
+      onclick="S.sheetPick='${m}';render()">${PAY_LOGOS[m] ? `<img src="${PAY_LOGOS[m]}" alt="">` : "PostFinance<br>Card"}</button>`).join("")}</div>
+    <button class="btn" ${S.sheetPick ? "" : "disabled"} onclick="S.morePay=S.pay=S.sheetPick;S.layer=null;render()">Select</button></div></div>`,
+
+  cancel: () => `<div class="overlay" onclick="if(event.target===this){S.layer=null;render()}"><div class="sheet" role="alertdialog" aria-modal="true" aria-label="Cancel your booking?">
+    <div class="between"><h2 style="margin:0">Cancel your booking?</h2><button class="iconbtn" aria-label="Close" onclick="S.layer=null;render()">${icon("x")}</button></div>
+    <p style="margin:0">If you proceed, the whole journey is cancelled and you get ${chf(S.booking.booking.total_chf)} back.</p>
+    <div class="stack" style="margin-top:24px"><button class="btn danger" onclick="cancelJourney()">Cancel journey</button>
+      <button class="btn" onclick="S.layer=null;render()">Dismiss</button></div></div></div>`,
+
+  settle: () => `<div class="overlay mid" onclick="if(event.target===this){S.layer=null;render()}"><div class="modal" role="dialog" aria-modal="true" aria-label="Settlement data">
+    <div class="between"><h2 style="margin:0">Settlement data</h2><button class="iconbtn" aria-label="Close" onclick="S.layer=null;render()">${icon("x")}</button></div>
+    <p class="muted" style="margin:0">Booking ${S.booking.booking.booking_id} – money flows between customer, Vertt and SBB.</p>
+    <pre>${esc(JSON.stringify(S.booking, null, 2))}</pre>
+    <button class="btn" onclick="copyText(JSON.stringify(S.booking, null, 2), 'settle')">${icon(S.copied === "settle" ? "check-circle" : "archive", 20)}${S.copied === "settle" ? "Copied" : "Copy"}</button>
+    <button class="btn outline" onclick="S.layer=null;render()">Close</button></div></div>`,
 };
 
 // ---------- actions ----------
 function typed(key, value) {
-  S[key] = { text: value, pos: null }; S.result = null;
+  S[key] = { text: value, pos: null, town: "" }; S.result = null; S.notFound[key] = false;
   document.getElementById("search").disabled = true;
+  document.getElementById(`box-${key}`).classList.remove("err");
+  document.getElementById(`err-${key}`).textContent = "";
   clearTimeout(timer);
   timer = setTimeout(async () => {
-    const box = document.getElementById(`sugg-${key}`);
-    if (value.trim().length < 3) { box.innerHTML = ""; return; }
+    if (value.trim().length < 3) { S.sugg[key] = []; showSugg(key); return; }
     const url = "https://api3.geo.admin.ch/rest/services/api/SearchServer?type=locations&origins=address&sr=4326&limit=5&searchText=" + encodeURIComponent(value);
     try {
       const res = (await (await fetch(url)).json()).results || [];
-      S.sugg[key] = res.map(r => ({ label: r.attrs.label.replace(/<[^>]+>/g, ""), pos: [r.attrs.lat, r.attrs.lon] }));
-      box.innerHTML = S.sugg[key].length
-        ? `<div class="sugg">${S.sugg[key].map((a, i) => `<div onmousedown="pick('${key}', ${i})">${esc(a.label)}</div>`).join("")}</div>`
-        : `<div class="sugg"><div>Address not found</div></div>`;
-    } catch { box.innerHTML = `<div class="sugg"><div>Address search not reachable</div></div>`; }
+      S.sugg[key] = res.map(r => {          // label: "Dorfstrasse 1 <b>8907 Wettswil am Albis</b>"
+        const [street, placeHtml = ""] = r.attrs.label.split("<b>"), plz = placeHtml.replace(/<[^>]+>/g, "").trim();
+        return { street: street.trim(), plz, town: plz.replace(/^\d{4}\s*/, ""), pos: [r.attrs.lat, r.attrs.lon] };
+      });
+      S.notFound[key] = !S.sugg[key].length;
+      document.getElementById(`box-${key}`).classList.toggle("err", S.notFound[key]);
+      document.getElementById(`err-${key}`).textContent = S.notFound[key] ? "Address not found" : "";
+      showSugg(key);
+    } catch { document.getElementById(`sugg-${key}`).innerHTML = `<div class="sugg"><div class="none">Address search not reachable</div></div>`; }
   }, 250);
 }
-function pick(key, i) { const a = S.sugg[key][i]; S[key] = { text: a.label, pos: a.pos }; S.sugg[key] = []; render(); }
+function showSugg(key) {
+  const box = document.getElementById(`sugg-${key}`), input = document.getElementById(`in-${key}`), list = S.sugg[key];
+  if (!box || document.activeElement !== input) return;
+  const q = input.value.trim().toLowerCase();
+  const mark = s => { const i = s.toLowerCase().indexOf(q); return i < 0 || !q ? esc(s) : esc(s.slice(0, i)) + "<b>" + esc(s.slice(i, i + q.length)) + "</b>" + esc(s.slice(i + q.length)); };
+  box.innerHTML = list.length ? `<div class="sugg" role="listbox">${list.map((a, i) => `<button role="option" onmousedown="event.preventDefault();pick('${key}', ${i})">
+    ${icon("location-pin", 20, "pin")}<span>${mark(a.street)}<small>${esc(a.plz)}, Switzerland</small></span></button>`).join("")}</div>` : "";
+  input.setAttribute("aria-expanded", !!list.length);
+  document.getElementById(`box-${key}`).classList.toggle("open", !!list.length);
+}
+function hideSugg(key) {
+  const box = document.getElementById(`sugg-${key}`);
+  if (box) { box.innerHTML = ""; document.getElementById(`box-${key}`).classList.remove("open"); }
+}
+function pick(key, i) { const a = S.sugg[key][i]; S[key] = { text: `${a.street}, ${a.town}`, pos: a.pos, town: a.town }; S.sugg[key] = []; document.activeElement.blur(); render(); }
+function toggleCal() { const d = new Date(S.date + "T12:00"); S.cal = S.cal ? null : { y: d.getFullYear(), m: d.getMonth() }; render(); }
+function moveCal(step) { const d = new Date(S.cal.y, S.cal.m + step, 1); S.cal = { y: d.getFullYear(), m: d.getMonth() }; render(); }
+// a click outside the calendar closes it
+document.addEventListener("mousedown", e => { if (S.cal && !e.target.closest(".cal, .datebtn")) { S.cal = null; render(); } });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && (S.cal || S.layer)) { S.cal = null; S.layer = null; render(); } });
+
 function swissPassLogin() {
-  S.swisspass = true; S.login = "swisspass";
-  if (S.spFrom === "plan") { S.card = S.spCard; go("plan"); } else go("overview");
+  if (S.spFrom === "login") { S.login = "swisspass"; go("overview"); return; }   // step 2: travelcard unchanged and not locked
+  S.swisspass = true; S.login = "swisspass"; S.card = S.spCard; go(S.spFrom);
+}
+function removeSwissPass() { S.swisspass = false; if (S.login === "swisspass") S.login = null; render(); }
+function promoTyped(value) {
+  S.promoText = value.replace(/\D/g, "").slice(0, 2);
+  const n = Number(S.promoText);
+  S.promo = [5, 10, 20].includes(n) ? n : 0;
+  render();
 }
 async function search() {
-  S.error = null; S.result = null;
-  const el = document.getElementById("search"); el.disabled = true; el.textContent = "Searching connections …";
+  S.error = null; S.result = null; S.open = {};
+  go("searching");
   const departure = new Date(`${S.date}T${S.time}`).toISOString();
   const { data } = await api("/api/trips", { start: { lat: S.from.pos[0], lon: S.from.pos[1] }, destination: { lat: S.to.pos[0], lon: S.to.pos[1] }, departure });
-  if (["ok", "no_trip", "not_suitable"].includes(data.status)) S.result = data; else S.error = data.message || "Search failed";
-  render();
+  if (S.screen !== "searching") return;            // the user left the screen meanwhile
+  if (["ok", "no_trip", "not_suitable"].includes(data.status)) { S.result = data; go("results"); }
+  else { S.error = { status: data.status, message: data.message || "Search failed" }; go("plan"); }
 }
 async function pay() {
   S.error = null; go("paying");
+  const started = Date.now();
   const { ok, data } = await api("/api/bookings", { action: "book", trip: trip(), system: S.app, travelcard: S.card,
-                                                   promo_percent: S.promo, payment_method: S.pay, login_method: S.login });
+                                                   promo_percent: S.promo, payment_method: S.pay, login_method: S.login || "email" });
   if (!ok) { S.error = data.message || "Booking failed"; go("overview"); return; }
   S.booking = data; saveIds([...ids(), data.booking.booking_id]);        // the booking exists from the click on "Pay"
-  setTimeout(() => go("receipt"), 600);
+  setTimeout(() => go("receipt"), Math.max(600, 1500 - (Date.now() - started)));
 }
 async function cancelJourney() {
-  if (!confirm("Really cancel the whole journey?")) return;
   const { ok, data } = await api("/api/bookings", { action: "cancel", booking_id: S.booking.booking.booking_id });
-  if (ok) { S.booking = data; S.error = null; } else S.error = data.status;
-  render();
+  if (ok) { S.booking = data; S.error = null; } else S.error = data.message || data.status;
+  S.layer = null; render();
 }
+async function copyText(text, what) {
+  try { await navigator.clipboard.writeText(text); S.copied = what; } catch { prompt("Copy this:", text); }
+  render(); setTimeout(() => { if (S.copied === what) { S.copied = null; render(); } }, 2000);
+}
+function shareBooking() { copyText(`${location.origin}/api/bookings?id=${S.booking.booking.booking_id}`, "share"); }
 async function exportAll() {
   const all = (await Promise.all(ids().map(id => api(`/api/bookings?id=${id}`)))).filter(r => r.ok).map(r => r.data);
   const a = document.createElement("a");

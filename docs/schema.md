@@ -62,7 +62,7 @@ Calculated from `legs` and `settlement_events` – the first thing to read; the 
 | `travelcard` | string | `none` · `half` · `ga` | Travelcard; affects only the train price |
 | `promo_percent` | integer | `0` · `5` · `10` · `20` | Promo on the Vertt rides |
 | `promo_chf` | number | CHF ≥ 0 | Discount in CHF, carried by Vertt |
-| `payment_method` | string | `card` · `twint` · `invoice` · `business` | Payment method (mock; all count as paid immediately) |
+| `payment_method` | string | `twint` · `invoice` · `visa` · `mastercard` · `amex` · `postfinance` · `paypal` · `apple_pay` · `google_pay` | Payment method (mock; all count as paid immediately) |
 | `booked_at` | string | ISO 8601 with time zone, Swiss time | Click on "Pay" |
 | `total_chf` | number | CHF, multiple of 0.05 | What the customer paid = sum of `legs[].amount_chf` |
 
